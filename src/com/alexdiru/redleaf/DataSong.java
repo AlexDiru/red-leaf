@@ -163,17 +163,20 @@ public class DataSong {
 			current = mRenderNotes.get(i);
 
 			// (Applies to tap notes) If the note has been fallen off the screen remove it from the render list
-			boolean tapFallen = current.mTopY > mTapAreas.mTapBoxBottom && current.isTapNote() && !current.mTapped;//|| (current.isHoldNote() && !current.mTapped));
+			boolean tapFallen = current.mTopY > mTapAreas.mTapBoxBottom && current.isTapNote() && !current.mTapped;
+
+			// (Applies to hold notes) If the note hasn't been tapped and is below the tapbox
+			boolean heldInitialFallen = (current.mTopY  > mTapAreas.mTapBoxBottom) && current.isHoldNote() && !current.mTapped;
 			
 			// (Applies to hold notes) If the note has been held and the line has fallen off screen
-			boolean heldFallen = (current.mTopY - (current.getEndTime() - current.mStartTime) > mTapAreas.mTapBoxBottom || current.mTapped && !current.mBeingHeld) && current.isHoldNote();
+			boolean heldFallen = current.mTapped && !current.mBeingHeld && current.isHoldNote();
 			
 			// If a regular note has been tapped or fallen off the screen
-			if (current.mTapped && current.isTapNote() || tapFallen || heldFallen) {
+			if (current.mTapped && current.isTapNote() || tapFallen || heldInitialFallen || heldFallen) {
 				mRenderNotes.remove(i);
 				i--;
 
-				if (tapFallen) 
+				if (tapFallen || heldInitialFallen) 
 					mTapAreas.miss();
 				
 
