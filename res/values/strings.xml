@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Red Leaf</string>
+    <string name="menu_settings">Settings</string>
+
+    <!-- Main Menu -->
+    <string name="menumain_play">Play</string>
+    <string name="menumain_editor">Editor</string>
+    <string name="menumain_credits">Credits</string>
+    
+    <!-- Credits -->
+    <string name="credits_programmer">Programmer - Alex Spedding</string>
+    <string name="credits_music">Music - LOST</string>
+    
+    <!-- Alerts -->
+    <string name="ok">OK</string>
+    <string name="unimplementedsong_title">Unimplemented Song</string>
+    <string name="unimplementedsong_message">Sorry this song hasn\'t been created yet!</string>
+    
+    <!-- Game -->
+    <string name="game_songnameprefix">Song:\u0020</string>
+    <string name="game_fpsprefix">FPS:\u0020</string>
+    <string name="game_fpsdivider">\u0020/\u0020</string>
+    <string name="game_accuracyprefix">Accuracy:\u0020</string>
+    <string name="game_accuracysuffix">%</string>
+    <string name="game_streakprefix">Streak:\u0020</string>
+    <string name="game_multiplierprefix">Multiplier:\u0020</string>
+    <string name="game_multipliersuffix">x</string>
+</resources>
