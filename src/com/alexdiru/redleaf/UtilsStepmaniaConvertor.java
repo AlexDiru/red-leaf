@@ -1,6 +1,7 @@
 package com.alexdiru.redleaf;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,8 +9,14 @@ import android.util.Log;
 
 public abstract class UtilsStepmaniaConvertor {
 	
-
+	private static Integer[] heldStart = new Integer[4];
+	private static boolean[] heldEnabled = new boolean[4];
+	
+	
 	public static DataSong stepmaniaToRedLeaf(String inputFilePath, DataSong.DataSongDifficulty difficulty) {
+		Arrays.fill(heldStart, null);
+		Arrays.fill(heldEnabled, false);
+		
 		ArrayList<String> lines = UtilsFileIO.readAllLines(inputFilePath);
 		DataSong convertedSong = new DataSong();
 
@@ -69,10 +76,20 @@ public abstract class UtilsStepmaniaConvertor {
 							switch (noteLines.get(n).charAt(c)){
 								default:
 								case '0':
+									//Stop any hold notes
+									if (heldEnabled[c]) {
+										heldEnabled[c] = false;
+										notes[currentDifficulty].add(new DataNote(heldStart[c], currentTimeMS + (int)(((beatsPerMillisecond * n)/noteLines.size())), 1, c));
+									}
 									break;
 								case '1':
-								case '2':
 									notes[currentDifficulty].add(new DataNote(currentTimeMS + (int)(((beatsPerMillisecond * n)/noteLines.size())), 0, 0, c ));
+									break;
+								case '2':
+									if (!heldEnabled[c]) {
+										heldEnabled[c] = true;
+										heldStart[c] = currentTimeMS + (int)(((beatsPerMillisecond * n)/noteLines.size()));
+									}
 									break;
 							}
 						}
