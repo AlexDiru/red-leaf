@@ -163,16 +163,16 @@ public class DataSong {
 			current = mRenderNotes.get(i);
 
 			// (Applies to tap notes) If the note has been fallen off the screen remove it from the render list
-			boolean tapFallen = current.mTopY > mTapAreas.mTapBoxBottom && current.isTapNote() && !current.mTapped;
+			boolean tapFallen = current.mTopY > mTapAreas.mTapBoxBottom && current.isTapNote() && !current.hasBeenTapped();
 
 			// (Applies to hold notes) If the note hasn't been tapped and is below the tapbox
-			boolean heldInitialFallen = (current.mTopY  > mTapAreas.mTapBoxBottom) && current.isHoldNote() && !current.mTapped;
+			boolean heldInitialFallen = (current.mTopY  > mTapAreas.mTapBoxBottom) && current.isHoldNote() && !current.hasBeenTapped();
 			
 			// (Applies to hold notes) If the note has been held and the line has fallen off screen
-			boolean heldFallen = current.mTapped && !current.mBeingHeld && current.isHoldNote();
+			boolean heldFallen = current.hasBeenTapped() && !current.isHeld() && current.isHoldNote();
 			
 			// If a regular note has been tapped or fallen off the screen
-			if (current.mTapped && current.isTapNote() || tapFallen || heldInitialFallen || heldFallen) {
+			if (current.hasBeenTapped() && current.isTapNote() || tapFallen || heldInitialFallen || heldFallen) {
 				mRenderNotes.remove(i);
 				i--;
 
@@ -207,7 +207,7 @@ public class DataSong {
 		for (int i = startIndex; i < endIndex; i++) {
 			note = mNotes.get(i);
 			startIndex++;
-			if (note.mStartTime - currentTime < renderDistance) {
+			if (note.getStartTime() - currentTime < renderDistance) {
 				mRenderNotes.add(note);
 				mNoteIndex = startIndex;
 			}
@@ -236,14 +236,14 @@ public class DataSong {
 				continue;
 
 			// Update note coordinates
-			note.mTopY = Utils.getCurrentSong().mMusicManager.getPlayPosition() - note.mStartTime + GameView.TAPCIRCLES_Y;
+			note.mTopY = Utils.getCurrentSong().mMusicManager.getPlayPosition() - note.getStartTime() + GameView.TAPCIRCLES_Y;
 			note.mBottomY = note.mTopY + NOTESIZE;
-			int noteXPosition = tapAreas.getBoundingBoxLeft(note.mPosition) + ((DataTapAreas.TAP_AREA_WIDTH - NOTESIZE) >> 1);
+			int noteXPosition = tapAreas.getBoundingBoxLeft(note.getPosition()) + ((DataTapAreas.TAP_AREA_WIDTH - NOTESIZE) >> 1);
 
-			canvas.drawBitmap(note.mBeingHeld && note.isHoldNote() ? tapAreas.getRenderer().getNoteHeld(note.mPosition) : tapAreas.getRenderer().getNote(note.mPosition), noteXPosition, note.mTopY, null);
+			canvas.drawBitmap(note.isHeld() && note.isHoldNote() ? tapAreas.getRenderer().getNoteHeld(note.getPosition()) : tapAreas.getRenderer().getNote(note.getPosition()), noteXPosition, note.mTopY, null);
 
 			if (note.isHoldNote())
-				note.drawHoldLine(canvas, tapAreas.getRenderer().getHoldLineHeldPaint(note.mPosition) , tapAreas.getRenderer().getHoldLineUnheldPaint(note.mPosition) , noteXPosition);
+				note.drawHoldLine(canvas, tapAreas.getRenderer().getHoldLineHeldPaint(note.getPosition()) , tapAreas.getRenderer().getHoldLineUnheldPaint(note.getPosition()) , noteXPosition);
 		}
 	}
 
@@ -251,9 +251,9 @@ public class DataSong {
 		DataNote note = null;
 		for (int i = 0; i < mRenderNotes.size(); i++) {
 			note = mRenderNotes.get(i);
-			if (!note.mTapped)
+			if (!note.hasBeenTapped())
 				if (note.isHit(mTapAreas.getBoundingBoxTop(), mTapAreas.getBoundingBoxBottom()))
-					if (note.mPosition == position)
+					if (note.getPosition() == position)
 						return note;
 		}
 		return null;
@@ -271,10 +271,10 @@ public class DataSong {
 
 		if (isTapSuccessful(note, position)) {
 		
-			note.mTapped = true;
+			note.setTapped(true);
 			
 			if (note.isHoldNote()) {
-				note.mBeingHeld = true;
+				note.setHeld(true);
 				mHeldNotes[position] = note;
 			}
 			
@@ -288,7 +288,7 @@ public class DataSong {
 	/** Called when the player lifts a finger up, makes sure any held notes are unheld */
 	public void unhold(int position) {
 		if (mHeldNotes[position] != null) {
-			mHeldNotes[position].mBeingHeld = false;
+			mHeldNotes[position].setHeld(false);
 			mHeldNotes[position] = null;
 		}
 	}

@@ -1,7 +1,5 @@
 package com.alexdiru.redleaf;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
 
 public class UtilsString {
 
@@ -17,6 +15,11 @@ public class UtilsString {
 	
 	/** Appends an integer to the string builder without allocation */
 	public static void appendInteger(int i) {
+		if (i == 0) {
+			mStringBuilder.append(mDigits[0]);
+			return;
+		}
+		
 		int index = 0;
 		while (i > 0) {
 			mDigitBuffer[index] = i % 10;

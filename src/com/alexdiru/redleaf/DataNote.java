@@ -14,19 +14,17 @@ public class DataNote {
 	
 	/** Only need one rectangle to share between all of the notes */
 	private static Rect mHoldLineRect = new Rect();
-	
-	//private static Path mHoldLinePath = new Path();
 
-	public int mStartTime;
+	private int mStartTime;
 	private int mEndTime;
-	public int mType;
-	public int mPosition;
-	public boolean mTapped;
+	private int mType; //Unused for now
+	private int mPosition;
+	private boolean mTapped;
 	public int mTopY;
 	public int mBottomY;
 
 	/** If a hold note, whether the note is being held down */
-	public boolean mBeingHeld;
+	private boolean mBeingHeld;
 
 	public DataNote(int startTime, int endTime, int type, int position) {
 		mStartTime = startTime;
@@ -56,8 +54,28 @@ public class DataNote {
 		return mEndTime == 0;
 	}
 	
+	public boolean hasBeenTapped() {
+		return mTapped;
+	}
+	
+	public int getStartTime() {
+		return mStartTime;
+	}
+	
 	public int getEndTime() {
 		return mEndTime;
+	}
+	
+	public int getPosition() {
+		return mPosition;
+	}
+	
+	public void setHeld(boolean beingHeld) {
+		mBeingHeld = beingHeld;
+	}
+	
+	public boolean isHeld() {
+		return mBeingHeld;
 	}
 
 	public void drawHoldLine(Canvas canvas, Paint held, Paint unheld, int noteX) {
@@ -80,5 +98,9 @@ public class DataNote {
 		//mHoldLinePath.addRect(mHoldLineRect, Direction.CCW);
 		
 		canvas.drawRect(mHoldLineRect, mBeingHeld ? held : unheld);
+	}
+
+	public void setTapped(boolean tapped) {
+		mTapped = tapped;
 	}
 }
