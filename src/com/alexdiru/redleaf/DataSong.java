@@ -14,7 +14,7 @@ public class DataSong {
 	public static final int NOTESIZE = DataTapAreas.TAP_AREA_WIDTH;
 	
 	/** The maximum number of notes that can be rendered */
-	private static final int MAX_NOTES_ON_SCREEN = 30;
+	private static final int MAX_NOTES_ON_SCREEN = 20;
 
 	/** Represents the levels of difficulty of the song */
 	public enum DataSongDifficulty {
