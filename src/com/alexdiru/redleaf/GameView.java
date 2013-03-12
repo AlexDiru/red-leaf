@@ -216,7 +216,7 @@ public class GameView extends SurfaceView implements
 		sb.append(Utils.getActivity().getString(R.string.game_streakprefix));
 		UtilsString.appendInteger(mTapAreas.getStreak());
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 100, 200, mTextPaint);
+		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 200, mTextPaint);
 	}
 	
 	private void drawMultiplier(Canvas canvas) {
@@ -224,7 +224,7 @@ public class GameView extends SurfaceView implements
 		sb.append(Utils.getActivity().getString(R.string.game_multiplierprefix));
 		UtilsString.appendInteger(mTapAreas.getMultiplier());
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 100, 250, mTextPaint);
+		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 250, mTextPaint);
 	}
 	
 	private void drawAccuracy(Canvas canvas) {
@@ -236,7 +236,7 @@ public class GameView extends SurfaceView implements
 			UtilsString.appendInteger((int)(100.0*((float)mTapAreas.getTappedCount()/(float)(mTapAreas.getTappedCount() + mTapAreas.getMissedCount()))));
 		sb.append(Utils.getActivity().getString(R.string.game_accuracysuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		canvas.drawText(UtilsString.getChars(),0, sb.length(),100,150, mTextPaint);
+		canvas.drawText(UtilsString.getChars(),0, sb.length(),30,150, mTextPaint);
 	}
 	
 	private void drawScore(Canvas canvas) {
@@ -244,7 +244,7 @@ public class GameView extends SurfaceView implements
 		sb.append(Utils.getActivity().getString(R.string.game_scoreprefix));
 		UtilsString.appendInteger(mTapAreas.getScore());
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 100, 50, mTextPaint);
+		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 50, mTextPaint);
 	}
 	
 	private void drawSongName(Canvas canvas) {
@@ -252,7 +252,7 @@ public class GameView extends SurfaceView implements
 		sb.append(Utils.getActivity().getString(R.string.game_songnameprefix));
 		sb.append(Utils.getCurrentSong().mSongName);
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 100, 100, mTextPaint);
+		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 100, mTextPaint);
 	}
 	
 	private void drawFPS(Canvas canvas) {
@@ -262,7 +262,7 @@ public class GameView extends SurfaceView implements
 		sb.append(Utils.getActivity().getString(R.string.game_fpsdivider));
 		UtilsString.appendInteger((int) (mTotalFPS / mLoopCount));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 100, 300, mTextPaint);
+		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 300, mTextPaint);
 	}
 
 	@Override
