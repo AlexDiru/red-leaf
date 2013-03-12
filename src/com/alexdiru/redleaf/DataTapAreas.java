@@ -41,30 +41,24 @@ public class DataTapAreas {
 			mTapBoundingBoxes[t] = new DataBoundingBox();
 
 		mSong = song;
+		
+		initialiseTapBoxes();
 	}
 
-	public void update() {
-
+	private void initialiseTapBoxes() {
 		int y1 = UtilsScreenSize.scaleY(GameView.TAPCIRCLES_Y);
 		int y2 = y1 + UtilsScreenSize.scaleY(TAP_AREA_HEIGHT);
+		
 		mTapBoxTop = y1;
 		mTapBoxBottom = y2;
-
-		switch (TAP_AREAS) {
-		case 3:
-			mTapBoundingBoxes[0].update(UtilsScreenSize.scaleX(115 - TAP_AREA_WIDTH / 2), y1, UtilsScreenSize.scaleX(115 + TAP_AREA_WIDTH / 2), y2);
-			mTapBoundingBoxes[1].update(UtilsScreenSize.scaleX(360 - TAP_AREA_WIDTH / 2), y1, UtilsScreenSize.scaleX(360 + TAP_AREA_WIDTH / 2), y2);
-			mTapBoundingBoxes[2].update(UtilsScreenSize.scaleX(605 - TAP_AREA_WIDTH / 2), y1, UtilsScreenSize.scaleX(605 + TAP_AREA_WIDTH / 2), y2);
-			break;
-		case 4:
-			int a = 720 - TAP_AREA_WIDTH * 4;
-			int b = a / 5;
-			mTapBoundingBoxes[0].update(UtilsScreenSize.scaleX(b), y1, UtilsScreenSize.scaleX(b + TAP_AREA_WIDTH), y2);
-			mTapBoundingBoxes[1].update(UtilsScreenSize.scaleX(b * 2 + TAP_AREA_WIDTH), y1, UtilsScreenSize.scaleX(b * 2 + TAP_AREA_WIDTH * 2), y2);
-			mTapBoundingBoxes[2].update(UtilsScreenSize.scaleX(b * 3 + TAP_AREA_WIDTH * 2), y1, UtilsScreenSize.scaleX(b * 3 + TAP_AREA_WIDTH * 3), y2);
-			mTapBoundingBoxes[3].update(UtilsScreenSize.scaleX(b * 4 + TAP_AREA_WIDTH * 3), y1, UtilsScreenSize.scaleX(b * 4 + TAP_AREA_WIDTH * 4), y2);
-			break;
-		}
+		
+		int a = 720 - TAP_AREA_WIDTH * 4;
+		int b = a / 5;
+		
+		mTapBoundingBoxes[0].update(UtilsScreenSize.scaleX(b), y1, UtilsScreenSize.scaleX(b + TAP_AREA_WIDTH), y2);
+		mTapBoundingBoxes[1].update(UtilsScreenSize.scaleX(b * 2 + TAP_AREA_WIDTH), y1, UtilsScreenSize.scaleX(b * 2 + TAP_AREA_WIDTH * 2), y2);
+		mTapBoundingBoxes[2].update(UtilsScreenSize.scaleX(b * 3 + TAP_AREA_WIDTH * 2), y1, UtilsScreenSize.scaleX(b * 3 + TAP_AREA_WIDTH * 3), y2);
+		mTapBoundingBoxes[3].update(UtilsScreenSize.scaleX(b * 4 + TAP_AREA_WIDTH * 3), y1, UtilsScreenSize.scaleX(b * 4 + TAP_AREA_WIDTH * 4), y2);
 	}
 
 	public void successfulTap() {
