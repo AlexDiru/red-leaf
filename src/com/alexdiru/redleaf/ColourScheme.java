@@ -40,15 +40,15 @@ public class ColourScheme {
 			mTapHold[2] = "Si.png";
 			mTapHold[3] = "Ti.png";
 
-			mNote[0] = "reddown.png";
+			mNote[0] = "redleft.png";
 			mNote[1] = "reddown.png";
-			mNote[2] = "reddown.png";
-			mNote[3] = "reddown.png";
+			mNote[2] = "redup.png";
+			mNote[3] = "redright.png";
 			
-			mNoteHeld[0] = "bluedown.png";
+			mNoteHeld[0] = "blueleft.png";
 			mNoteHeld[1] = "bluedown.png";
-			mNoteHeld[2] = "bluedown.png";
-			mNoteHeld[3] = "bluedown.png";
+			mNoteHeld[2] = "blueup.png";
+			mNoteHeld[3] = "blueright.png";
 
 			mNoteStreamHeld[0] = "bluedowntrail.png";
 			mNoteStreamHeld[1] = "bluedowntrail.png";
