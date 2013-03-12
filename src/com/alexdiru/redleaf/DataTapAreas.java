@@ -8,8 +8,8 @@ public class DataTapAreas {
 
 	private static final int TAP_AREAS = 4;
 	private static final int TAP_AREA_HEIGHT = 160;
-
 	public static final int TAP_AREA_WIDTH = 120;
+	private static final int TAP_AREA_GAP = (720 - TAP_AREA_WIDTH * 4)/5;
 
 	private DataBoundingBox[] mTapBoundingBoxes;
 	private DataSong mSong;
@@ -104,7 +104,7 @@ public class DataTapAreas {
 	 * @param pid The index of the touch */
 	public void handleTouchDown(int x, int y, int pid) {
 		for (int i = 0; i < TAP_AREAS; i++)
-			if (mTapBoundingBoxes[i].isTouched(x, y)) {
+			if (mTapBoundingBoxes[i].isTouched(x, y, TAP_AREA_GAP/2)) {
 				mSong.tap(i);
 				mTouchMap.put(pid, i);
 				break;

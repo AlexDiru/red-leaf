@@ -25,8 +25,8 @@ public class DataBoundingBox {
 	/**
 	 * Whether the entered coordinates are inside the bounding box
 	 */
-	public boolean isTouched(int x, int y) {
-		return (x >= mRect.left && x <= mRect.right && y >= mRect.top && y <= mRect.bottom);
+	public boolean isTouched(int x, int y, int extensionX) {
+		return (x >= mRect.left - extensionX && x <= mRect.right + extensionX && y >= mRect.top && y <= mRect.bottom);
 	}
 
 	/**

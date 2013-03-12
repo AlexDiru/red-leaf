@@ -235,11 +235,7 @@ public class GameView extends SurfaceView implements
 			UtilsString.appendInteger((int)(100.0*((float)mTapAreas.getTappedCount()/(float)(mTapAreas.getTappedCount() + mTapAreas.getMissedCount()))));
 		sb.append(Utils.getActivity().getString(R.string.game_accuracysuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-<<<<<<< HEAD
 		canvas.drawText(UtilsString.getChars(),0, sb.length(),30,150, mTextPaint);
-=======
-		canvas.drawText(UtilsString.getChars(),0, sb.length(), 30,150, mTextPaint);
->>>>>>> origin/master
 	}
 	
 	private void drawScore(Canvas canvas) {
