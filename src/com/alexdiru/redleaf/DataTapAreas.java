@@ -86,6 +86,7 @@ public class DataTapAreas {
 	public void unsuccessfulTap() {
 		mStreak = 0;
 		mMultiplier = 1;
+		mScore -= 30;
 	}
 
 	/*private void handleTouchHold(int x, int y, int pid) {
