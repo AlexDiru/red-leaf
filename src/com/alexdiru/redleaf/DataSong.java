@@ -173,13 +173,17 @@ public class DataSong {
 			
 			// If a regular note has been tapped or fallen off the screen
 			if (current.hasBeenTapped() && current.isTapNote() || tapFallen || heldInitialFallen || heldFallen) {
-				mRenderNotes.remove(i);
-				i--;
-
+				
+				// Get score from hold note
+				if (current.isHoldNote() && current.hasBeenTapped())
+					mTapAreas.increaseScore(currentTime - current.getStartTime());
+					
 				if (tapFallen || heldInitialFallen) 
 					mTapAreas.miss();
 				
-
+				mRenderNotes.remove(i);
+				i--;
+				
 				continue;
 			}
 			// Else no chance of any other notes being tapped

@@ -203,6 +203,7 @@ public class GameView extends SurfaceView implements
 		mSong.renderNotes(canvas, mTapAreas);
 		
 		// Text
+		drawScore(canvas);
 		drawSongName(canvas);
 		drawAccuracy(canvas);
 		drawStreak(canvas);
@@ -236,6 +237,14 @@ public class GameView extends SurfaceView implements
 		sb.append(Utils.getActivity().getString(R.string.game_accuracysuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
 		canvas.drawText(UtilsString.getChars(),0, sb.length(),100,150, mTextPaint);
+	}
+	
+	private void drawScore(Canvas canvas) {
+		StringBuilder sb = UtilsString.getStringBuilder();
+		sb.append(Utils.getActivity().getString(R.string.game_scoreprefix));
+		UtilsString.appendInteger(mTapAreas.getScore());
+		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
+		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 100, 50, mTextPaint);
 	}
 	
 	private void drawSongName(Canvas canvas) {

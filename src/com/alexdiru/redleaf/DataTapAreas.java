@@ -25,6 +25,7 @@ public class DataTapAreas {
 	private int mMultiplier;
 	private int mTappedCount;
 	private int mMisses;
+	private int mScore;
 
 	/** Y coordinate of the top of the tapboxes */
 	public int mTapBoxTop;
@@ -69,6 +70,8 @@ public class DataTapAreas {
 	public void successfulTap() {
 		mStreak++;
 		mTappedCount++;
+		
+		mScore += 100 * mMultiplier;
 
 		switch (mStreak) {
 		case 20:
@@ -176,5 +179,13 @@ public class DataTapAreas {
 
 	public int getMultiplier() {
 		return mMultiplier;
+	}
+	
+	public int getScore() {
+		return mScore;
+	}
+
+	public void increaseScore(int score) {
+		mScore += score;
 	}
 }
