@@ -21,4 +21,11 @@ public class UtilsArray {
 			arr[i] = arr[i].trim();
 		return arr;
 	}
+
+	public static boolean allTrue(boolean[] arr) {
+		for (int i = 0; i < arr.length; i++)
+			if (!arr[i])
+				return false;
+		return true;
+	}
 }

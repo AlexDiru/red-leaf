@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import android.graphics.Canvas;
-import android.graphics.Rect;
+import android.util.Log;
 
 //http://code.google.com/p/beats2/source/browse/trunk/beats/src/com/beatsportable/beats/DataFile.java
 public class DataSong {
@@ -54,6 +54,8 @@ public class DataSong {
 	/** The notes which are held by the player */
 	private DataNote[] mHeldNotes = new DataNote[4];
 
+	private boolean[] mNoChanceOfMoreNotesAtPosition = new boolean[4];
+	
 	public DataSong() {
 		Arrays.fill(mHeldNotes, null);
 	}
@@ -155,6 +157,8 @@ public class DataSong {
 	
 	public void updateNotes(int currentTime, int renderDistance, int tapCirclesHeight) {
 
+		Arrays.fill(mNoChanceOfMoreNotesAtPosition, false);
+		
 		// Check the render list to remove any tapped or off screen notes
 		// Note: must use iterator to delete otherwise MASSIVE speed drop (very noticable jitter)
 		DataNote current = null;
@@ -187,8 +191,10 @@ public class DataSong {
 				continue;
 			}
 			// Else no chance of any other notes being tapped
-			else if (current.mBottomY > mTapAreas.mTapBoxTop && current.isTapNote())
+			else if (current.mBottomY < mTapAreas.mTapBoxTop) {
 				break;
+			}
+			
 		}
 
 		// Too many notes on screen, no need to add more
@@ -256,7 +262,6 @@ public class DataSong {
 		for (int i = 0; i < mRenderNotes.size(); i++) {
 			note = mRenderNotes.get(i);
 			if (!note.hasBeenTapped())
-				if (note.isHit(mTapAreas.getBoundingBoxTop(), mTapAreas.getBoundingBoxBottom()))
 					if (note.getPosition() == position)
 						return note;
 		}
@@ -272,7 +277,7 @@ public class DataSong {
 
 	public boolean tap(int position) {
 		DataNote note = getNextTappableNoteInPosition(position);
-
+		
 		if (isTapSuccessful(note, position)) {
 		
 			note.setTapped(true);
