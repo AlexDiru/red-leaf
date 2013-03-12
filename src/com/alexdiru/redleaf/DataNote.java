@@ -78,9 +78,9 @@ public class DataNote {
 		return mBeingHeld;
 	}
 
-	public void drawHoldLine(Canvas canvas, Paint held, Paint unheld, int noteX) {
+	public void drawHoldLine(Canvas canvas, Paint held, Paint unheld, int noteX, float songSpeed) {
 		// Get the top of the hold line
-		int holdLineYPosition = Utils.getCurrentSong().mMusicManager.getPlayPosition() - mEndTime + GameView.TAPCIRCLES_Y;
+		int holdLineYPosition = (int)((Utils.getCurrentSong().mMusicManager.getPlayPosition() - mEndTime)*songSpeed) + GameView.TAPCIRCLES_Y;
 
 		// Top of line cannot be negative
 		if (holdLineYPosition < 0)

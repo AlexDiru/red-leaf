@@ -32,6 +32,10 @@ public class GameView extends SurfaceView implements
 	
 	private DataSong mSong;
 
+	
+	/** Speed at which notes fall */
+	private float mSongSpeed = 0.8f;
+	
 	public GameView(Context context) {
 		super(context);
 		setFocusable(true);
@@ -185,7 +189,7 @@ public class GameView extends SurfaceView implements
 		//Update the timer
 		if (mTapAreas != null) {
 
-			Utils.getCurrentSong().updateNotes(mMusicManager.getPlayPosition(), UtilsScreenSize.getScreenHeight(), TAPCIRCLES_Y);
+			Utils.getCurrentSong().updateNotes(mMusicManager.getPlayPosition(), (int)(1280/mSongSpeed), TAPCIRCLES_Y);
 		}
 
 	}
@@ -199,7 +203,7 @@ public class GameView extends SurfaceView implements
 			mTapAreas.draw(canvas);
 
 		//Notes
-		mSong.renderNotes(canvas, mTapAreas);
+		mSong.renderNotes(canvas, mTapAreas, mSongSpeed);
 		
 		// Text
 		drawScore(canvas);

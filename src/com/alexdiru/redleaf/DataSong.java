@@ -226,7 +226,7 @@ public class DataSong {
 	/** Renders the notes of the song
 	 * @param canvas The canvas to render to
 	 * @param tapAreas */
-	public void renderNotes(Canvas canvas, DataTapAreas tapAreas) {
+	public void renderNotes(Canvas canvas, DataTapAreas tapAreas, float songSpeed) {
 
 		// Assign the notes to a local array list
 		ArrayList<DataNote> notes = Utils.getCurrentSong().mRenderNotes;
@@ -240,14 +240,14 @@ public class DataSong {
 				continue;
 
 			// Update note coordinates
-			note.mTopY = Utils.getCurrentSong().mMusicManager.getPlayPosition() - note.getStartTime() + GameView.TAPCIRCLES_Y;
+			note.mTopY = (int)((Utils.getCurrentSong().mMusicManager.getPlayPosition() - note.getStartTime())*songSpeed) + GameView.TAPCIRCLES_Y;
 			note.mBottomY = note.mTopY + NOTESIZE;
 			int noteXPosition = tapAreas.getBoundingBoxLeft(note.getPosition()) + ((DataTapAreas.TAP_AREA_WIDTH - NOTESIZE) >> 1);
 
 			canvas.drawBitmap(note.isHeld() && note.isHoldNote() ? tapAreas.getRenderer().getNoteHeld(note.getPosition()) : tapAreas.getRenderer().getNote(note.getPosition()), noteXPosition, note.mTopY, null);
 
 			if (note.isHoldNote())
-				note.drawHoldLine(canvas, tapAreas.getRenderer().getHoldLineHeldPaint(note.getPosition()) , tapAreas.getRenderer().getHoldLineUnheldPaint(note.getPosition()) , noteXPosition);
+				note.drawHoldLine(canvas, tapAreas.getRenderer().getHoldLineHeldPaint(note.getPosition()) , tapAreas.getRenderer().getHoldLineUnheldPaint(note.getPosition()) , noteXPosition, songSpeed);
 		}
 	}
 
