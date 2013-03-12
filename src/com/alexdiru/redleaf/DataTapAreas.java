@@ -1,5 +1,6 @@
 package com.alexdiru.redleaf;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 import com.alexdiru.redleaf.ColourScheme.ThemeType;
@@ -34,31 +35,28 @@ public class DataTapAreas {
 	public int mTapBoxBottom;
 
 	public DataTapAreas(DataSong song) {
-
-		mTapBoundingBoxes = new DataBoundingBox[TAP_AREAS];
-
-		for (int t = 0; t < TAP_AREAS; t++)
-			mTapBoundingBoxes[t] = new DataBoundingBox();
-
 		mSong = song;
-		
-		initialiseTapBoxes();
+		initialiseBackgroundAndTapBoxes();
 	}
 
-	private void initialiseTapBoxes() {
-		int y1 = UtilsScreenSize.scaleY(GameView.TAPCIRCLES_Y);
-		int y2 = y1 + UtilsScreenSize.scaleY(TAP_AREA_HEIGHT);
+	private void initialiseBackgroundAndTapBoxes() {
+		//Create the bounding boxes
+		mTapBoundingBoxes = new DataBoundingBox[TAP_AREAS];
+		for (int t = 0; t < TAP_AREAS; t++)
+			mTapBoundingBoxes[t] = new DataBoundingBox();
 		
-		mTapBoxTop = y1;
-		mTapBoxBottom = y2;
+		//Get the tapbox height boundaries
+		mTapBoxTop = UtilsScreenSize.scaleY(GameView.TAPCIRCLES_Y);
+		mTapBoxBottom = mTapBoxTop + UtilsScreenSize.scaleY(TAP_AREA_HEIGHT);
 		
-		int a = 720 - TAP_AREA_WIDTH * 4;
-		int b = a / 5;
-		
-		mTapBoundingBoxes[0].update(UtilsScreenSize.scaleX(b), y1, UtilsScreenSize.scaleX(b + TAP_AREA_WIDTH), y2);
-		mTapBoundingBoxes[1].update(UtilsScreenSize.scaleX(b * 2 + TAP_AREA_WIDTH), y1, UtilsScreenSize.scaleX(b * 2 + TAP_AREA_WIDTH * 2), y2);
-		mTapBoundingBoxes[2].update(UtilsScreenSize.scaleX(b * 3 + TAP_AREA_WIDTH * 2), y1, UtilsScreenSize.scaleX(b * 3 + TAP_AREA_WIDTH * 3), y2);
-		mTapBoundingBoxes[3].update(UtilsScreenSize.scaleX(b * 4 + TAP_AREA_WIDTH * 3), y1, UtilsScreenSize.scaleX(b * 4 + TAP_AREA_WIDTH * 4), y2);
+		//Update the tapboxes according to their size
+		mTapBoundingBoxes[0].update(UtilsScreenSize.scaleX(TAP_AREA_GAP), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP + TAP_AREA_WIDTH), mTapBoxBottom);
+		mTapBoundingBoxes[1].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 2 + TAP_AREA_WIDTH), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 2 + TAP_AREA_WIDTH * 2), mTapBoxBottom);
+		mTapBoundingBoxes[2].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 3 + TAP_AREA_WIDTH * 2), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 3 + TAP_AREA_WIDTH * 3), mTapBoxBottom);
+		mTapBoundingBoxes[3].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 4 + TAP_AREA_WIDTH * 3), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 4 + TAP_AREA_WIDTH * 4), mTapBoxBottom);
+
+		//Render the tapboxes on the same bitmap as the background
+		mGUIRenderer.setupBackgroundWithTapboxes(mTapBoundingBoxes);
 	}
 
 	public void successfulTap() {
@@ -88,15 +86,6 @@ public class DataTapAreas {
 		mMultiplier = 1;
 		mScore -= 30;
 	}
-
-	/*private void handleTouchHold(int x, int y, int pid) {
-		if (mTouchMap.get(pid) == null)
-			return;
-
-		if (!mTapBoundingBoxes[mTouchMap.get(pid)].isTouched(x, y)) {
-			mTouchMap.remove(pid);
-		}
-	}*/
 
 	/** Called when the player places a new finger on the screen, check if a tapbox is touched and if
 	 * so attempts to tap a note
@@ -141,7 +130,8 @@ public class DataTapAreas {
 		mGUIRenderer.drawBackground(canvas);
 
 		for (int t = 0; t < TAP_AREAS; t++)
-			mGUIRenderer.drawTapBox(canvas, mTapBoundingBoxes[t], t, mTouchMap.isTouched(t));
+			if (mTouchMap.isTouched(t))
+				mGUIRenderer.drawTapBox(canvas, mTapBoundingBoxes[t], t, true);
 	}
 
 	public GUIRenderer getRenderer() {
