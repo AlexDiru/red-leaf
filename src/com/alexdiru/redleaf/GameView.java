@@ -33,6 +33,7 @@ public class GameView extends SurfaceView implements
 	private StrokePaint mComboPaint = new StrokePaint();
 	private StrokePaint mScorePaint = new StrokePaint();
 	private StrokePaint mAccuracyPaint = new StrokePaint();
+	private StrokePaint mMultiplierPaint = new StrokePaint();
 
 	public static final int TAPCIRCLES_Y = (int)(1280/1.3061);
 	
@@ -78,6 +79,7 @@ public class GameView extends SurfaceView implements
 		mScorePaint.setTextSize(55);
 		mScorePaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
 		mScorePaint.setStrokeWidth(3);
+		mScorePaint.setTextAlign(Align.CENTER);
 		mScorePaint.setARGB(220, 163, 73, 164);
 		mScorePaint.setStrokeARGB(220, 116, 52, 116);
 		
@@ -87,6 +89,12 @@ public class GameView extends SurfaceView implements
 		mAccuracyPaint.setARGB(220, 163, 73, 164);
 		mAccuracyPaint.setStrokeARGB(220, 116, 52, 116);
 		mAccuracyPaint.setTextAlign(Align.RIGHT);
+		
+		mMultiplierPaint.setTextSize(55);
+		mMultiplierPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
+		mMultiplierPaint.setStrokeWidth(3);
+		mMultiplierPaint.setARGB(220, 163, 73, 164);
+		mMultiplierPaint.setStrokeARGB(220, 116, 52, 116);
 	}
 
 
@@ -266,10 +274,10 @@ public class GameView extends SurfaceView implements
 	
 	private void drawMultiplier(Canvas canvas) {
 		StringBuilder sb = UtilsString.getStringBuilder();
-		sb.append(Utils.getActivity().getString(R.string.game_multiplierprefix));
 		UtilsString.appendInteger(mTapAreas.getMultiplier());
+		sb.append(Utils.getActivity().getString(R.string.game_multipliersuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 250, mTextPaint);
+		mMultiplierPaint.drawText(canvas, UtilsString.getChars(), 0, sb.length(), 30, 80);
 	}
 	
 	private void drawAccuracy(Canvas canvas) {
@@ -289,7 +297,7 @@ public class GameView extends SurfaceView implements
 		sb.append(Utils.getActivity().getString(R.string.game_scoreprefix));
 		UtilsString.appendInteger(mTapAreas.getScore());
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		mScorePaint.drawText(canvas, UtilsString.getChars(), 0, sb.length(), 30, 80);
+		mScorePaint.drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, 80);
 	}
 	
 	private void drawSongName(Canvas canvas) {

@@ -250,7 +250,7 @@ public class DataSong {
 			note.mBottomY = note.mTopY + NOTESIZE;
 			int noteXPosition = tapAreas.getBoundingBoxLeft(note.getPosition()) + ((DataTapAreas.TAP_AREA_WIDTH - NOTESIZE) >> 1);
 
-			canvas.drawBitmap(note.isHeld() && note.isHoldNote() ? tapAreas.getRenderer().getNoteHeld(note.getPosition()) : tapAreas.getRenderer().getNote(note.getPosition()), noteXPosition, note.mTopY, null);
+			canvas.drawBitmap(note.isHeld() && note.isHoldNote() ? tapAreas.getRenderer().getNoteHeld(note.getPosition()) : tapAreas.getRenderer().getNote(note.getPosition()), noteXPosition, note.mTopY - DataSong.NOTESIZE, null);
 
 			if (note.isHoldNote())
 				note.drawHoldLine(canvas, tapAreas.getRenderer().getHoldLineHeldPaint(note.getPosition()) , tapAreas.getRenderer().getHoldLineUnheldPaint(note.getPosition()) , noteXPosition, songSpeed);
