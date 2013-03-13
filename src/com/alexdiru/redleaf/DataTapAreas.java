@@ -94,7 +94,7 @@ public class DataTapAreas {
 	 * @param pid The index of the touch */
 	public void handleTouchDown(int x, int y, int pid) {
 		for (int i = 0; i < TAP_AREAS; i++)
-			if (mTapBoundingBoxes[i].isTouched(x, y, TAP_AREA_GAP/2)) {
+			if (mTapBoundingBoxes[i].isTouched(x, y, TAP_AREA_GAP/2, TAP_AREA_GAP*2)) {
 				mSong.tap(i);
 				mTouchMap.put(pid, i);
 				break;
