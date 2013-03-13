@@ -246,9 +246,9 @@ public class GameView extends SurfaceView implements
 		
 		// Text
 		drawScore(canvas);
-		drawSongName(canvas);
+		//drawSongName(canvas);
 		drawAccuracy(canvas);
-		drawStreak(canvas);
+		//drawStreak(canvas);
 		drawMultiplier(canvas);
 		drawFPS(canvas);
 		drawCombo(canvas);
@@ -318,7 +318,7 @@ public class GameView extends SurfaceView implements
 		sb.append(Utils.getActivity().getString(R.string.game_fpsdivider));
 		UtilsString.appendInteger((int) (mTotalFPS / mLoopCount));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 300, mTextPaint);
+		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 120, mTextPaint);
 	}
 
 	@Override

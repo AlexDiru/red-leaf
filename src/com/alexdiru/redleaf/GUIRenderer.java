@@ -37,14 +37,18 @@ public class GUIRenderer {
 			// screen height
 			// But the width must also be scaled in the same ratio that the height was scaled in
 			// Then the bitmap must be centred when positioned
-			mBackgroundBitmap = Bitmap.createBitmap(UtilsScreenSize.getScreenWidth(), UtilsScreenSize.getScreenHeight(), Config.RGB_565);
+			mBackgroundBitmap = Bitmap.createBitmap(UtilsScreenSize.getScreenWidth(), UtilsScreenSize.getScreenHeight(), Config.ARGB_8888);
 			Bitmap originalBackground;
 			originalBackground = BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mBackground));
-
+		
 			int scaledWidth = (int) (originalBackground.getWidth() * (UtilsScreenSize.getScreenHeight() / (float) originalBackground.getHeight()));
 			Canvas background = new Canvas(mBackgroundBitmap);
 			background.drawBitmap(Bitmap.createScaledBitmap(originalBackground, scaledWidth, UtilsScreenSize.getScreenHeight(), false),
 					UtilsScreenSize.getScreenWidth() / 2 - scaledWidth / 2, 0, null);
+			
+			//Create a white rectangle to fade out the background
+			background.drawARGB(255 - colourScheme.mBackgroundAlpha, 255,255,255);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -110,7 +114,7 @@ public class GUIRenderer {
 	}
 
 	public void drawTapBox(Canvas canvas, DataBoundingBox tapbox, int tapboxIndex, boolean touched) {
-		tapbox.drawWithBitmap(canvas, touched ? LOSTInverse[tapboxIndex] : LOST[tapboxIndex], null);
+		tapbox.drawWithBitmap(canvas, touched ? LOSTInverse[tapboxIndex] : LOST[tapboxIndex], null, true, 6);
 	}
 
 	public Paint getHoldLineUnheldPaint(int position) {

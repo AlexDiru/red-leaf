@@ -43,7 +43,6 @@ public class DataNote {
 	public boolean isHit(int currentTime, int tapWindow) {
 		int a = currentTime - tapWindow;
 		int b = currentTime + tapWindow;
-		Log.d("time", a + " | " + b);
 		return (mStartTime >= currentTime - tapWindow && mStartTime <= currentTime + tapWindow);
 	}
 	

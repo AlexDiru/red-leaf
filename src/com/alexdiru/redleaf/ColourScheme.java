@@ -22,6 +22,7 @@ public class ColourScheme {
 	public String[] mNoteStreamUnheld = new String[4];
 
 	public String mBackground;
+	public int mBackgroundAlpha;
 
 	// Default values
 	public ColourScheme(ThemeType themeType) {
@@ -29,6 +30,7 @@ public class ColourScheme {
 		switch (themeType) {
 		case DISCOVERY:
 			mBackground = "discovery.png";
+			mBackgroundAlpha = 213;
 
 			mTap[0] = "L.png";
 			mTap[1] = "O.png";
