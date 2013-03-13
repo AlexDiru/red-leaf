@@ -169,7 +169,7 @@ public class DataSong {
 			boolean tapFallen = current.getStartTime() < currentTime - tapWindow && current.isTapNote() && !current.hasBeenTapped();
 
 			// (Applies to hold notes) If the note hasn't been tapped and is below the tapbox
-			boolean heldInitialFallen = (current.getStartTime() > currentTime + tapWindow) && current.isHoldNote() && !current.hasBeenTapped();
+			boolean heldInitialFallen = ( current.getStartTime() < currentTime - tapWindow) && current.isHoldNote() && !current.hasBeenTapped();
 			
 			// (Applies to hold notes) If the note has been held and the line has fallen off screen
 			boolean heldFallen = current.hasBeenTapped() && !current.isHeld() && current.isHoldNote();
@@ -245,12 +245,12 @@ public class DataSong {
 				continue;
 
 			// Update note coordinates
-			note.mTopY = (int)((Utils.getCurrentSong().mMusicManager.getPlayPosition() - note.getStartTime())*songSpeed) + GameView.TAPCIRCLES_Y + NOTESIZE;
-			note.mBottomY = note.mTopY + NOTESIZE;
+			note.mTopY = (int)((Utils.getCurrentSong().mMusicManager.getPlayPosition() - note.getStartTime())*songSpeed) + GameView.TAPCIRCLES_Y;
+			note.mBottomY = note.mTopY + DataSong.NOTESIZE;
 			
 			int noteXPosition = tapAreas.getBoundingBoxLeft(note.getPosition()) + ((DataTapAreas.TAP_AREA_WIDTH - NOTESIZE) >> 1);
 
-			canvas.drawBitmap(note.isHeld() && note.isHoldNote() ? tapAreas.getRenderer().getNoteHeld(note.getPosition()) : tapAreas.getRenderer().getNote(note.getPosition()), noteXPosition, note.mTopY - DataSong.NOTESIZE, null);
+			canvas.drawBitmap(note.isHeld() && note.isHoldNote() ? tapAreas.getRenderer().getNoteHeld(note.getPosition()) : tapAreas.getRenderer().getNote(note.getPosition()), noteXPosition, note.mTopY, null);
 
 			if (note.isHoldNote())
 				note.drawHoldLine(canvas, tapAreas.getRenderer().getHoldLineHeldPaint(note.getPosition()) , tapAreas.getRenderer().getHoldLineUnheldPaint(note.getPosition()) , noteXPosition, songSpeed);
