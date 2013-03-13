@@ -143,36 +143,28 @@ public class GUIRenderer {
 			drawTapBox(canvas, tapBoundingBoxes[t], t, false);
 	}
 
-	public void updateComboPaints(StrokePaint comboPaint,  int multiplier) {
-		int opacity = 220;
+	public void updateComboPaints(StrokePaint comboPaint,  int streak) {
+		int opacity = 190;
 		
-		//Set colours depending on the multiplier
-		switch (multiplier) {
-		default:
-		case 1:
+		//Set colours depending on the streak
+		if (streak < 20) {
 			comboPaint.setARGB(opacity, 255, 220, 0);
 			comboPaint.setStrokeARGB(opacity, 255, 192, 0);
-			break;
-		case 2:
+		} else if (streak < 40) {
 			comboPaint.setARGB(opacity, 255, 160, 0);
 			comboPaint.setStrokeARGB(opacity, 255, 120, 0);
-			break;
-		case 3:
+		} else if (streak < 80) {
 			comboPaint.setARGB(opacity, 255, 128, 0);
 			comboPaint.setStrokeARGB(opacity, 255, 64, 0);
-			break;
-		case 4:
+		} else if (streak < 150) {
 			comboPaint.setARGB(opacity, 255, 85, 0);
 			comboPaint.setStrokeARGB(opacity, 255, 20, 0);
-			break;
-		case 8:
+		} else if (streak < 250) {
 			comboPaint.setARGB(opacity, 255, 64, 0);
 			comboPaint.setStrokeARGB(opacity, 255, 12, 0);
-			break;
-		case 16:
+		} else if (streak < 500) {
 			comboPaint.setARGB(opacity, 255, 12, 0);
-			comboPaint.setStrokeARGB(opacity, 255, 220, 0);
-			break;
+			comboPaint.setStrokeARGB(opacity, 225	, 0, 0);
 		}
 	}
 }

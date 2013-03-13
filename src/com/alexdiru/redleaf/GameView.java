@@ -21,29 +21,45 @@ public class GameView extends SurfaceView implements
 	private static final String SONG_NAME_PREFIX = Utils.getActivity().getString(R.string.game_songnameprefix);
 	private static final int TAP_WINDOW_MS = 200;
 
+
+	public static final int TAPCIRCLES_Y = (int)(1280/1.3061);
+	
+	
 	private GameThread mGameThread;
 	public MusicManager mMusicManager;
 	private DataTapAreas mTapAreas;
 
-	private Bitmap mBackground;
-
-	private long mPreviousTime, mCurrentTimeFPS, mFPS, mTotalFPS = 0, mLoopCount = 0;
 
 	//Text Paints
 	private Paint mTextPaint = new Paint();
+	
+	/** Paint used for drawing the combo counter */
 	private StrokePaint mComboPaint = new StrokePaint();
+	
+	/** Paint used for drawing the score */
 	private StrokePaint mScorePaint = new StrokePaint();
+	
+	/**
+	 * Paint used for drawing the accuracy percentage
+	 */
 	private StrokePaint mAccuracyPaint = new StrokePaint();
+	
+	/** Paint used for drawing the multiplier */
 	private StrokePaint mMultiplierPaint = new StrokePaint();
 
-	public static final int TAPCIRCLES_Y = (int)(1280/1.3061);
-	
+	/** The song being played */
 	private DataSong mSong;
 	
+	/** Current time that the song is at, assigned in the update method, used in the draw method */
 	private int mCurrentTime;
 	
 	/** Speed at which notes fall */
 	private float mSongSpeed = 0.8f;
+
+	/// Debug Variables ///
+	//Variables for recording the FPS
+	private long mPreviousTime, mCurrentTimeFPS, mFPS, mTotalFPS = 0, mLoopCount = 0;
+
 	
 	public GameView(Context context) {
 		super(context);
@@ -80,23 +96,23 @@ public class GameView extends SurfaceView implements
 
 		mScorePaint.setTextSize(55);
 		mScorePaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-		mScorePaint.setStrokeWidth(3);
+		mScorePaint.setStrokeWidth(6);
 		mScorePaint.setTextAlign(Align.CENTER);
-		mScorePaint.setARGB(220, 163, 73, 164);
-		mScorePaint.setStrokeARGB(220, 116, 52, 116);
+		mScorePaint.setARGB(220, 255, 255, 255);
+		mScorePaint.setStrokeARGB(220, 0, 0, 0);
 		
 		mAccuracyPaint.setTextSize(55);
 		mAccuracyPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-		mAccuracyPaint.setStrokeWidth(3);
-		mAccuracyPaint.setARGB(220, 163, 73, 164);
-		mAccuracyPaint.setStrokeARGB(220, 116, 52, 116);
+		mAccuracyPaint.setStrokeWidth(6);
+		mAccuracyPaint.setARGB(220, 255, 255, 255);
+		mAccuracyPaint.setStrokeARGB(220, 0, 0, 0);
 		mAccuracyPaint.setTextAlign(Align.RIGHT);
 		
 		mMultiplierPaint.setTextSize(55);
 		mMultiplierPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-		mMultiplierPaint.setStrokeWidth(3);
-		mMultiplierPaint.setARGB(220, 163, 73, 164);
-		mMultiplierPaint.setStrokeARGB(220, 116, 52, 116);
+		mMultiplierPaint.setStrokeWidth(6);
+		mMultiplierPaint.setARGB(220, 255, 255, 255);
+		mMultiplierPaint.setStrokeARGB(220, 0, 0, 0);
 	}
 
 
@@ -250,7 +266,7 @@ public class GameView extends SurfaceView implements
 		drawAccuracy(canvas);
 		//drawStreak(canvas);
 		drawMultiplier(canvas);
-		drawFPS(canvas);
+		//drawFPS(canvas);
 		drawCombo(canvas);
 	}
 	
@@ -258,13 +274,22 @@ public class GameView extends SurfaceView implements
 		if (mTapAreas.getStreak() < 4)
 			return;
 		
-		mTapAreas.getRenderer().updateComboPaints(mComboPaint, mTapAreas.getMultiplier());
+		mTapAreas.getRenderer().updateComboPaints(mComboPaint, mTapAreas.getStreak());
 		
 		StringBuilder sb = UtilsString.getStringBuilder();
 		UtilsString.appendInteger(mTapAreas.getStreak());
 		sb.append(Utils.getActivity().getString(R.string.game_combosuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
 		mComboPaint.drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2);
+		
+		//INSANE
+		if (mTapAreas.getStreak() > 150) {
+			sb = UtilsString.getStringBuilder();
+			sb.append(Utils.getActivity().getString(R.string.game_highcombo));
+			sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
+			mComboPaint.drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2 - 60);
+		}
+			
 	}
 	
 	private void drawStreak(Canvas canvas) {

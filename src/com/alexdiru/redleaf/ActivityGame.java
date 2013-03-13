@@ -3,10 +3,12 @@ package com.alexdiru.redleaf;
 import android.os.Bundle;
 import android.util.Log;
 
+/**
+ * The activity for the game
+ * @author Alex
+ *
+ */
 public class ActivityGame extends ActivityCommon {
-	/** Called when the activity is first created. */
-
-	private static final String TAG = ActivityGame.class.getSimpleName();
 
 	private GameView mGameView;
 
@@ -21,29 +23,28 @@ public class ActivityGame extends ActivityCommon {
 
 	@Override
 	protected void onPause() {
-		Log.d(TAG, "onPause");
+		Log.d(getClass().getName(), "onPause");
 		super.onPause();
-
 		mGameView.pauseGame();
 	}
 
 	@Override
 	protected void onStop() {
-		Log.d(TAG, "onStop");
+		Log.d(getClass().getName(), "onStop");
 		super.onStop();
 		mGameView.pauseGame();
 	}
 
 	@Override
 	protected void onRestart() {
-		Log.d(TAG, "onRestart");
+		Log.d(getClass().getName(), "onRestart");
 		super.onRestart();
 		mGameView.resumeGame();
 	}
 
 	@Override
 	protected void onResume() {
-		Log.d(TAG, "onResume");
+		Log.d(getClass().getName(), "onResume");
 		super.onResume();
 
 		mGameView.resumeGame();

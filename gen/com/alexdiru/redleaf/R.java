@@ -50,6 +50,7 @@ public final class R {
         public static final int game_combosuffix=0x7f040012;
         public static final int game_fpsdivider=0x7f04000c;
         public static final int game_fpsprefix=0x7f04000b;
+        public static final int game_highcombo=0x7f040013;
         public static final int game_multipliersuffix=0x7f040010;
         public static final int game_scoreprefix=0x7f040011;
         /**  Game 

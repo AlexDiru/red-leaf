@@ -1,30 +1,40 @@
 package com.alexdiru.redleaf;
 
+/** Represents a colour scheme for the song
+ * @author Alex */
 public class ColourScheme {
 
-	public enum ThemeType
-	{
+	/** The themes the song can have */
+	public enum ThemeType {
 		DISCOVERY, MONSOON, MAYDIE
 	}
 
+	/** The bitmaps for the tapbox */
 	public String[] mTap = new String[4];
+
+	/** The bitmaps for when a tapbox is held */
 	public String[] mTapHold = new String[4];
 
-	/** Bitmap used when a note is unheld/tap note */
+	/** Bitmaps used when a note is unheld/tap note */
 	public String[] mNote = new String[4];
-	
+
+	/** Bitmaps used when a note is held */
 	public String[] mNoteHeld = new String[4];
-	
-	/** Bitmap used for a hold note trail when the note is held down */
+
+	/** Bitmaps used for a hold note trail when the note is held down */
 	public String[] mNoteStreamHeld = new String[4];
-	
-	/** Bitmap used for a hold note trail when the note is not held down */
+
+	/** Bitmaps used for a hold note trail when the note is not held down */
 	public String[] mNoteStreamUnheld = new String[4];
 
+	/** Bitmap used for the background */
 	public String mBackground;
+
+	/** The alpha level of the background */
 	public int mBackgroundAlpha;
 
-	// Default values
+	/** Initialises all the file paths with the theme given
+	 * @param themeType The theme to base the files on */
 	public ColourScheme(ThemeType themeType) {
 
 		switch (themeType) {
@@ -46,7 +56,7 @@ public class ColourScheme {
 			mNote[1] = "reddown.png";
 			mNote[2] = "redup.png";
 			mNote[3] = "redright.png";
-			
+
 			mNoteHeld[0] = "blueleft.png";
 			mNoteHeld[1] = "bluedown.png";
 			mNoteHeld[2] = "blueup.png";
