@@ -28,4 +28,5 @@
     <string name="game_multiplierprefix">Multiplier:\u0020</string>
     <string name="game_multipliersuffix">x</string>
     <string name="game_scoreprefix">Score:\u0020</string>
+    <string name="game_combosuffix">\u0020COMBO</string>
 </resources>

@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.graphics.Paint.Align;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -26,7 +28,11 @@ public class GameView extends SurfaceView implements
 
 	private long mPreviousTime, mCurrentTimeFPS, mFPS, mTotalFPS = 0, mLoopCount = 0;
 
+	//Text Paints
 	private Paint mTextPaint = new Paint();
+	private StrokePaint mComboPaint = new StrokePaint();
+	private StrokePaint mScorePaint = new StrokePaint();
+	private StrokePaint mAccuracyPaint = new StrokePaint();
 
 	public static final int TAPCIRCLES_Y = (int)(1280/1.3061);
 	
@@ -57,8 +63,30 @@ public class GameView extends SurfaceView implements
 
 		//Helper.getCurrentSong().generateRandomNotes(1);
 
+		setupTextPaints();
+	}
+	
+	private void setupTextPaints() {
 		mTextPaint.setColor(Color.BLACK);
 		mTextPaint.setTextSize(40);
+		
+		mComboPaint.setTextSize(70);
+		mComboPaint.setTextAlign(Align.CENTER);
+		mComboPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
+		mComboPaint.setStrokeWidth(4);
+
+		mScorePaint.setTextSize(55);
+		mScorePaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
+		mScorePaint.setStrokeWidth(3);
+		mScorePaint.setARGB(220, 163, 73, 164);
+		mScorePaint.setStrokeARGB(220, 116, 52, 116);
+		
+		mAccuracyPaint.setTextSize(55);
+		mAccuracyPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
+		mAccuracyPaint.setStrokeWidth(3);
+		mAccuracyPaint.setARGB(220, 163, 73, 164);
+		mAccuracyPaint.setStrokeARGB(220, 116, 52, 116);
+		mAccuracyPaint.setTextAlign(Align.RIGHT);
 	}
 
 
@@ -212,6 +240,20 @@ public class GameView extends SurfaceView implements
 		drawStreak(canvas);
 		drawMultiplier(canvas);
 		drawFPS(canvas);
+		drawCombo(canvas);
+	}
+	
+	private void drawCombo(Canvas canvas) {
+		if (mTapAreas.getStreak() < 4)
+			return;
+		
+		mTapAreas.getRenderer().updateComboPaints(mComboPaint, mTapAreas.getMultiplier());
+		
+		StringBuilder sb = UtilsString.getStringBuilder();
+		UtilsString.appendInteger(mTapAreas.getStreak());
+		sb.append(Utils.getActivity().getString(R.string.game_combosuffix));
+		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
+		mComboPaint.drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2);
 	}
 	
 	private void drawStreak(Canvas canvas) {
@@ -232,14 +274,14 @@ public class GameView extends SurfaceView implements
 	
 	private void drawAccuracy(Canvas canvas) {
 		StringBuilder sb = UtilsString.getStringBuilder();
-		sb.append(Utils.getActivity().getString(R.string.game_accuracyprefix));
+		//sb.append(Utils.getActivity().getString(R.string.game_accuracyprefix));
 		if (mTapAreas.getTappedCount() + mTapAreas.getMissedCount() < 1)
 			UtilsString.appendInteger(100);
 		else
 			UtilsString.appendInteger((int)(100.0*((float)mTapAreas.getTappedCount()/(float)(mTapAreas.getTappedCount() + mTapAreas.getMissedCount()))));
 		sb.append(Utils.getActivity().getString(R.string.game_accuracysuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		canvas.drawText(UtilsString.getChars(),0, sb.length(),30,150, mTextPaint);
+		mAccuracyPaint.drawText(canvas, UtilsString.getChars(),0, sb.length(), UtilsScreenSize.getScreenWidth() - 30, 80);
 	}
 	
 	private void drawScore(Canvas canvas) {
@@ -247,7 +289,7 @@ public class GameView extends SurfaceView implements
 		sb.append(Utils.getActivity().getString(R.string.game_scoreprefix));
 		UtilsString.appendInteger(mTapAreas.getScore());
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 50, mTextPaint);
+		mScorePaint.drawText(canvas, UtilsString.getChars(), 0, sb.length(), 30, 80);
 	}
 	
 	private void drawSongName(Canvas canvas) {

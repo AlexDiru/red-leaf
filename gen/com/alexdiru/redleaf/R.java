@@ -47,6 +47,7 @@ public final class R {
         public static final int credits_programmer=0x7f040005;
         public static final int game_accuracyprefix=0x7f04000d;
         public static final int game_accuracysuffix=0x7f04000e;
+        public static final int game_combosuffix=0x7f040013;
         public static final int game_fpsdivider=0x7f04000c;
         public static final int game_fpsprefix=0x7f04000b;
         public static final int game_multiplierprefix=0x7f040010;
