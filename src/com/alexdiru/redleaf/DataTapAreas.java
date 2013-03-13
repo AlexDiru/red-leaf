@@ -1,7 +1,7 @@
 package com.alexdiru.redleaf;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.util.Log;
 
 import com.alexdiru.redleaf.ColourScheme.ThemeType;
 
@@ -23,7 +23,7 @@ public class DataTapAreas {
 
 	// Gameplay
 	private int mStreak;
-	private int mMultiplier;
+	private int mMultiplier = 1;
 	private int mTappedCount;
 	private int mMisses;
 	private int mScore;
@@ -64,6 +64,7 @@ public class DataTapAreas {
 		mTappedCount++;
 		
 		mScore += 100 * mMultiplier;
+		
 
 		switch (mStreak) {
 		case 20:
@@ -92,10 +93,10 @@ public class DataTapAreas {
 	 * @param x The x coordinate of the touch
 	 * @param y The y coordinate of the touch
 	 * @param pid The index of the touch */
-	public void handleTouchDown(int x, int y, int pid) {
+	public void handleTouchDown(int x, int y, int pid, int currentTime, int tapWindow) {
 		for (int i = 0; i < TAP_AREAS; i++)
 			if (mTapBoundingBoxes[i].isTouched(x, y, TAP_AREA_GAP/2, TAP_AREA_GAP*2)) {
-				mSong.tap(i);
+				mSong.tap(i, currentTime, tapWindow);
 				mTouchMap.put(pid, i);
 				break;
 			}

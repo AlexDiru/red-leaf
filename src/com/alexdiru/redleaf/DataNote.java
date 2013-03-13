@@ -2,10 +2,8 @@ package com.alexdiru.redleaf;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Path.Direction;
 import android.graphics.Rect;
-import android.graphics.RectF;
+import android.util.Log;
 
 public class DataNote {
 
@@ -42,8 +40,11 @@ public class DataNote {
 		mBeingHeld = false;
 	}
 
-	public boolean isHit(int tapBoxTop, int tapBoxBottom) {
-		return (mBottomY > tapBoxTop && mBottomY < tapBoxBottom) || (mTopY > tapBoxTop && mTopY < tapBoxBottom);
+	public boolean isHit(int currentTime, int tapWindow) {
+		int a = currentTime - tapWindow;
+		int b = currentTime + tapWindow;
+		Log.d("time", a + " | " + b);
+		return (mStartTime >= currentTime - tapWindow && mStartTime <= currentTime + tapWindow);
 	}
 	
 	public boolean isHoldNote() {

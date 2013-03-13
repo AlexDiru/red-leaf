@@ -155,9 +155,8 @@ public class DataSong {
 		}
 	}
 	
-	public void updateNotes(int currentTime, int renderDistance, int tapCirclesHeight) {
+	public void updateNotes(int currentTime, int renderDistance, int tapCirclesHeight, int tapWindow) {
 
-		Arrays.fill(mNoChanceOfMoreNotesAtPosition, false);
 		
 		// Check the render list to remove any tapped or off screen notes
 		// Note: must use iterator to delete otherwise MASSIVE speed drop (very noticable jitter)
@@ -167,10 +166,10 @@ public class DataSong {
 			current = mRenderNotes.get(i);
 
 			// (Applies to tap notes) If the note has been fallen off the screen remove it from the render list
-			boolean tapFallen = current.mTopY > mTapAreas.mTapBoxBottom && current.isTapNote() && !current.hasBeenTapped();
+			boolean tapFallen = current.getStartTime() < currentTime - tapWindow && current.isTapNote() && !current.hasBeenTapped();
 
 			// (Applies to hold notes) If the note hasn't been tapped and is below the tapbox
-			boolean heldInitialFallen = (current.mTopY  > mTapAreas.mTapBoxBottom) && current.isHoldNote() && !current.hasBeenTapped();
+			boolean heldInitialFallen = (current.getStartTime() > currentTime + tapWindow) && current.isHoldNote() && !current.hasBeenTapped();
 			
 			// (Applies to hold notes) If the note has been held and the line has fallen off screen
 			boolean heldFallen = current.hasBeenTapped() && !current.isHeld() && current.isHoldNote();
@@ -191,7 +190,7 @@ public class DataSong {
 				continue;
 			}
 			// Else no chance of any other notes being tapped
-			else if (current.mBottomY < mTapAreas.mTapBoxTop) {
+			else if (current.getStartTime() > currentTime + tapWindow) {
 				break;
 			}
 			
@@ -232,7 +231,7 @@ public class DataSong {
 	/** Renders the notes of the song
 	 * @param canvas The canvas to render to
 	 * @param tapAreas */
-	public void renderNotes(Canvas canvas, DataTapAreas tapAreas, float songSpeed) {
+	public void renderNotes(Canvas canvas, DataTapAreas tapAreas, float songSpeed, int tapWindow) {
 
 		// Assign the notes to a local array list
 		ArrayList<DataNote> notes = Utils.getCurrentSong().mRenderNotes;
@@ -246,8 +245,9 @@ public class DataSong {
 				continue;
 
 			// Update note coordinates
-			note.mTopY = (int)((Utils.getCurrentSong().mMusicManager.getPlayPosition() - note.getStartTime())*songSpeed) + GameView.TAPCIRCLES_Y;
+			note.mTopY = (int)((Utils.getCurrentSong().mMusicManager.getPlayPosition() - note.getStartTime())*songSpeed) + GameView.TAPCIRCLES_Y + NOTESIZE;
 			note.mBottomY = note.mTopY + NOTESIZE;
+			
 			int noteXPosition = tapAreas.getBoundingBoxLeft(note.getPosition()) + ((DataTapAreas.TAP_AREA_WIDTH - NOTESIZE) >> 1);
 
 			canvas.drawBitmap(note.isHeld() && note.isHoldNote() ? tapAreas.getRenderer().getNoteHeld(note.getPosition()) : tapAreas.getRenderer().getNote(note.getPosition()), noteXPosition, note.mTopY - DataSong.NOTESIZE, null);
@@ -268,17 +268,17 @@ public class DataSong {
 		return null;
 	}
 
-	private boolean isTapSuccessful(DataNote note, int position) {
+	private boolean isTapSuccessful(DataNote note, int position, int currentTime, int tapWindow) {
 		if (note == null)
 			return false;
 
-		return note.isHit(mTapAreas.getBoundingBoxTop(), mTapAreas.getBoundingBoxBottom());
+		return note.isHit(currentTime, tapWindow);
 	}
 
-	public boolean tap(int position) {
+	public boolean tap(int position,  int currentTime, int tapWindow) {
 		DataNote note = getNextTappableNoteInPosition(position);
 		
-		if (isTapSuccessful(note, position)) {
+		if (isTapSuccessful(note, position, currentTime, tapWindow)) {
 		
 			note.setTapped(true);
 			

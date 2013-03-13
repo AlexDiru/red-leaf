@@ -19,6 +19,7 @@ public class GameView extends SurfaceView implements
 		SurfaceHolder.Callback, OnTouchListener {
 	
 	private static final String SONG_NAME_PREFIX = Utils.getActivity().getString(R.string.game_songnameprefix);
+	private static final int TAP_WINDOW_MS = 200;
 
 	private GameThread mGameThread;
 	public MusicManager mMusicManager;
@@ -38,7 +39,8 @@ public class GameView extends SurfaceView implements
 	public static final int TAPCIRCLES_Y = (int)(1280/1.3061);
 	
 	private DataSong mSong;
-
+	
+	private int mCurrentTime;
 	
 	/** Speed at which notes fall */
 	private float mSongSpeed = 0.8f;
@@ -225,7 +227,8 @@ public class GameView extends SurfaceView implements
 		//Update the timer
 		if (mTapAreas != null) {
 
-			Utils.getCurrentSong().updateNotes(mMusicManager.getPlayPosition(), (int)(1280/mSongSpeed), TAPCIRCLES_Y);
+			mCurrentTime = mMusicManager.getPlayPosition();
+			Utils.getCurrentSong().updateNotes(mCurrentTime, (int)(1280/mSongSpeed), TAPCIRCLES_Y, TAP_WINDOW_MS);
 		}
 
 	}
@@ -239,7 +242,7 @@ public class GameView extends SurfaceView implements
 			mTapAreas.draw(canvas);
 
 		//Notes
-		mSong.renderNotes(canvas, mTapAreas, mSongSpeed);
+		mSong.renderNotes(canvas, mTapAreas, mSongSpeed, TAP_WINDOW_MS);
 		
 		// Text
 		drawScore(canvas);
@@ -329,10 +332,10 @@ public class GameView extends SurfaceView implements
 
 		switch (actionCode) {
 		case MotionEvent.ACTION_DOWN:
-			mTapAreas.handleTouchDown((int) event.getX(touchOrderID), (int) event.getY(touchOrderID), touchOrderID);
+			mTapAreas.handleTouchDown((int) event.getX(touchOrderID), (int) event.getY(touchOrderID), touchOrderID, mCurrentTime, TAP_WINDOW_MS);
 			break;
 		case MotionEvent.ACTION_POINTER_DOWN:
-			mTapAreas.handleTouchDown((int) event.getX(touchOrderID), (int) event.getY(touchOrderID), touchOrderID);
+			mTapAreas.handleTouchDown((int) event.getX(touchOrderID), (int) event.getY(touchOrderID), touchOrderID, mCurrentTime, TAP_WINDOW_MS);
 			break;
 		case MotionEvent.ACTION_POINTER_UP:
 		case MotionEvent.ACTION_CANCEL:
