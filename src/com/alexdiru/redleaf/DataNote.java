@@ -8,6 +8,7 @@ public class DataNote {
 
 	public static final int NOTE_TYPE_TAP = 0;
 	public static final int NOTE_TYPE_HOLD = 1;
+	public static final int NOTE_TYPE_TAP_STAR = 2;
 
 	/** Only need one rectangle to share between all of the notes */
 	private static Rect mHoldLineRect = new Rect();
@@ -63,8 +64,22 @@ public class DataNote {
 	public boolean isHit(int currentTime, int tapWindow) {
 		return (mStartTime >= currentTime - tapWindow && mStartTime <= currentTime + tapWindow);
 	}
+	
+	public void draw(Canvas canvas, DataTapAreas tapAreas, float songSpeed)  {
+		// Update note coordinates
+		mTopY = (int)((Utils.getCurrentSong().mMusicManager.getPlayPosition() - getStartTime())*songSpeed) + GameView.TAPCIRCLES_Y;
+		mBottomY = mTopY + DataSong.NOTESIZE;
+		
+		int noteXPosition = tapAreas.getBoundingBoxLeft(mPosition) + ((DataTapAreas.TAP_AREA_WIDTH - DataSong.NOTESIZE) >> 1);
 
-	public void drawHoldLine(Canvas canvas, Paint held, Paint unheld, int noteX, float songSpeed) {
+		canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getRenderer().getNoteHeld(mPosition) : tapAreas.getRenderer().getNote(mPosition), noteXPosition, mTopY, null);
+
+		if (isHoldNote())
+			drawHoldLine(canvas, tapAreas.getRenderer().getHoldLineHeldPaint(mPosition) , tapAreas.getRenderer().getHoldLineUnheldPaint(mPosition) , noteXPosition, songSpeed);
+	
+	}
+
+	private void drawHoldLine(Canvas canvas, Paint held, Paint unheld, int noteX, float songSpeed) {
 		// Get the top of the hold line
 		int holdLineYPosition = (int) ((Utils.getCurrentSong().mMusicManager.getPlayPosition() - mEndTime) * songSpeed) + GameView.TAPCIRCLES_Y - DataSong.NOTESIZE;
 

@@ -12,27 +12,23 @@ public class MusicManager implements OnPreparedListener {
 	public int mPauseTime;
 	public boolean mStarted;
 	private long mSongLength;
-	
+
 	public MusicManager(String encryptedFilePath) {
 		byte[] decryptedMusicBytes;
-		//Decrypt the music
+		// Decrypt the music
 		try {
-			/*decryptedMusicBytes = HelperCrypto.decryptFile(encryptedFilePath);
-			File tempMp3 = File.createTempFile("DATA", "mp3", Helper.getActivity().getCacheDir());
-			tempMp3.deleteOnExit();
-			FileOutputStream stream = new FileOutputStream(tempMp3);
-			stream.write(decryptedMusicBytes);
-			stream.close();
-			
+			/* decryptedMusicBytes = HelperCrypto.decryptFile(encryptedFilePath); File tempMp3 =
+			 * File.createTempFile("DATA", "mp3", Helper.getActivity().getCacheDir());
+			 * tempMp3.deleteOnExit(); FileOutputStream stream = new FileOutputStream(tempMp3);
+			 * stream.write(decryptedMusicBytes); stream.close();
+			 * 
+			 * mMediaPlayer = new MediaPlayer(); mMediaPlayer.setDataSource(stream.getFD());
+			 * mMediaPlayer.prepare(); mMediaPlayer.start(); */
+
 			mMediaPlayer = new MediaPlayer();
-			mMediaPlayer.setDataSource(stream.getFD());
-			mMediaPlayer.prepare();
-			mMediaPlayer.start();*/
-			
-			mMediaPlayer = new MediaPlayer();
-			
+
 			AssetFileDescriptor descriptor = Utils.getActivity().getAssets().openFd(encryptedFilePath);
-			
+
 			mMediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
 			descriptor.close();
 
@@ -44,16 +40,16 @@ public class MusicManager implements OnPreparedListener {
 			return;
 		}
 	}
-	
+
 	public int getPlayPosition() {
 		return mMediaPlayer.getCurrentPosition();
 	}
-	
-	public void play() { 
+
+	public void play() {
 		mMediaPlayer.start();
 		mStarted = true;
 	}
-	
+
 	public void pause() {
 		if (mMediaPlayer != null)
 			if (mMediaPlayer.isPlaying()) {
@@ -61,20 +57,16 @@ public class MusicManager implements OnPreparedListener {
 				mPauseTime = mMediaPlayer.getCurrentPosition();
 			}
 	}
-	
-	/**
-	 * Resumes the media player if it is already playing
-	 */
+
+	/** Resumes the media player if it is already playing */
 	public void resume() {
 		if (mStarted && mMediaPlayer != null) {
 			mMediaPlayer.seekTo(mPauseTime);
 			mMediaPlayer.start();
 		}
 	}
-	
-	/**
-	 * Garbage collects the contents of this class
-	 */
+
+	/** Garbage collects the contents of this class */
 	public void cleanup() {
 		if (mMediaPlayer != null) {
 			mPauseTime = 0;

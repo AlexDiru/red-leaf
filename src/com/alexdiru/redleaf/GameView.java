@@ -19,8 +19,6 @@ public class GameView extends SurfaceView implements
 		SurfaceHolder.Callback, OnTouchListener {
 	
 	private static final String SONG_NAME_PREFIX = Utils.getActivity().getString(R.string.game_songnameprefix);
-	private static final int TAP_WINDOW_MS = 200;
-
 
 	public static final int TAPCIRCLES_Y = (int)(1280/1.3061);
 	
@@ -244,7 +242,7 @@ public class GameView extends SurfaceView implements
 		if (mTapAreas != null) {
 
 			mCurrentTime = mMusicManager.getPlayPosition();
-			Utils.getCurrentSong().updateNotes(mCurrentTime, (int)(1280/mSongSpeed), TAPCIRCLES_Y, TAP_WINDOW_MS);
+			mSong.updateNotes(mCurrentTime, (int)(1280/mSongSpeed), TAPCIRCLES_Y);
 		}
 
 	}
@@ -258,7 +256,7 @@ public class GameView extends SurfaceView implements
 			mTapAreas.draw(canvas);
 
 		//Notes
-		mSong.renderNotes(canvas, mTapAreas, mSongSpeed, TAP_WINDOW_MS);
+		mSong.renderNotes(canvas, mSongSpeed);
 		
 		// Text
 		drawScore(canvas);
@@ -357,10 +355,10 @@ public class GameView extends SurfaceView implements
 
 		switch (actionCode) {
 		case MotionEvent.ACTION_DOWN:
-			mTapAreas.handleTouchDown((int) event.getX(touchOrderID), (int) event.getY(touchOrderID), touchOrderID, mCurrentTime, TAP_WINDOW_MS);
+			mTapAreas.handleTouchDown((int) event.getX(touchOrderID), (int) event.getY(touchOrderID), touchOrderID, mCurrentTime);
 			break;
 		case MotionEvent.ACTION_POINTER_DOWN:
-			mTapAreas.handleTouchDown((int) event.getX(touchOrderID), (int) event.getY(touchOrderID), touchOrderID, mCurrentTime, TAP_WINDOW_MS);
+			mTapAreas.handleTouchDown((int) event.getX(touchOrderID), (int) event.getY(touchOrderID), touchOrderID, mCurrentTime);
 			break;
 		case MotionEvent.ACTION_POINTER_UP:
 		case MotionEvent.ACTION_CANCEL:

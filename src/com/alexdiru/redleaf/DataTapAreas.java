@@ -1,7 +1,6 @@
 package com.alexdiru.redleaf;
 
 import android.graphics.Canvas;
-import android.util.Log;
 
 import com.alexdiru.redleaf.ColourScheme.ThemeType;
 
@@ -33,6 +32,9 @@ public class DataTapAreas {
 
 	/** Y coordinate of the bottom of the tapboxes */
 	public int mTapBoxBottom;
+	
+	/** The tap window in ms */
+	private int mTapWindow = 200;
 
 	public DataTapAreas(DataSong song) {
 		mSong = song;
@@ -93,10 +95,10 @@ public class DataTapAreas {
 	 * @param x The x coordinate of the touch
 	 * @param y The y coordinate of the touch
 	 * @param pid The index of the touch */
-	public void handleTouchDown(int x, int y, int pid, int currentTime, int tapWindow) {
+	public void handleTouchDown(int x, int y, int pid, int currentTime) {
 		for (int i = 0; i < TAP_AREAS; i++)
 			if (mTapBoundingBoxes[i].isTouched(x, y, TAP_AREA_GAP/2, TAP_AREA_GAP*2)) {
-				mSong.tap(i, currentTime, tapWindow);
+				mSong.tap(i, currentTime);
 				mTouchMap.put(pid, i);
 				break;
 			}
@@ -169,6 +171,10 @@ public class DataTapAreas {
 	
 	public int getScore() {
 		return mScore;
+	}
+	
+	public int getTapWindow() {
+		return mTapWindow;
 	}
 
 	public void increaseScore(int score) {

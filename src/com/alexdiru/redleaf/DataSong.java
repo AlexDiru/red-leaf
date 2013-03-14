@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 import android.graphics.Canvas;
-import android.util.Log;
 
 //http://code.google.com/p/beats2/source/browse/trunk/beats/src/com/beatsportable/beats/DataFile.java
 public class DataSong {
@@ -51,11 +50,9 @@ public class DataSong {
 	// Current notes being rendered
 	public ArrayList<DataNote> mRenderNotes = new ArrayList<DataNote>(MAX_NOTES_ON_SCREEN);
 	
-	/** The notes which are held by the player */
+	/** The notes which are held by the player at each position */
 	private DataNote[] mHeldNotes = new DataNote[4];
 
-	private boolean[] mNoChanceOfMoreNotesAtPosition = new boolean[4];
-	
 	public DataSong() {
 		Arrays.fill(mHeldNotes, null);
 	}
@@ -155,7 +152,7 @@ public class DataSong {
 		}
 	}
 	
-	public void updateNotes(int currentTime, int renderDistance, int tapCirclesHeight, int tapWindow) {
+	public void updateNotes(int currentTime, int renderDistance, int tapCirclesHeight) {
 
 		
 		// Check the render list to remove any tapped or off screen notes
@@ -166,10 +163,10 @@ public class DataSong {
 			current = mRenderNotes.get(i);
 
 			// (Applies to tap notes) If the note has been fallen off the screen remove it from the render list
-			boolean tapFallen = current.getStartTime() < currentTime - tapWindow && current.isTapNote() && !current.hasBeenTapped();
+			boolean tapFallen = current.getStartTime() < currentTime - mTapAreas.getTapWindow() && current.isTapNote() && !current.hasBeenTapped();
 
 			// (Applies to hold notes) If the note hasn't been tapped and is below the tapbox
-			boolean heldInitialFallen = ( current.getStartTime() < currentTime - tapWindow) && current.isHoldNote() && !current.hasBeenTapped();
+			boolean heldInitialFallen = ( current.getStartTime() < currentTime - mTapAreas.getTapWindow()) && current.isHoldNote() && !current.hasBeenTapped();
 			
 			// (Applies to hold notes) If the note has been held and the line has fallen off screen
 			boolean heldFallen = current.hasBeenTapped() && !current.isHeld() && current.isHoldNote();
@@ -190,7 +187,7 @@ public class DataSong {
 				continue;
 			}
 			// Else no chance of any other notes being tapped
-			else if (current.getStartTime() > currentTime + tapWindow) {
+			else if (current.getStartTime() > currentTime + mTapAreas.getTapWindow()) {
 				break;
 			}
 			
@@ -230,8 +227,8 @@ public class DataSong {
 
 	/** Renders the notes of the song
 	 * @param canvas The canvas to render to
-	 * @param tapAreas */
-	public void renderNotes(Canvas canvas, DataTapAreas tapAreas, float songSpeed, int tapWindow) {
+	 * @param songSpeed */
+	public void renderNotes(Canvas canvas,float songSpeed) {
 
 		// Assign the notes to a local array list
 		ArrayList<DataNote> notes = Utils.getCurrentSong().mRenderNotes;
@@ -243,17 +240,8 @@ public class DataSong {
 
 			if (note == null)
 				continue;
-
-			// Update note coordinates
-			note.mTopY = (int)((Utils.getCurrentSong().mMusicManager.getPlayPosition() - note.getStartTime())*songSpeed) + GameView.TAPCIRCLES_Y;
-			note.mBottomY = note.mTopY + DataSong.NOTESIZE;
 			
-			int noteXPosition = tapAreas.getBoundingBoxLeft(note.getPosition()) + ((DataTapAreas.TAP_AREA_WIDTH - NOTESIZE) >> 1);
-
-			canvas.drawBitmap(note.isHeld() && note.isHoldNote() ? tapAreas.getRenderer().getNoteHeld(note.getPosition()) : tapAreas.getRenderer().getNote(note.getPosition()), noteXPosition, note.mTopY, null);
-
-			if (note.isHoldNote())
-				note.drawHoldLine(canvas, tapAreas.getRenderer().getHoldLineHeldPaint(note.getPosition()) , tapAreas.getRenderer().getHoldLineUnheldPaint(note.getPosition()) , noteXPosition, songSpeed);
+			note.draw(canvas, mTapAreas, songSpeed);
 		}
 	}
 
@@ -275,10 +263,10 @@ public class DataSong {
 		return note.isHit(currentTime, tapWindow);
 	}
 
-	public boolean tap(int position,  int currentTime, int tapWindow) {
+	public boolean tap(int position,  int currentTime) {
 		DataNote note = getNextTappableNoteInPosition(position);
 		
-		if (isTapSuccessful(note, position, currentTime, tapWindow)) {
+		if (isTapSuccessful(note, position, currentTime, mTapAreas.getTapWindow())) {
 		
 			note.setTapped(true);
 			
