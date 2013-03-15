@@ -29,4 +29,5 @@
     <string name="game_scoreprefix">Score:\u0020</string>
     <string name="game_combosuffix">\u0020COMBO</string>
     <string name="game_highcombo">INSANE!</string>
+    <string name="game_starpower">STAR POWER</string>
 </resources>

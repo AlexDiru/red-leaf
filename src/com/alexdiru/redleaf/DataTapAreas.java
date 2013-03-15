@@ -35,6 +35,9 @@ public class DataTapAreas {
 	
 	/** The tap window in ms */
 	private int mTapWindow = 200;
+	
+	private int mStarNoteStreak = 0;
+	private boolean mStarPowerActive = false;
 
 	public DataTapAreas(DataSong song) {
 		mSong = song;
@@ -61,7 +64,7 @@ public class DataTapAreas {
 		mGUIRenderer.setupBackgroundWithTapboxes(mTapBoundingBoxes);
 	}
 
-	public void successfulTap() {
+	public void successfulTap(DataNote note) {
 		mStreak++;
 		mTappedCount++;
 		
@@ -82,10 +85,20 @@ public class DataTapAreas {
 			mMultiplier = 8;
 			break;
 		}
+		
+		//Check star
+		if (note.isStarNote())
+			mStarNoteStreak++;
+		
+		if (mStarNoteStreak == 4) {
+			mStarPowerActive = true;
+			mMultiplier = 16;
+		}
 	}
 
 	public void unsuccessfulTap() {
 		mStreak = 0;
+		mStarNoteStreak = 0;
 		mMultiplier = 1;
 		mScore -= 30;
 	}
@@ -179,5 +192,9 @@ public class DataTapAreas {
 
 	public void increaseScore(int score) {
 		mScore += score;
+	}
+	
+	public boolean isStarPowerActive() {
+		return mStarPowerActive;
 	}
 }

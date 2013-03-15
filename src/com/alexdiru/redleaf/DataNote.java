@@ -9,6 +9,7 @@ public class DataNote {
 	public static final int NOTE_TYPE_TAP = 0;
 	public static final int NOTE_TYPE_HOLD = 1;
 	public static final int NOTE_TYPE_TAP_STAR = 2;
+	public static final int NOTE_TYPE_HOLD_STAR = 3;
 
 	/** Only need one rectangle to share between all of the notes */
 	private static Rect mHoldLineRect = new Rect();
@@ -72,7 +73,10 @@ public class DataNote {
 		
 		int noteXPosition = tapAreas.getBoundingBoxLeft(mPosition) + ((DataTapAreas.TAP_AREA_WIDTH - DataSong.NOTESIZE) >> 1);
 
-		canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getRenderer().getNoteHeld(mPosition) : tapAreas.getRenderer().getNote(mPosition), noteXPosition, mTopY, null);
+		if (isStarNote())
+			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getRenderer().getNoteHeld(mPosition) : tapAreas.getRenderer().getNoteStar(mPosition), noteXPosition, mTopY, null);
+		else
+			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getRenderer().getNoteHeld(mPosition) : tapAreas.getRenderer().getNote(mPosition), noteXPosition, mTopY, null);
 
 		if (isHoldNote())
 			drawHoldLine(canvas, tapAreas.getRenderer().getHoldLineHeldPaint(mPosition) , tapAreas.getRenderer().getHoldLineUnheldPaint(mPosition) , noteXPosition, songSpeed);
@@ -104,6 +108,10 @@ public class DataNote {
 
 	public boolean isTapNote() {
 		return mEndTime == 0;
+	}
+	
+	public boolean isStarNote() {
+		return mType == NOTE_TYPE_TAP_STAR || mType == NOTE_TYPE_HOLD_STAR;
 	}
 
 	public boolean hasBeenTapped() {

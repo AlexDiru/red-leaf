@@ -56,6 +56,7 @@ public final class R {
         /**  Game 
          */
         public static final int game_songnameprefix=0x7f04000a;
+        public static final int game_starpower=0x7f040014;
         public static final int game_streakprefix=0x7f04000f;
         public static final int menu_settings=0x7f040001;
         public static final int menumain_credits=0x7f040004;

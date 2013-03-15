@@ -19,6 +19,8 @@ public class GUIRenderer {
 
 	// Note bitmap
 	private Bitmap[] mNoteBitmap = new Bitmap[4];
+	
+	private Bitmap[] mNoteStarBitmap = new Bitmap[4];
 
 	private Bitmap[] mNoteHeldBitmap = new Bitmap[4];
 
@@ -64,6 +66,8 @@ public class GUIRenderer {
 						UtilsScreenSize.scaleY(DataSong.NOTESIZE), false);
 				mNoteHeldBitmap[i] = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mNoteHeld[i])), UtilsScreenSize.scaleX(DataSong.NOTESIZE),
 						UtilsScreenSize.scaleY(DataSong.NOTESIZE), false);
+				mNoteStarBitmap[i] = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mNoteStar[i])), UtilsScreenSize.scaleX(DataSong.NOTESIZE),
+						UtilsScreenSize.scaleY(DataSong.NOTESIZE), false);
 
 				// We have to adjust the paint bitmap offset
 				Matrix matrix = new Matrix();
@@ -99,6 +103,10 @@ public class GUIRenderer {
 
 	public Bitmap getNote(int position) {
 		return mNoteBitmap[position];
+	}
+	
+	public Bitmap getNoteStar(int position) {
+		return mNoteStarBitmap[position];
 	}
 
 	public Bitmap getTapBox(int position) {

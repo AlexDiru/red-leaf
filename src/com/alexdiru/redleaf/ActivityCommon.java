@@ -13,6 +13,8 @@ public class ActivityCommon extends Activity {
 	/** Passes the context and activity to the Utils class */
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		System.gc();
 
 		// Visual appearance
 		requestWindowFeature(Window.FEATURE_NO_TITLE);

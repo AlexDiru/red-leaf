@@ -280,8 +280,15 @@ public class GameView extends SurfaceView implements
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
 		mComboPaint.drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2);
 		
+		//STAR POWER
+		if (mTapAreas.isStarPowerActive()) {
+			sb = UtilsString.getStringBuilder();
+			sb.append(Utils.getActivity().getString(R.string.game_starpower));
+			sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
+			mComboPaint.drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2 - 60);
+		}
 		//INSANE
-		if (mTapAreas.getStreak() > 150) {
+		else if (mTapAreas.getStreak() > 150) {
 			sb = UtilsString.getStringBuilder();
 			sb.append(Utils.getActivity().getString(R.string.game_highcombo));
 			sb.getChars(0, sb.length(), UtilsString.getChars(), 0);

@@ -275,7 +275,7 @@ public class DataSong {
 				mHeldNotes[position] = note;
 			}
 			
-			mTapAreas.successfulTap();
+			mTapAreas.successfulTap(note);
 		} else
 			mTapAreas.unsuccessfulTap();
 

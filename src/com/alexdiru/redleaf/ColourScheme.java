@@ -11,6 +11,9 @@ public class ColourScheme {
 
 	/** The bitmaps for the tapbox */
 	public String[] mTap = new String[4];
+	
+	/** The bitmaps for star notes */
+	public String[] mNoteStar = new String[4];
 
 	/** The bitmaps for when a tapbox is held */
 	public String[] mTapHold = new String[4];
@@ -56,6 +59,11 @@ public class ColourScheme {
 			mNote[1] = "reddown.png";
 			mNote[2] = "redup.png";
 			mNote[3] = "redright.png";
+
+			mNoteStar[0] = "yellowleft.png";
+			mNoteStar[1] = "yellowdown.png";
+			mNoteStar[2] = "yellowup.png";
+			mNoteStar[3] = "yellowright.png";
 
 			mNoteHeld[0] = "blueleft.png";
 			mNoteHeld[1] = "bluedown.png";
