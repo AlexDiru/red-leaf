@@ -15,7 +15,11 @@ public class MusicManager implements OnPreparedListener {
 	public boolean mStarted;
 	private long mSongLength;
 
-	public MusicManager(String encryptedFilePath) {
+	public MusicManager() {
+		
+		String encryptedFilePath = Utils.getCurrentSong().mMusicFile;
+		Utils.getCurrentSong().mMusicManager = this;
+		
 		byte[] decryptedMusicBytes;
 		// Decrypt the music
 		try {

@@ -35,6 +35,7 @@ public class ColourSchemeAssets {
 
 	// Background
 	private Bitmap mBackgroundBitmap;
+	private Bitmap mBackgroundStarBitmap;
 
 	private Paint[] mHoldLineUnheldPaint = new Paint[4];
 	private Paint[] mHoldLineHeldPaint = new Paint[4];
@@ -55,6 +56,29 @@ public class ColourSchemeAssets {
 	
 	/** Paint used for drawing the multiplier */
 	private StrokePaint mMultiplierPaint = new StrokePaint();
+	
+	private static Bitmap loadBackground(String filePath, int alpha) throws IOException {
+		
+		Bitmap backgroundBitmap;
+		
+		// When loading the background it must be scaled so that the height is the same as the
+		// screen height
+		// But the width must also be scaled in the same ratio that the height was scaled in
+		// Then the bitmap must be centred when positioned
+		backgroundBitmap = Bitmap.createBitmap(UtilsScreenSize.getScreenWidth(), UtilsScreenSize.getScreenHeight(), Config.ARGB_8888);
+		Bitmap originalBackground;
+		originalBackground = BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(filePath));
+	
+		int scaledWidth = (int) (originalBackground.getWidth() * (UtilsScreenSize.getScreenHeight() / (float) originalBackground.getHeight()));
+		Canvas background = new Canvas(backgroundBitmap);
+		background.drawBitmap(Bitmap.createScaledBitmap(originalBackground, scaledWidth, UtilsScreenSize.getScreenHeight(), false),
+				UtilsScreenSize.getScreenWidth() / 2 - scaledWidth / 2, 0, null);
+		
+		//Create a white rectangle to fade out the background
+		background.drawARGB(255 - alpha, 255,255,255);
+		
+		return backgroundBitmap;
+	}
 
 	public ColourSchemeAssets(ColourScheme colourScheme, int tapBoxWidth, int tapBoxHeight) {
 		setupPaints();
@@ -62,21 +86,8 @@ public class ColourSchemeAssets {
 		int gapBetweenTapBoxes = (UtilsScreenSize.getScreenWidth() - (DataTapAreas.TAP_AREA_WIDTH * 4)) / 5;
 
 		try {
-			// When loading the background it must be scaled so that the height is the same as the
-			// screen height
-			// But the width must also be scaled in the same ratio that the height was scaled in
-			// Then the bitmap must be centred when positioned
-			mBackgroundBitmap = Bitmap.createBitmap(UtilsScreenSize.getScreenWidth(), UtilsScreenSize.getScreenHeight(), Config.ARGB_8888);
-			Bitmap originalBackground;
-			originalBackground = BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mBackground));
-		
-			int scaledWidth = (int) (originalBackground.getWidth() * (UtilsScreenSize.getScreenHeight() / (float) originalBackground.getHeight()));
-			Canvas background = new Canvas(mBackgroundBitmap);
-			background.drawBitmap(Bitmap.createScaledBitmap(originalBackground, scaledWidth, UtilsScreenSize.getScreenHeight(), false),
-					UtilsScreenSize.getScreenWidth() / 2 - scaledWidth / 2, 0, null);
-			
-			//Create a white rectangle to fade out the background
-			background.drawARGB(255 - colourScheme.mBackgroundAlpha, 255,255,255);
+			mBackgroundBitmap = loadBackground(colourScheme.mBackground, colourScheme.mBackgroundAlpha);
+			mBackgroundStarBitmap = loadBackground(colourScheme.mBackgroundStar, colourScheme.mBackgroundAlpha);
 			
 			//Star power bitmap
 			mStarPowerBitmap = BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mStarPower));
@@ -153,7 +164,10 @@ public class ColourSchemeAssets {
 		mMultiplierPaint.setStrokeARGB(220, 0, 0, 0);
 	}
 
-	public Bitmap getBackground() {
+	public Bitmap getBackground(boolean starPowerActive) {
+		if(starPowerActive)
+			return mBackgroundStarBitmap;
+		
 		return mBackgroundBitmap;
 	}
 
@@ -197,14 +211,21 @@ public class ColourSchemeAssets {
 	 * Draws the tapboxes to the same bitmap as the background
 	 * @param tapBoundingBoxes
 	 */
-	public void setupBackgroundWithTapboxes(DataBoundingBox[] tapBoundingBoxes) {
-		Bitmap storedBackground = mBackgroundBitmap;
-		mBackgroundBitmap = Bitmap.createBitmap(UtilsScreenSize.getScreenWidth(), UtilsScreenSize.getScreenHeight(), Config.RGB_565);
-		Canvas canvas = new Canvas(mBackgroundBitmap);
+	public void setupBackgroundsWithTapboxes(DataBoundingBox[] tapBoundingBoxes) {
+		mBackgroundBitmap = drawTapboxesOnBackground(mBackgroundBitmap, tapBoundingBoxes);
+		mBackgroundStarBitmap = drawTapboxesOnBackground(mBackgroundStarBitmap, tapBoundingBoxes);
+	}
+	
+	private Bitmap drawTapboxesOnBackground(Bitmap backgroundBitmap, DataBoundingBox[] tapBoundingBoxes){
+		Bitmap storedBackground = backgroundBitmap;
+		backgroundBitmap = Bitmap.createBitmap(UtilsScreenSize.getScreenWidth(), UtilsScreenSize.getScreenHeight(), Config.RGB_565);
+		Canvas canvas = new Canvas(backgroundBitmap);
 		canvas.drawBitmap(storedBackground, 0,0,null);
 
 		for (int t = 0; t < tapBoundingBoxes.length; t++)
 			drawTapBox(canvas, tapBoundingBoxes[t], t, false);
+		
+		return backgroundBitmap;
 	}
 
 	private void updateComboPaints(StrokePaint comboPaint,  int streak) {

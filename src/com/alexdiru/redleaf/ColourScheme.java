@@ -33,6 +33,9 @@ public class ColourScheme {
 
 	/** Bitmap used for the background */
 	public String mBackground;
+	
+	/** Bitmap used for the background when star power is active */
+	public String mBackgroundStar;
 
 	/** The alpha level of the background */
 	public int mBackgroundAlpha;
@@ -46,6 +49,7 @@ public class ColourScheme {
 		switch (themeType) {
 		case DISCOVERY:
 			mBackground = "discovery.png";
+			mBackgroundStar = "discoverystar.png";
 			mBackgroundAlpha = 213;
 
 			mTap[0] = "L.png";

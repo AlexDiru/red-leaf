@@ -1,4 +1,4 @@
-package com.alexdiru.redleaf;
+ package com.alexdiru.redleaf;
 
 import com.alexdiru.redleaf.android.MusicManager;
 
@@ -15,35 +15,31 @@ import android.view.View.OnTouchListener;
 
 public class GameView extends SurfaceView implements
 		SurfaceHolder.Callback, OnTouchListener {
-	
+
 	private static final String SONG_NAME_PREFIX = Utils.getActivity().getString(R.string.game_songnameprefix);
 
-	public static final int TAPCIRCLES_Y = (int)(1280/1.3061);
-	
-	
+	public static final int TAPCIRCLES_Y = (int) (1280 / 1.3061);
+
 	private GameThread mGameThread;
 	public MusicManager mMusicManager;
 	private DataTapAreas mTapAreas;
 
-
-	//Text Paints
+	// Text Paints
 	private Paint mTextPaint = new Paint();
-	
 
 	/** The song being played */
 	private DataSong mSong;
-	
+
 	/** Current time that the song is at, assigned in the update method, used in the draw method */
 	private int mCurrentTime;
-	
+
 	/** Speed at which notes fall */
 	private float mSongSpeed = 0.8f;
 
-	/// Debug Variables ///
-	//Variables for recording the FPS
+	// / Debug Variables ///
+	// Variables for recording the FPS
 	private long mPreviousTime, mCurrentTimeFPS, mFPS, mTotalFPS = 0, mLoopCount = 0;
 
-	
 	public GameView(Context context) {
 		super(context);
 		setFocusable(true);
@@ -53,26 +49,17 @@ public class GameView extends SurfaceView implements
 		setOnTouchListener(this);
 
 		mGameThread = new GameThread(this);
-
-		mMusicManager = new MusicManager(Utils.getCurrentSong().mMusicFile);
-		
+		mMusicManager = new MusicManager();
 		mSong = Utils.getCurrentSong();
-		
-		mSong.mMusicManager = mMusicManager;
-
-		mTapAreas = new DataTapAreas(Utils.getCurrentSong());
-		Utils.getCurrentSong().setTapAreas(mTapAreas);
-
-		//Helper.getCurrentSong().generateRandomNotes(1);
+		mTapAreas = new DataTapAreas();
 
 		setupTextPaints();
 	}
-	
+
 	private void setupTextPaints() {
 		mTextPaint.setColor(Color.BLACK);
 		mTextPaint.setTextSize(40);
 	}
-
 
 	// Used to release any resources.
 	public void cleanup() {
@@ -90,9 +77,7 @@ public class GameView extends SurfaceView implements
 		holder.removeCallback(this);
 	}
 
-	/*
-	 * Setters and Getters
-	 */
+	/* Setters and Getters */
 
 	public void setThread(GameThread newThread) {
 
@@ -104,9 +89,7 @@ public class GameView extends SurfaceView implements
 		setFocusable(true);
 	}
 
-	/*
-	 * Screen functions
-	 */
+	/* Screen functions */
 
 	// ensure that we go into pause state if we go out of focus
 	@Override
@@ -162,10 +145,8 @@ public class GameView extends SurfaceView implements
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 	}
 
-	/*
-	 * Need to stop the GameThread if the surface is destroyed Remember this
-	 * doesn't need to happen when app is paused on even stopped.
-	 */
+	/* Need to stop the GameThread if the surface is destroyed Remember this doesn't need to happen
+	 * when app is paused on even stopped. */
 	public void surfaceDestroyed(SurfaceHolder arg0) {
 
 		// Stop the thread from running its update and draw methods
@@ -188,73 +169,76 @@ public class GameView extends SurfaceView implements
 
 	public void update() {
 
-		
 		mPreviousTime = mCurrentTimeFPS;
 		mCurrentTimeFPS = SystemClock.elapsedRealtime();
 
 		mFPS = (int) (1000 * ((float) 1 / (float) (mCurrentTimeFPS - mPreviousTime)));
 		mTotalFPS += mFPS;
 		mLoopCount++;
-		
-		//Log.d("fps", mFPS + " / " + (mTotalFPS/mLoopCount));
-		
-		//Update the timer
-		if (mTapAreas != null) {
 
+		// Log.d("fps", mFPS + " / " + (mTotalFPS/mLoopCount));
+
+		// Update the timer
+		if (mTapAreas != null) {
 			mCurrentTime = mMusicManager.getPlayPosition();
-			mSong.updateNotes(mCurrentTime, (int)(1280/mSongSpeed), TAPCIRCLES_Y);
+			mTapAreas.update(mCurrentTime);
+			mSong.updateNotes(mCurrentTime, (int) (1280 / mSongSpeed), TAPCIRCLES_Y);
+
 		}
 
 	}
 
 	public void draw(Canvas canvas) {
 
-		//Background
-		
-		//Tap boxes
+		// Background
+
+		// Tap boxes
 		if (mTapAreas != null)
 			mTapAreas.draw(canvas);
 
-		//Notes
+		// Notes
 		mSong.renderNotes(canvas, mSongSpeed);
-		
+
 		// Text
 		drawScore(canvas);
-		//drawSongName(canvas);
+		// drawSongName(canvas);
 		drawAccuracy(canvas);
-		//drawStreak(canvas);
+		// drawStreak(canvas);
 		drawMultiplier(canvas);
-		//drawFPS(canvas);
+		// drawFPS(canvas);
 		drawCombo(canvas);
 	}
-	
+
 	private void drawCombo(Canvas canvas) {
 		if (mTapAreas.getStreak() < 4)
 			return;
-		
+
 		StringBuilder sb = UtilsString.getStringBuilder();
 		UtilsString.appendInteger(mTapAreas.getStreak());
 		sb.append(Utils.getActivity().getString(R.string.game_combosuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak()).drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2);
-		
-		//STAR POWER
+		mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak())
+				.drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, UtilsScreenSize.getScreenHeight() / 2);
+
+		// STAR POWER
 		if (mTapAreas.isStarPowerActive()) {
 			sb = UtilsString.getStringBuilder();
 			sb.append(Utils.getActivity().getString(R.string.game_starpower));
 			sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-			mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak()).drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2 - 60);
+			mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak())
+					.drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, UtilsScreenSize.getScreenHeight() / 2 - 60);
 		}
-		//INSANE
+		// INSANE
 		else if (mTapAreas.getStreak() > 150) {
 			sb = UtilsString.getStringBuilder();
 			sb.append(Utils.getActivity().getString(R.string.game_highcombo));
 			sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-			mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak()).drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2 - 60);
+			mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak())
+					.drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, UtilsScreenSize.getScreenHeight() / 2 - 60);
 		}
-			
+
 	}
-	
+
 	private void drawStreak(Canvas canvas) {
 		StringBuilder sb = UtilsString.getStringBuilder();
 		sb.append(Utils.getActivity().getString(R.string.game_streakprefix));
@@ -262,40 +246,40 @@ public class GameView extends SurfaceView implements
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
 		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 200, mTextPaint);
 	}
-	
+
 	private void drawMultiplier(Canvas canvas) {
 		StringBuilder sb = UtilsString.getStringBuilder();
-		
+
 		if (mTapAreas.isStarPowerActive())
 			UtilsString.appendInteger(16);
 		else
 			UtilsString.appendInteger(mTapAreas.getMultiplier());
-		
+
 		sb.append(Utils.getActivity().getString(R.string.game_multipliersuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
 		mTapAreas.getColourSchemeAssets().getMultiplierPaint().drawText(canvas, UtilsString.getChars(), 0, sb.length(), 30, 80);
 	}
-	
+
 	private void drawAccuracy(Canvas canvas) {
 		StringBuilder sb = UtilsString.getStringBuilder();
-		//sb.append(Utils.getActivity().getString(R.string.game_accuracyprefix));
+		// sb.append(Utils.getActivity().getString(R.string.game_accuracyprefix));
 		if (mTapAreas.getTappedCount() + mTapAreas.getMissedCount() < 1)
 			UtilsString.appendInteger(100);
 		else
-			UtilsString.appendInteger((int)(100.0*((float)mTapAreas.getTappedCount()/(float)(mTapAreas.getTappedCount() + mTapAreas.getMissedCount()))));
+			UtilsString.appendInteger((int) (100.0 * ((float) mTapAreas.getTappedCount() / (float) (mTapAreas.getTappedCount() + mTapAreas.getMissedCount()))));
 		sb.append(Utils.getActivity().getString(R.string.game_accuracysuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		mTapAreas.getColourSchemeAssets().getAccuracyPaint().drawText(canvas, UtilsString.getChars(),0, sb.length(), UtilsScreenSize.getScreenWidth() - 30, 80);
+		mTapAreas.getColourSchemeAssets().getAccuracyPaint().drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() - 30, 80);
 	}
-	
+
 	private void drawScore(Canvas canvas) {
 		StringBuilder sb = UtilsString.getStringBuilder();
 		sb.append(Utils.getActivity().getString(R.string.game_scoreprefix));
 		UtilsString.appendInteger(mTapAreas.getScore());
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		mTapAreas.getColourSchemeAssets().getScorePaint().drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, 80);
+		mTapAreas.getColourSchemeAssets().getScorePaint().drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, 80);
 	}
-	
+
 	private void drawSongName(Canvas canvas) {
 		StringBuilder sb = UtilsString.getStringBuilder();
 		sb.append(Utils.getActivity().getString(R.string.game_songnameprefix));
@@ -303,11 +287,11 @@ public class GameView extends SurfaceView implements
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
 		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 100, mTextPaint);
 	}
-	
+
 	private void drawFPS(Canvas canvas) {
 		StringBuilder sb = UtilsString.getStringBuilder();
 		sb.append(Utils.getActivity().getString(R.string.game_fpsprefix));
-		UtilsString.appendInteger((int)mFPS);
+		UtilsString.appendInteger((int) mFPS);
 		sb.append(Utils.getActivity().getString(R.string.game_fpsdivider));
 		UtilsString.appendInteger((int) (mTotalFPS / mLoopCount));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
@@ -339,7 +323,6 @@ public class GameView extends SurfaceView implements
 			break;
 		default:
 		}
-
 
 		return true;
 	}

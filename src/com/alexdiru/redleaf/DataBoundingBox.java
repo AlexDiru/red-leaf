@@ -23,6 +23,10 @@ public class DataBoundingBox {
 		mRect.top = y1;
 		mRect.bottom = y2;
 	}
+	
+	public boolean isTouched(int x, int y) {
+		return isTouched(x,y,0,0);
+	}
 
 	/** Whether the entered coordinates are inside the bounding box
 	 * @param x The x coordinate

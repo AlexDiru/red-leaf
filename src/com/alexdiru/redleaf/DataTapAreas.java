@@ -10,6 +10,8 @@ public class DataTapAreas {
 	private static final int TAP_AREA_HEIGHT = 160;
 	public static final int TAP_AREA_WIDTH = 120;
 	private static final int TAP_AREA_GAP = (720 - TAP_AREA_WIDTH * 4)/5;
+	
+	private static final int STAR_POWER_DURATION = 10000;
 
 	private DataBoundingBox[] mTapBoundingBoxes;
 	private DataSong mSong;
@@ -40,14 +42,32 @@ public class DataTapAreas {
 	private int mStarPowersAvailable = 0;
 	private boolean mStarPowerActive = false;
 	private DataBoundingBox mStarPowerBoundingBox = new DataBoundingBox();
+	private int mStarPowerTimeOfActivation;
 
-	public DataTapAreas(DataSong song) {
-		mSong = song;
+	public DataTapAreas() {
+		mSong = Utils.getCurrentSong();
+		mSong.setTapAreas(this);
+		
 		initialiseBackgroundAndTapBoxes();
 		
 		//Star power bounding box
 		mStarPowerBoundingBox.update(UtilsScreenSize.getScreenWidth()/2 - mColourSchemeAssets.getStarPower().getWidth()/2,UtilsScreenSize.getScreenHeight()/2 - mColourSchemeAssets.getStarPower().getHeight()/2, 
 				UtilsScreenSize.getScreenWidth()/2 + mColourSchemeAssets.getStarPower().getWidth()/2,UtilsScreenSize.getScreenHeight()/2 + mColourSchemeAssets.getStarPower().getHeight()/2);
+	}
+	
+	public void update(int currentTime) {
+		if (mStarPowerActive && mStarPowerTimeOfActivation + STAR_POWER_DURATION < currentTime)
+			endStarPower();
+	}
+	
+	private void startStarPower(int currentTime) {
+		mStarPowerActive = true;
+		mStarPowersAvailable--;
+		mStarPowerTimeOfActivation = currentTime;
+	}
+	
+	private void endStarPower() {
+		mStarPowerActive = false;
 	}
 
 	private void initialiseBackgroundAndTapBoxes() {
@@ -67,7 +87,7 @@ public class DataTapAreas {
 		mTapBoundingBoxes[3].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 4 + TAP_AREA_WIDTH * 3), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 4 + TAP_AREA_WIDTH * 4), mTapBoxBottom);
 
 		//Render the tapboxes on the same bitmap as the background
-		mColourSchemeAssets.setupBackgroundWithTapboxes(mTapBoundingBoxes);
+		mColourSchemeAssets.setupBackgroundsWithTapboxes(mTapBoundingBoxes);
 	}
 
 	public void successfulTap(DataNote note) {
@@ -115,12 +135,20 @@ public class DataTapAreas {
 	 * @param y The y coordinate of the touch
 	 * @param pid The index of the touch */
 	public void handleTouchDown(int x, int y, int pid, int currentTime) {
+		
+		//Check the tapboxes being touched
 		for (int i = 0; i < TAP_AREAS; i++)
 			if (mTapBoundingBoxes[i].isTouched(x, y, TAP_AREA_GAP/2, TAP_AREA_GAP*2)) {
 				mSong.tap(i, currentTime);
 				mTouchMap.put(pid, i);
-				break;
+				return;
 			}
+		
+		//Check star power being touched
+		if (mStarPowersAvailable > 0)
+			if (mStarPowerBoundingBox.isTouched(x, y)) 
+				startStarPower(currentTime);
+		
 	}
 
 	/** Triggered when the player doesn't tap a note and it goes below the tapbox area */
@@ -149,7 +177,7 @@ public class DataTapAreas {
 	/** Draws this object, this includes the background and the tapboxes
 	 * @param canvas The canvas to draw to */
 	public void draw(Canvas canvas) {
-		mColourSchemeAssets.drawBackground(canvas);
+		canvas.drawBitmap(mColourSchemeAssets.getBackground(mStarPowerActive),0,0,null);
 
 		for (int t = 0; t < TAP_AREAS; t++)
 			if (mTouchMap.isTouched(t))

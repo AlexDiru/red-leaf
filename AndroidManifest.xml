@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.alexdiru.redleaf.ActivityMainMenu"
+            android:name="com.alexdiru.redleaf.activity.ActivityMainMenu"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,10 +25,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.alexdiru.redleaf.ActivitySongPickerMenu"/>
-        <activity android:name="com.alexdiru.redleaf.ActivityGame"/>
-        <activity android:name="com.alexdiru.redleaf.ActivityEditorSongPickerMenu" />
-        <activity android:name="com.alexdiru.redleaf.ActivityCredits" />
+        <activity android:name="com.alexdiru.redleaf.activity.ActivitySongPickerMenu"/>
+        <activity android:name="com.alexdiru.redleaf.activity.ActivityGame"/>
+        <activity android:name="com.alexdiru.redleaf.activity.ActivityEditorSongPickerMenu" />
+        <activity android:name="com.alexdiru.redleaf.activity.ActivityCredits" />
     </application>
 
 </manifest>
