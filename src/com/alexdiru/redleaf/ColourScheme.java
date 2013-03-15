@@ -1,6 +1,7 @@
 package com.alexdiru.redleaf;
 
-/** Represents a colour scheme for the song
+/** Represents a colour scheme for the song Different assets will be loaded for the graphics
+ * depending on the theme chosen
  * @author Alex */
 public class ColourScheme {
 
@@ -11,7 +12,7 @@ public class ColourScheme {
 
 	/** The bitmaps for the tapbox */
 	public String[] mTap = new String[4];
-	
+
 	/** The bitmaps for star notes */
 	public String[] mNoteStar = new String[4];
 
@@ -35,6 +36,8 @@ public class ColourScheme {
 
 	/** The alpha level of the background */
 	public int mBackgroundAlpha;
+
+	public String mStarPower;
 
 	/** Initialises all the file paths with the theme given
 	 * @param themeType The theme to base the files on */
@@ -79,6 +82,8 @@ public class ColourScheme {
 			mNoteStreamUnheld[1] = "reddowntrail.png";
 			mNoteStreamUnheld[2] = "reddowntrail.png";
 			mNoteStreamUnheld[3] = "reddowntrail.png";
+
+			mStarPower = "silverflame.png";
 
 			break;
 		case MONSOON:

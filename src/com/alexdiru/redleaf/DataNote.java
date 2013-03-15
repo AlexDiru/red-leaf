@@ -4,6 +4,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+/** Represents a note which appears on a song i.e. falls down from the top of the screen and the
+ * player must tap it
+ * @author Alex */
 public class DataNote {
 
 	public static final int NOTE_TYPE_TAP = 0;
@@ -65,22 +68,22 @@ public class DataNote {
 	public boolean isHit(int currentTime, int tapWindow) {
 		return (mStartTime >= currentTime - tapWindow && mStartTime <= currentTime + tapWindow);
 	}
-	
-	public void draw(Canvas canvas, DataTapAreas tapAreas, float songSpeed)  {
+
+	public void draw(Canvas canvas, DataTapAreas tapAreas, float songSpeed) {
 		// Update note coordinates
-		mTopY = (int)((Utils.getCurrentSong().mMusicManager.getPlayPosition() - getStartTime())*songSpeed) + GameView.TAPCIRCLES_Y;
+		mTopY = (int) ((Utils.getCurrentSong().mMusicManager.getPlayPosition() - getStartTime()) * songSpeed) + GameView.TAPCIRCLES_Y;
 		mBottomY = mTopY + DataSong.NOTESIZE;
-		
+
 		int noteXPosition = tapAreas.getBoundingBoxLeft(mPosition) + ((DataTapAreas.TAP_AREA_WIDTH - DataSong.NOTESIZE) >> 1);
 
 		if (isStarNote())
-			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getRenderer().getNoteHeld(mPosition) : tapAreas.getRenderer().getNoteStar(mPosition), noteXPosition, mTopY, null);
+			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getColourSchemeAssets().getNoteHeld(mPosition) : tapAreas.getColourSchemeAssets().getNoteStar(mPosition), noteXPosition, mTopY, null);
 		else
-			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getRenderer().getNoteHeld(mPosition) : tapAreas.getRenderer().getNote(mPosition), noteXPosition, mTopY, null);
+			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getColourSchemeAssets().getNoteHeld(mPosition) : tapAreas.getColourSchemeAssets().getNote(mPosition), noteXPosition, mTopY, null);
 
 		if (isHoldNote())
-			drawHoldLine(canvas, tapAreas.getRenderer().getHoldLineHeldPaint(mPosition) , tapAreas.getRenderer().getHoldLineUnheldPaint(mPosition) , noteXPosition, songSpeed);
-	
+			drawHoldLine(canvas, tapAreas.getColourSchemeAssets().getHoldLineHeldPaint(mPosition), tapAreas.getColourSchemeAssets().getHoldLineUnheldPaint(mPosition), noteXPosition, songSpeed);
+
 	}
 
 	private void drawHoldLine(Canvas canvas, Paint held, Paint unheld, int noteX, float songSpeed) {
@@ -109,7 +112,7 @@ public class DataNote {
 	public boolean isTapNote() {
 		return mEndTime == 0;
 	}
-	
+
 	public boolean isStarNote() {
 		return mType == NOTE_TYPE_TAP_STAR || mType == NOTE_TYPE_HOLD_STAR;
 	}

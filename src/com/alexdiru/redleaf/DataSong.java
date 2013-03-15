@@ -4,9 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import com.alexdiru.redleaf.android.MusicManager;
+
 import android.graphics.Canvas;
 
-//http://code.google.com/p/beats2/source/browse/trunk/beats/src/com/beatsportable/beats/DataFile.java
+/** Represents a song the player can play
+ * As such it stores all the notes which will fall down the screen (and provide methods to update and render these notes)
+ * @author Alex
+ *
+ */
 public class DataSong {
 
 	/** The pixel width/height of each note */

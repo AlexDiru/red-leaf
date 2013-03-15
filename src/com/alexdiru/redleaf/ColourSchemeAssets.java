@@ -2,16 +2,25 @@ package com.alexdiru.redleaf;
 
 import java.io.IOException;
 
+import com.alexdiru.redleaf.android.StrokePaint;
+
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.Paint.Align;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 
-public class GUIRenderer {
+/**
+ * Stores assets dependent on the colour scheme chosen
+ * @author Alex
+ *
+ */
+public class ColourSchemeAssets {
 
 	// Tapbox bitmaps
 	private Bitmap[] LOST = new Bitmap[4];
@@ -29,8 +38,26 @@ public class GUIRenderer {
 
 	private Paint[] mHoldLineUnheldPaint = new Paint[4];
 	private Paint[] mHoldLineHeldPaint = new Paint[4];
+	
+	private Bitmap mStarPowerBitmap;
+	
 
-	public GUIRenderer(ColourScheme colourScheme, int tapBoxWidth, int tapBoxHeight) {
+	/** Paint used for drawing the combo counter */
+	private StrokePaint mComboPaint = new StrokePaint();
+	
+	/** Paint used for drawing the score */
+	private StrokePaint mScorePaint = new StrokePaint();
+	
+	/**
+	 * Paint used for drawing the accuracy percentage
+	 */
+	private StrokePaint mAccuracyPaint = new StrokePaint();
+	
+	/** Paint used for drawing the multiplier */
+	private StrokePaint mMultiplierPaint = new StrokePaint();
+
+	public ColourSchemeAssets(ColourScheme colourScheme, int tapBoxWidth, int tapBoxHeight) {
+		setupPaints();
 
 		int gapBetweenTapBoxes = (UtilsScreenSize.getScreenWidth() - (DataTapAreas.TAP_AREA_WIDTH * 4)) / 5;
 
@@ -51,6 +78,8 @@ public class GUIRenderer {
 			//Create a white rectangle to fade out the background
 			background.drawARGB(255 - colourScheme.mBackgroundAlpha, 255,255,255);
 			
+			//Star power bitmap
+			mStarPowerBitmap = BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mStarPower));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -95,6 +124,33 @@ public class GUIRenderer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void setupPaints() {
+		mComboPaint.setTextSize(70);
+		mComboPaint.setTextAlign(Align.CENTER);
+		mComboPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
+		mComboPaint.setStrokeWidth(4);
+
+		mScorePaint.setTextSize(55);
+		mScorePaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
+		mScorePaint.setStrokeWidth(6);
+		mScorePaint.setTextAlign(Align.CENTER);
+		mScorePaint.setARGB(220, 255, 255, 255);
+		mScorePaint.setStrokeARGB(220, 0, 0, 0);
+		
+		mAccuracyPaint.setTextSize(55);
+		mAccuracyPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
+		mAccuracyPaint.setStrokeWidth(6);
+		mAccuracyPaint.setARGB(220, 255, 255, 255);
+		mAccuracyPaint.setStrokeARGB(220, 0, 0, 0);
+		mAccuracyPaint.setTextAlign(Align.RIGHT);
+		
+		mMultiplierPaint.setTextSize(55);
+		mMultiplierPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
+		mMultiplierPaint.setStrokeWidth(6);
+		mMultiplierPaint.setARGB(220, 255, 255, 255);
+		mMultiplierPaint.setStrokeARGB(220, 0, 0, 0);
 	}
 
 	public Bitmap getBackground() {
@@ -151,7 +207,7 @@ public class GUIRenderer {
 			drawTapBox(canvas, tapBoundingBoxes[t], t, false);
 	}
 
-	public void updateComboPaints(StrokePaint comboPaint,  int streak) {
+	private void updateComboPaints(StrokePaint comboPaint,  int streak) {
 		int opacity = 190;
 		
 		//Set colours depending on the streak
@@ -174,5 +230,26 @@ public class GUIRenderer {
 			comboPaint.setARGB(opacity, 255, 12, 0);
 			comboPaint.setStrokeARGB(opacity, 225	, 0, 0);
 		}
+	}
+
+	public Bitmap getStarPower() {
+		return mStarPowerBitmap;
+	}
+	
+	public StrokePaint getComboPaint(int streak) {
+		updateComboPaints(mComboPaint, streak);
+		return mComboPaint;
+	}
+	
+	public StrokePaint getScorePaint() {
+		return mScorePaint;
+	}
+	
+	public StrokePaint getAccuracyPaint() {
+		return mAccuracyPaint;
+	}
+	
+	public StrokePaint getMultiplierPaint() {
+		return mMultiplierPaint;
 	}
 }

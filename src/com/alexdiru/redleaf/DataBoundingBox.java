@@ -47,6 +47,10 @@ public class DataBoundingBox {
 	public void drawAsRect(Canvas canvas, Paint paint) {
 		canvas.drawRect(mRect, paint);
 	}
+	
+	public void drawWithBitmap(Canvas canvas, Bitmap bitmap) {
+		drawWithBitmap(canvas, bitmap, null, false, 0);
+	}
 
 	/** Draws the bounding box by using a bitmap
 	 * @param canvas The canvas to draw to

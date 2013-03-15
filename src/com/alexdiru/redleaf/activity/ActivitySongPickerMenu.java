@@ -1,6 +1,15 @@
-package com.alexdiru.redleaf;
+package com.alexdiru.redleaf.activity;
 
 import java.io.IOException;
+
+import com.alexdiru.redleaf.DataSong;
+import com.alexdiru.redleaf.DataSongMenuItem;
+import com.alexdiru.redleaf.R;
+import com.alexdiru.redleaf.Utils;
+import com.alexdiru.redleaf.UtilsStepmaniaConvertor;
+import com.alexdiru.redleaf.DataSong.DataSongDifficulty;
+import com.alexdiru.redleaf.R.id;
+import com.alexdiru.redleaf.R.layout;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

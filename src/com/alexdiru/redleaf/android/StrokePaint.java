@@ -1,4 +1,4 @@
-package com.alexdiru.redleaf;
+package com.alexdiru.redleaf.android;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

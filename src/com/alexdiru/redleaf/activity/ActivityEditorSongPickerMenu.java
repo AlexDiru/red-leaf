@@ -1,4 +1,9 @@
-package com.alexdiru.redleaf;
+package com.alexdiru.redleaf.activity;
+
+import com.alexdiru.redleaf.R;
+import com.alexdiru.redleaf.UtilsFileIO;
+import com.alexdiru.redleaf.R.id;
+import com.alexdiru.redleaf.R.layout;
 
 import android.os.Bundle;
 import android.view.View;

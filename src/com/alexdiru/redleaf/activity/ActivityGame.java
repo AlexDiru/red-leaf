@@ -1,4 +1,6 @@
-package com.alexdiru.redleaf;
+package com.alexdiru.redleaf.activity;
+
+import com.alexdiru.redleaf.GameView;
 
 import android.os.Bundle;
 import android.util.Log;

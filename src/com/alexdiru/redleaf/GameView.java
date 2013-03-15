@@ -1,14 +1,12 @@
 package com.alexdiru.redleaf;
 
+import com.alexdiru.redleaf.android.MusicManager;
+
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.graphics.Paint.Align;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -31,19 +29,6 @@ public class GameView extends SurfaceView implements
 	//Text Paints
 	private Paint mTextPaint = new Paint();
 	
-	/** Paint used for drawing the combo counter */
-	private StrokePaint mComboPaint = new StrokePaint();
-	
-	/** Paint used for drawing the score */
-	private StrokePaint mScorePaint = new StrokePaint();
-	
-	/**
-	 * Paint used for drawing the accuracy percentage
-	 */
-	private StrokePaint mAccuracyPaint = new StrokePaint();
-	
-	/** Paint used for drawing the multiplier */
-	private StrokePaint mMultiplierPaint = new StrokePaint();
 
 	/** The song being played */
 	private DataSong mSong;
@@ -86,31 +71,6 @@ public class GameView extends SurfaceView implements
 	private void setupTextPaints() {
 		mTextPaint.setColor(Color.BLACK);
 		mTextPaint.setTextSize(40);
-		
-		mComboPaint.setTextSize(70);
-		mComboPaint.setTextAlign(Align.CENTER);
-		mComboPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-		mComboPaint.setStrokeWidth(4);
-
-		mScorePaint.setTextSize(55);
-		mScorePaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-		mScorePaint.setStrokeWidth(6);
-		mScorePaint.setTextAlign(Align.CENTER);
-		mScorePaint.setARGB(220, 255, 255, 255);
-		mScorePaint.setStrokeARGB(220, 0, 0, 0);
-		
-		mAccuracyPaint.setTextSize(55);
-		mAccuracyPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-		mAccuracyPaint.setStrokeWidth(6);
-		mAccuracyPaint.setARGB(220, 255, 255, 255);
-		mAccuracyPaint.setStrokeARGB(220, 0, 0, 0);
-		mAccuracyPaint.setTextAlign(Align.RIGHT);
-		
-		mMultiplierPaint.setTextSize(55);
-		mMultiplierPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-		mMultiplierPaint.setStrokeWidth(6);
-		mMultiplierPaint.setARGB(220, 255, 255, 255);
-		mMultiplierPaint.setStrokeARGB(220, 0, 0, 0);
 	}
 
 
@@ -272,27 +232,25 @@ public class GameView extends SurfaceView implements
 		if (mTapAreas.getStreak() < 4)
 			return;
 		
-		mTapAreas.getRenderer().updateComboPaints(mComboPaint, mTapAreas.getStreak());
-		
 		StringBuilder sb = UtilsString.getStringBuilder();
 		UtilsString.appendInteger(mTapAreas.getStreak());
 		sb.append(Utils.getActivity().getString(R.string.game_combosuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		mComboPaint.drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2);
+		mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak()).drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2);
 		
 		//STAR POWER
 		if (mTapAreas.isStarPowerActive()) {
 			sb = UtilsString.getStringBuilder();
 			sb.append(Utils.getActivity().getString(R.string.game_starpower));
 			sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-			mComboPaint.drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2 - 60);
+			mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak()).drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2 - 60);
 		}
 		//INSANE
 		else if (mTapAreas.getStreak() > 150) {
 			sb = UtilsString.getStringBuilder();
 			sb.append(Utils.getActivity().getString(R.string.game_highcombo));
 			sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-			mComboPaint.drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2 - 60);
+			mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak()).drawText(canvas,UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, UtilsScreenSize.getScreenHeight()/2 - 60);
 		}
 			
 	}
@@ -315,7 +273,7 @@ public class GameView extends SurfaceView implements
 		
 		sb.append(Utils.getActivity().getString(R.string.game_multipliersuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		mMultiplierPaint.drawText(canvas, UtilsString.getChars(), 0, sb.length(), 30, 80);
+		mTapAreas.getColourSchemeAssets().getMultiplierPaint().drawText(canvas, UtilsString.getChars(), 0, sb.length(), 30, 80);
 	}
 	
 	private void drawAccuracy(Canvas canvas) {
@@ -327,7 +285,7 @@ public class GameView extends SurfaceView implements
 			UtilsString.appendInteger((int)(100.0*((float)mTapAreas.getTappedCount()/(float)(mTapAreas.getTappedCount() + mTapAreas.getMissedCount()))));
 		sb.append(Utils.getActivity().getString(R.string.game_accuracysuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		mAccuracyPaint.drawText(canvas, UtilsString.getChars(),0, sb.length(), UtilsScreenSize.getScreenWidth() - 30, 80);
+		mTapAreas.getColourSchemeAssets().getAccuracyPaint().drawText(canvas, UtilsString.getChars(),0, sb.length(), UtilsScreenSize.getScreenWidth() - 30, 80);
 	}
 	
 	private void drawScore(Canvas canvas) {
@@ -335,7 +293,7 @@ public class GameView extends SurfaceView implements
 		sb.append(Utils.getActivity().getString(R.string.game_scoreprefix));
 		UtilsString.appendInteger(mTapAreas.getScore());
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		mScorePaint.drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, 80);
+		mTapAreas.getColourSchemeAssets().getScorePaint().drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth()/2, 80);
 	}
 	
 	private void drawSongName(Canvas canvas) {

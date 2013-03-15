@@ -1,4 +1,6 @@
-package com.alexdiru.redleaf;
+package com.alexdiru.redleaf.android;
+
+import com.alexdiru.redleaf.Utils;
 
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaMetadataRetriever;

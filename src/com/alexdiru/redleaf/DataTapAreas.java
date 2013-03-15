@@ -15,7 +15,7 @@ public class DataTapAreas {
 	private DataSong mSong;
 
 	/** Handles the rendering according to the colour scheme */
-	private GUIRenderer mGUIRenderer = new GUIRenderer(new ColourScheme(ThemeType.DISCOVERY), TAP_AREA_WIDTH, TAP_AREA_HEIGHT);
+	private ColourSchemeAssets mColourSchemeAssets = new ColourSchemeAssets(new ColourScheme(ThemeType.DISCOVERY), TAP_AREA_WIDTH, TAP_AREA_HEIGHT);
 
 	/** Handles the player's touches */
 	private DataTouchMap mTouchMap = new DataTouchMap();
@@ -37,11 +37,17 @@ public class DataTapAreas {
 	private int mTapWindow = 200;
 	
 	private int mStarNoteStreak = 0;
+	private int mStarPowersAvailable = 0;
 	private boolean mStarPowerActive = false;
+	private DataBoundingBox mStarPowerBoundingBox = new DataBoundingBox();
 
 	public DataTapAreas(DataSong song) {
 		mSong = song;
 		initialiseBackgroundAndTapBoxes();
+		
+		//Star power bounding box
+		mStarPowerBoundingBox.update(UtilsScreenSize.getScreenWidth()/2 - mColourSchemeAssets.getStarPower().getWidth()/2,UtilsScreenSize.getScreenHeight()/2 - mColourSchemeAssets.getStarPower().getHeight()/2, 
+				UtilsScreenSize.getScreenWidth()/2 + mColourSchemeAssets.getStarPower().getWidth()/2,UtilsScreenSize.getScreenHeight()/2 + mColourSchemeAssets.getStarPower().getHeight()/2);
 	}
 
 	private void initialiseBackgroundAndTapBoxes() {
@@ -61,14 +67,13 @@ public class DataTapAreas {
 		mTapBoundingBoxes[3].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 4 + TAP_AREA_WIDTH * 3), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 4 + TAP_AREA_WIDTH * 4), mTapBoxBottom);
 
 		//Render the tapboxes on the same bitmap as the background
-		mGUIRenderer.setupBackgroundWithTapboxes(mTapBoundingBoxes);
+		mColourSchemeAssets.setupBackgroundWithTapboxes(mTapBoundingBoxes);
 	}
 
 	public void successfulTap(DataNote note) {
 		mStreak++;
 		mTappedCount++;
 		
-
 		switch (mStreak) {
 		case 20:
 			mMultiplier = 2;
@@ -89,7 +94,7 @@ public class DataTapAreas {
 			mStarNoteStreak++;
 		
 		if (mStarNoteStreak == 4) 
-			mStarPowerActive = true;
+			mStarPowersAvailable++;
 		
 		if (mStarPowerActive)
 			mScore += 1600;
@@ -144,15 +149,18 @@ public class DataTapAreas {
 	/** Draws this object, this includes the background and the tapboxes
 	 * @param canvas The canvas to draw to */
 	public void draw(Canvas canvas) {
-		mGUIRenderer.drawBackground(canvas);
+		mColourSchemeAssets.drawBackground(canvas);
 
 		for (int t = 0; t < TAP_AREAS; t++)
 			if (mTouchMap.isTouched(t))
-				mGUIRenderer.drawTapBox(canvas, mTapBoundingBoxes[t], t, true);
+				mColourSchemeAssets.drawTapBox(canvas, mTapBoundingBoxes[t], t, true);
+	
+		if (mStarPowersAvailable > 0)
+			mStarPowerBoundingBox.drawWithBitmap(canvas, mColourSchemeAssets.getStarPower());
 	}
 
-	public GUIRenderer getRenderer() {
-		return mGUIRenderer;
+	public ColourSchemeAssets getColourSchemeAssets() {
+		return mColourSchemeAssets;
 	}
 
 	public int getBoundingBoxTop() {
