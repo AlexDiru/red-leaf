@@ -307,7 +307,12 @@ public class GameView extends SurfaceView implements
 	
 	private void drawMultiplier(Canvas canvas) {
 		StringBuilder sb = UtilsString.getStringBuilder();
-		UtilsString.appendInteger(mTapAreas.getMultiplier());
+		
+		if (mTapAreas.isStarPowerActive())
+			UtilsString.appendInteger(16);
+		else
+			UtilsString.appendInteger(mTapAreas.getMultiplier());
+		
 		sb.append(Utils.getActivity().getString(R.string.game_multipliersuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
 		mMultiplierPaint.drawText(canvas, UtilsString.getChars(), 0, sb.length(), 30, 80);

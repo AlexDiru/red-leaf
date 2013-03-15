@@ -175,8 +175,10 @@ public class DataSong {
 			if (current.hasBeenTapped() && current.isTapNote() || tapFallen || heldInitialFallen || heldFallen) {
 				
 				// Get score from hold note
-				if (current.isHoldNote() && current.hasBeenTapped())
-					mTapAreas.increaseScore(currentTime - current.getStartTime());
+				if (current.isHoldNote() && current.hasBeenTapped()) {
+					int smallerTime = Math.min(currentTime, current.getEndTime());
+					mTapAreas.increaseScore(smallerTime - current.getStartTime());
+				}
 					
 				if (tapFallen || heldInitialFallen) 
 					mTapAreas.miss();

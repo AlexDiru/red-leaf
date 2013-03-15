@@ -68,8 +68,6 @@ public class DataTapAreas {
 		mStreak++;
 		mTappedCount++;
 		
-		mScore += 100 * mMultiplier;
-		
 
 		switch (mStreak) {
 		case 20:
@@ -90,17 +88,20 @@ public class DataTapAreas {
 		if (note.isStarNote())
 			mStarNoteStreak++;
 		
-		if (mStarNoteStreak == 4) {
+		if (mStarNoteStreak == 4) 
 			mStarPowerActive = true;
-			mMultiplier = 16;
-		}
+		
+		if (mStarPowerActive)
+			mScore += 1600;
+		else
+			mScore += 100 * mMultiplier;
 	}
 
 	public void unsuccessfulTap() {
 		mStreak = 0;
 		mStarNoteStreak = 0;
-		mMultiplier = 1;
 		mScore -= 30;
+		mMultiplier = 1;
 	}
 
 	/** Called when the player places a new finger on the screen, check if a tapbox is touched and if
