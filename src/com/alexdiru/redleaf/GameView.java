@@ -1,7 +1,5 @@
  package com.alexdiru.redleaf;
 
-import com.alexdiru.redleaf.android.MusicManager;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,8 +11,11 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
+import com.alexdiru.redleaf.android.MusicManager;
+import com.alexdiru.redleaf.interfaces.IDisposable;
+
 public class GameView extends SurfaceView implements
-		SurfaceHolder.Callback, OnTouchListener {
+		SurfaceHolder.Callback, OnTouchListener, IDisposable {
 
 	private static final String SONG_NAME_PREFIX = Utils.getActivity().getString(R.string.game_songnameprefix);
 
@@ -62,8 +63,9 @@ public class GameView extends SurfaceView implements
 	}
 
 	// Used to release any resources.
-	public void cleanup() {
-		mMusicManager.cleanup();
+	@Override
+	public void dispose() {
+		mMusicManager.dispose();
 		mMusicManager = null;
 
 		mGameThread.mRunning = false;

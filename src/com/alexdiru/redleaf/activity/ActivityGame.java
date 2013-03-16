@@ -1,6 +1,7 @@
 package com.alexdiru.redleaf.activity;
 
 import com.alexdiru.redleaf.GameView;
+import com.alexdiru.redleaf.Utils;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -17,16 +18,21 @@ public class ActivityGame extends ActivityCommon {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		mGameView = new GameView(this);
-		setContentView(mGameView);
-
+		
+		//This happens when the game has been left idleA, just switch to previous activity
+		try {
+			mGameView = new GameView(this);
+			setContentView(mGameView);
+		} catch (Exception ex) {
+			finish();
+		}
 	}
 
 	@Override
 	protected void onPause() {
 		Log.d(getClass().getName(), "onPause");
 		super.onPause();
+		
 		mGameView.pauseGame();
 	}
 
@@ -34,6 +40,7 @@ public class ActivityGame extends ActivityCommon {
 	protected void onStop() {
 		Log.d(getClass().getName(), "onStop");
 		super.onStop();
+		
 		mGameView.pauseGame();
 	}
 
@@ -55,7 +62,10 @@ public class ActivityGame extends ActivityCommon {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mGameView.cleanup();
+		
+		if (mGameView != null)
+			mGameView.dispose();
+		
 		mGameView = null;
 	}
 }

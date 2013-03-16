@@ -1,14 +1,14 @@
 package com.alexdiru.redleaf.android;
 
-import com.alexdiru.redleaf.Utils;
-
 import android.content.res.AssetFileDescriptor;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.util.Log;
 
-public class MusicManager implements OnPreparedListener {
+import com.alexdiru.redleaf.Utils;
+import com.alexdiru.redleaf.interfaces.IDisposable;
+
+public class MusicManager implements OnPreparedListener, IDisposable {
 
 	public MediaPlayer mMediaPlayer;
 	public int mPauseTime;
@@ -73,7 +73,8 @@ public class MusicManager implements OnPreparedListener {
 	}
 
 	/** Garbage collects the contents of this class */
-	public void cleanup() {
+	@Override
+	public void dispose() {
 		if (mMediaPlayer != null) {
 			mPauseTime = 0;
 			mStarted = false;
