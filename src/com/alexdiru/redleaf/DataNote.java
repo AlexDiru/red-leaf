@@ -74,7 +74,7 @@ public class DataNote {
 		mTopY = (int) ((Utils.getCurrentSong().mMusicManager.getPlayPosition() - getStartTime()) * songSpeed) + GameView.TAPCIRCLES_Y;
 		mBottomY = mTopY + DataSong.NOTESIZE;
 
-		int noteXPosition = tapAreas.getBoundingBoxLeft(mPosition) + ((DataTapAreas.TAP_AREA_WIDTH - DataSong.NOTESIZE) >> 1);
+		int noteXPosition = tapAreas.getBoundingBoxLeft(mPosition) + (UtilsScreenSize.scaleX(DataTapAreas.TAP_AREA_WIDTH - DataSong.NOTESIZE) >> 1);
 
 		if (isStarNote())
 			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getColourSchemeAssets().getNoteHeld(mPosition) : tapAreas.getColourSchemeAssets().getNoteStar(mPosition), noteXPosition, mTopY, null);
@@ -98,9 +98,9 @@ public class DataNote {
 			return;
 
 		mHoldLineRect.left = noteX;
-		mHoldLineRect.top = holdLineYPosition;
-		mHoldLineRect.right = noteX + DataSong.NOTESIZE;
-		mHoldLineRect.bottom = mBottomY - DataSong.NOTESIZE / 2;
+		mHoldLineRect.top = UtilsScreenSize.scaleY(holdLineYPosition);
+		mHoldLineRect.right = noteX + UtilsScreenSize.scaleY(DataSong.NOTESIZE);
+		mHoldLineRect.bottom = UtilsScreenSize.scaleY(mBottomY - DataSong.NOTESIZE / 2);
 
 		canvas.drawRect(mHoldLineRect, mBeingHeld ? held : unheld);
 	}

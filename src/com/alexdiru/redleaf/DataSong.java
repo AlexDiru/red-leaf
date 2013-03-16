@@ -160,6 +160,7 @@ public class DataSong {
 	
 	public void updateNotes(int currentTime, int renderDistance, int tapCirclesHeight) {
 
+		tapCirclesHeight = UtilsScreenSize.scaleY(tapCirclesHeight);
 		
 		// Check the render list to remove any tapped or off screen notes
 		// Note: must use iterator to delete otherwise MASSIVE speed drop (very noticable jitter)

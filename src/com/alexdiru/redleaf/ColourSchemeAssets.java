@@ -138,28 +138,28 @@ public class ColourSchemeAssets {
 	}
 	
 	private void setupPaints() {
-		mComboPaint.setTextSize(70);
+		mComboPaint.setTextSize(UtilsScreenSize.scaleFontSize(70));
 		mComboPaint.setTextAlign(Align.CENTER);
 		mComboPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-		mComboPaint.setStrokeWidth(4);
+		mComboPaint.setStrokeWidth(UtilsScreenSize.scaleFontSize(6));
 
-		mScorePaint.setTextSize(55);
+		mScorePaint.setTextSize(UtilsScreenSize.scaleFontSize(55));
 		mScorePaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-		mScorePaint.setStrokeWidth(6);
+		mScorePaint.setStrokeWidth(UtilsScreenSize.scaleFontSize(6));
 		mScorePaint.setTextAlign(Align.CENTER);
 		mScorePaint.setARGB(220, 255, 255, 255);
 		mScorePaint.setStrokeARGB(220, 0, 0, 0);
 		
-		mAccuracyPaint.setTextSize(55);
+		mAccuracyPaint.setTextSize(UtilsScreenSize.scaleFontSize(55));
 		mAccuracyPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-		mAccuracyPaint.setStrokeWidth(6);
+		mAccuracyPaint.setStrokeWidth(UtilsScreenSize.scaleFontSize(6));
 		mAccuracyPaint.setARGB(220, 255, 255, 255);
 		mAccuracyPaint.setStrokeARGB(220, 0, 0, 0);
 		mAccuracyPaint.setTextAlign(Align.RIGHT);
 		
-		mMultiplierPaint.setTextSize(55);
+		mMultiplierPaint.setTextSize(UtilsScreenSize.scaleFontSize(55));
 		mMultiplierPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-		mMultiplierPaint.setStrokeWidth(6);
+		mMultiplierPaint.setStrokeWidth(UtilsScreenSize.scaleFontSize(6));
 		mMultiplierPaint.setARGB(220, 255, 255, 255);
 		mMultiplierPaint.setStrokeARGB(220, 0, 0, 0);
 	}
@@ -192,7 +192,7 @@ public class ColourSchemeAssets {
 	}
 
 	public void drawTapBox(Canvas canvas, DataBoundingBox tapbox, int tapboxIndex, boolean touched) {
-		tapbox.drawWithBitmap(canvas, touched ? LOSTInverse[tapboxIndex] : LOST[tapboxIndex], null, true, 6);
+		tapbox.drawWithBitmap(canvas, touched ? LOSTInverse[tapboxIndex] : LOST[tapboxIndex], null, true, UtilsScreenSize.scaleX(6));
 	}
 
 	public Paint getHoldLineUnheldPaint(int position) {

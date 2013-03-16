@@ -12,7 +12,6 @@ public abstract class UtilsStepmaniaConvertor {
 	private static Integer[] heldStart = new Integer[4];
 	private static boolean[] heldEnabled = new boolean[4];
 	
-	
 	public static DataSong stepmaniaToRedLeaf(String inputFilePath, DataSong.DataSongDifficulty difficulty) {
 		Arrays.fill(heldStart, null);
 		Arrays.fill(heldEnabled, false);

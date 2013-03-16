@@ -228,7 +228,7 @@ public class GameView extends SurfaceView implements
 			sb.append(Utils.getActivity().getString(R.string.game_starpower));
 			sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
 			mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak())
-					.drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, UtilsScreenSize.getScreenHeight() / 2 - 60);
+					.drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, UtilsScreenSize.getScreenHeight() / 2 - UtilsScreenSize.scaleY(60));
 		}
 		// INSANE
 		else if (mTapAreas.getStreak() > 150) {
@@ -236,7 +236,7 @@ public class GameView extends SurfaceView implements
 			sb.append(Utils.getActivity().getString(R.string.game_highcombo));
 			sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
 			mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak())
-					.drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, UtilsScreenSize.getScreenHeight() / 2 - 60);
+					.drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, UtilsScreenSize.getScreenHeight() / 2 - UtilsScreenSize.scaleY(60));
 		}
 
 	}
@@ -259,7 +259,7 @@ public class GameView extends SurfaceView implements
 
 		sb.append(Utils.getActivity().getString(R.string.game_multipliersuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		mTapAreas.getColourSchemeAssets().getMultiplierPaint().drawText(canvas, UtilsString.getChars(), 0, sb.length(), 30, 80);
+		mTapAreas.getColourSchemeAssets().getMultiplierPaint().drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.scaleY(30), UtilsScreenSize.scaleY(80));
 	}
 
 	private void drawAccuracy(Canvas canvas) {
@@ -271,7 +271,7 @@ public class GameView extends SurfaceView implements
 			UtilsString.appendInteger((int) (100.0 * ((float) mTapAreas.getTappedCount() / (float) (mTapAreas.getTappedCount() + mTapAreas.getMissedCount()))));
 		sb.append(Utils.getActivity().getString(R.string.game_accuracysuffix));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		mTapAreas.getColourSchemeAssets().getAccuracyPaint().drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() - 30, 80);
+		mTapAreas.getColourSchemeAssets().getAccuracyPaint().drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() -  UtilsScreenSize.scaleY(30), UtilsScreenSize.scaleY(80));
 	}
 
 	private void drawScore(Canvas canvas) {
@@ -279,7 +279,7 @@ public class GameView extends SurfaceView implements
 		sb.append(Utils.getActivity().getString(R.string.game_scoreprefix));
 		UtilsString.appendInteger(mTapAreas.getScore());
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		mTapAreas.getColourSchemeAssets().getScorePaint().drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, 80);
+		mTapAreas.getColourSchemeAssets().getScorePaint().drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, UtilsScreenSize.scaleY(80));
 	}
 
 	private void drawSongName(Canvas canvas) {

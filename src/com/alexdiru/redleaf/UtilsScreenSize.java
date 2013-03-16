@@ -43,4 +43,8 @@ public abstract class UtilsScreenSize {
 	public static int scaleY(int px) {
 		return (int)(px * mScaleY);
 	}
+	
+	public static int scaleFontSize(int sz) {
+		return (int)(sz * mScaleY);
+	}
 }
