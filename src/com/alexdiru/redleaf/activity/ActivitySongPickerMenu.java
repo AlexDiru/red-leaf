@@ -34,10 +34,15 @@ public class ActivitySongPickerMenu extends ActivityCommon implements OnItemClic
 
 		// Setup the list view
 		// Load all the songs from file
-		mSongListParser = new FileIOSongListParser("SongList.txt");
+		loadSongList();
+		
 		mListView = (ListView) findViewById(R.id.menusongpicker_listview);
 		mListView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mSongListParser.getMenuItemsToDisplay()));
 		mListView.setOnItemClickListener(this);
+	}
+	
+	public void loadSongList() {
+		mSongListParser = new FileIOSongListParser("SongList.txt");
 	}
 
 	@Override
@@ -55,7 +60,7 @@ public class ActivitySongPickerMenu extends ActivityCommon implements OnItemClic
 			fileExists = false;
 		}
 
-		if (fileExists) {
+		//if (fileExists) {
 			//(new DataSong(noteFile));
 			
 
@@ -63,42 +68,45 @@ public class ActivitySongPickerMenu extends ActivityCommon implements OnItemClic
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage("Choose a difficulty").setTitle(menuItem.mSongName);
 
-			builder.setPositiveButton("Hard",
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							Utils.setCurrentSong(new DataSong(noteFile));
-							//Utils.setCurrentSong(UtilsStepmaniaConvertor.stepmaniaToRedLeaf("World Mad.ssc",DataSong.DataSongDifficulty.HARD));
-							Utils.getCurrentSong().mDifficulty = DataSong.DataSongDifficulty.HARD;
-							Utils.switchActivity(ActivityGame.class);
-						}
-					});
+			if (menuItem.hasHardDifficulty())
+				builder.setPositiveButton("Hard",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								//Utils.setCurrentSong(new DataSong(noteFile));
+								Utils.setCurrentSong(UtilsStepmaniaConvertor.stepmaniaToRedLeaf("Perfection.ssc",DataSong.DataSongDifficulty.MEDIUM));
+								Utils.getCurrentSong().mDifficulty = DataSong.DataSongDifficulty.MEDIUM;
+								Utils.switchActivity(ActivityGame.class);
+							}
+						});
 
-			builder.setNeutralButton("Medium",
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							Utils.setCurrentSong(UtilsStepmaniaConvertor.stepmaniaToRedLeaf("World Mad.ssc",DataSong.DataSongDifficulty.MEDIUM));
-							Utils.getCurrentSong().mDifficulty = DataSong.DataSongDifficulty.MEDIUM;
-							Utils.switchActivity(ActivityGame.class);
-						}
-					});
+			if (menuItem.hasMediumDifficulty()) 
+				builder.setNeutralButton("Medium",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								Utils.setCurrentSong(UtilsStepmaniaConvertor.stepmaniaToRedLeaf("Perfection.ssc",DataSong.DataSongDifficulty.MEDIUM));
+								Utils.getCurrentSong().mDifficulty = DataSong.DataSongDifficulty.MEDIUM;
+								Utils.switchActivity(ActivityGame.class);
+							}
+						});
 			
-			builder.setNegativeButton("Easy",
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							Utils.setCurrentSong(UtilsStepmaniaConvertor.stepmaniaToRedLeaf("World Mad.ssc",DataSong.DataSongDifficulty.EASY));
-							Utils.getCurrentSong().mDifficulty = DataSong.DataSongDifficulty.EASY;
-							Utils.switchActivity(ActivityGame.class);
-						}
-					});
+			if (menuItem.hasEasyDifficulty())
+				builder.setNegativeButton("Easy",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								Utils.setCurrentSong(UtilsStepmaniaConvertor.stepmaniaToRedLeaf("World Mad.ssc",DataSong.DataSongDifficulty.EASY));
+								Utils.getCurrentSong().mDifficulty = DataSong.DataSongDifficulty.EASY;
+								Utils.switchActivity(ActivityGame.class);
+							}
+				});
 			
 			builder.show();
 
 			
-		}
-		else {
+		//}
+		/*else {
 
 			// 1. Instantiate an AlertDialog.Builder with its constructor
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -111,7 +119,7 @@ public class ActivitySongPickerMenu extends ActivityCommon implements OnItemClic
 			AlertDialog dialog = builder.create();
 
 			dialog.show();
-		}
+		}*/
 
 	}
 

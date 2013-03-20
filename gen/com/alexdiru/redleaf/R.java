@@ -48,10 +48,16 @@ public final class R {
         public static final int game_accuracyprefix=0x7f04000d;
         public static final int game_accuracysuffix=0x7f04000e;
         public static final int game_combosuffix=0x7f040012;
+        public static final int game_countdown1=0x7f04001a;
+        public static final int game_countdown2=0x7f040019;
+        public static final int game_countdown3=0x7f040018;
         public static final int game_fpsdivider=0x7f04000c;
         public static final int game_fpsprefix=0x7f04000b;
         public static final int game_highcombo=0x7f040013;
         public static final int game_multipliersuffix=0x7f040010;
+        public static final int game_scoredialog_message=0x7f040016;
+        public static final int game_scoredialog_ok=0x7f040017;
+        public static final int game_scoredialog_title=0x7f040015;
         public static final int game_scoreprefix=0x7f040011;
         /**  Game 
          */

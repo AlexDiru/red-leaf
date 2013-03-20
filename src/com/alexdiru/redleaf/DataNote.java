@@ -69,26 +69,26 @@ public class DataNote {
 		return (mStartTime >= currentTime - tapWindow && mStartTime <= currentTime + tapWindow);
 	}
 
-	public void draw(Canvas canvas, DataTapAreas tapAreas, float songSpeed) {
+	public void draw(Canvas canvas, DataPlayer tapAreas, float songSpeed) {
 		// Update note coordinates
 		mTopY = (int) ((Utils.getCurrentSong().mMusicManager.getPlayPosition() - getStartTime()) * songSpeed) + GameView.TAPCIRCLES_Y;
 		mBottomY = mTopY + DataSong.NOTESIZE;
 
-		int noteXPosition = tapAreas.getBoundingBoxLeft(mPosition) + (UtilsScreenSize.scaleX(DataTapAreas.TAP_AREA_WIDTH - DataSong.NOTESIZE) >> 1);
+		int noteXPosition = tapAreas.getBoundingBoxLeft(mPosition) + (UtilsScreenSize.scaleX(DataPlayer.TAP_AREA_WIDTH - DataSong.NOTESIZE) >> 1);
 
+		if (isHoldNote())
+			drawHoldLine(canvas, tapAreas.getColourSchemeAssets().getHoldLineHeldPaint(mPosition), tapAreas.getColourSchemeAssets().getHoldLineUnheldPaint(mPosition), noteXPosition, songSpeed);
+		
 		if (isStarNote())
 			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getColourSchemeAssets().getNoteHeld(mPosition) : tapAreas.getColourSchemeAssets().getNoteStar(mPosition), noteXPosition, mTopY, null);
 		else
 			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getColourSchemeAssets().getNoteHeld(mPosition) : tapAreas.getColourSchemeAssets().getNote(mPosition), noteXPosition, mTopY, null);
 
-		if (isHoldNote())
-			drawHoldLine(canvas, tapAreas.getColourSchemeAssets().getHoldLineHeldPaint(mPosition), tapAreas.getColourSchemeAssets().getHoldLineUnheldPaint(mPosition), noteXPosition, songSpeed);
-
 	}
 
 	private void drawHoldLine(Canvas canvas, Paint held, Paint unheld, int noteX, float songSpeed) {
 		// Get the top of the hold line
-		int holdLineYPosition = (int) ((Utils.getCurrentSong().mMusicManager.getPlayPosition() - mEndTime) * songSpeed) + GameView.TAPCIRCLES_Y - DataSong.NOTESIZE;
+		int holdLineYPosition = (int) ((Utils.getCurrentSong().mMusicManager.getPlayPosition() - mEndTime) * songSpeed) + GameView.TAPCIRCLES_Y;// - (int)(DataSong.NOTESIZE * 1.5);
 
 		// Top of line cannot be negative
 		if (holdLineYPosition < 0)
@@ -131,6 +131,10 @@ public class DataNote {
 
 	public int getPosition() {
 		return mPosition;
+	}
+	
+	public int getType() {
+		return mType;
 	}
 
 	public void setHeld(boolean beingHeld) {

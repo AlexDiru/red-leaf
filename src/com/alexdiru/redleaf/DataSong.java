@@ -16,7 +16,7 @@ import android.graphics.Canvas;
 public class DataSong {
 
 	/** The pixel width/height of each note */
-	public static final int NOTESIZE = DataTapAreas.TAP_AREA_WIDTH;
+	public static final int NOTESIZE = DataPlayer.TAP_AREA_WIDTH;
 	
 	/** The maximum number of notes that can be rendered */
 	private static final int MAX_NOTES_ON_SCREEN = 20;
@@ -48,7 +48,7 @@ public class DataSong {
 	public MusicManager mMusicManager;
 
 	/** Manages the gameplay for the user */
-	private DataTapAreas mTapAreas;
+	private DataPlayer mTapAreas;
 
 	/** Index of the next note to check to be rendered */
 	private int mNoteIndex = 0;
@@ -304,11 +304,16 @@ public class DataSong {
 			unhold(i);
 	}
 
-	public void hold(int position) {
-	}
-
-	public void setTapAreas(DataTapAreas tapAreas) {
+	public void setTapAreas(DataPlayer tapAreas) {
 		mTapAreas = tapAreas;
 	}
 
+	public void save(String filePath, DataSong.DataSongDifficulty difficulty) {
+		String contents = "begin difficulty " + difficulty.ordinal();
+		
+		for (DataNote note : mNotes) 
+			contents += "note " + note.getStartTime() + " " + note.getEndTime() + " " + note.getType() + " " + note.getPosition() + "\n";
+		
+		contents += "end difficulty";
+	}
 }

@@ -33,7 +33,7 @@ public class FileIOSongListParser {
 				String[] fields = songLine.split("\\|");
 				
 				//Add each field to a DataSongMenuItem
-				DataSongMenuItem item = new DataSongMenuItem(fields[0].trim(), fields[1].trim(), fields[2].trim());
+				DataSongMenuItem item = new DataSongMenuItem(fields[0].trim(), fields[1].trim(), fields[2].trim(), fields[3].trim());
 				
 				//Add item to the list and hash
 				mMenuItems.add(item);

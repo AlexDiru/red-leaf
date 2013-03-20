@@ -6,12 +6,11 @@ import android.view.SurfaceHolder;
 
 public class GameThread extends Thread {
 
-
 	private SurfaceHolder mSurfaceHolder;
 	private GameView mGameView;
 	public boolean mRunning;
 	public boolean mPaused;
-	
+
 	public int mPreviousMusicPosition;
 
 	public GameThread(GameView gameView) {
@@ -28,29 +27,28 @@ public class GameThread extends Thread {
 
 			if (mPaused)
 				continue;
-			
 
-				canvas = null;
+			canvas = null;
 
-				try {
-					canvas = mSurfaceHolder.lockCanvas(null);
-					synchronized (mSurfaceHolder) {
-						if (mGameView != null && canvas != null) {
-							// Update the game
-							update();
+			try {
+				canvas = mSurfaceHolder.lockCanvas(null);
+				synchronized (mSurfaceHolder) {
+					if (mGameView != null && canvas != null) {
+						// Update the game
+						update();
 
-							// Render the game
-							draw(canvas);
-						}
-					}
-				} finally {
-
-					if (canvas != null) {
-						if (mSurfaceHolder != null)
-							mSurfaceHolder.unlockCanvasAndPost(canvas);
-						
+						// Render the game
+						draw(canvas);
 					}
 				}
+			} finally {
+
+				if (canvas != null) {
+					if (mSurfaceHolder != null)
+						mSurfaceHolder.unlockCanvasAndPost(canvas);
+
+				}
+			}
 		}
 	}
 

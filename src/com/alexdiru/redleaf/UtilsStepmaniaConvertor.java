@@ -66,11 +66,9 @@ public abstract class UtilsStepmaniaConvertor {
 						line = lines.get(++i);
 					}
 					
-					if (!notesMode)
-						continue;
-				
 					for (int n = 0; n < noteLines.size(); n++)
 					{
+						int time = currentTimeMS + n * (4000/noteLines.size());
 						for (int c = 0; c < noteLines.get(n).length(); c++) {
 							switch (noteLines.get(n).charAt(c)){
 								default:
@@ -78,16 +76,16 @@ public abstract class UtilsStepmaniaConvertor {
 									//Stop any hold notes
 									if (heldEnabled[c]) {
 										heldEnabled[c] = false;
-										notes[currentDifficulty].add(new DataNote(heldStart[c], currentTimeMS + (int)(((beatsPerMillisecond * n)/noteLines.size())), 1, c));
+										notes[currentDifficulty].add(new DataNote(heldStart[c], time, 1, c));
 									}
 									break;
 								case '1':
-									notes[currentDifficulty].add(new DataNote(currentTimeMS + (int)(((beatsPerMillisecond * n)/noteLines.size())), 0, 0, c ));
+									notes[currentDifficulty].add(new DataNote(time, 0, 0, c ));
 									break;
 								case '2':
 									if (!heldEnabled[c]) {
 										heldEnabled[c] = true;
-										heldStart[c] = currentTimeMS + (int)(((beatsPerMillisecond * n)/noteLines.size()));
+										heldStart[c] = time;
 									}
 									break;
 							}
@@ -96,7 +94,7 @@ public abstract class UtilsStepmaniaConvertor {
 					
 					noteGroupCount++;
 					
-					currentTimeMS += (60/currentBPM)*1000;
+					currentTimeMS += (currentBPM/60)*4000;
 					
 					continue;
 				}
@@ -176,7 +174,7 @@ public abstract class UtilsStepmaniaConvertor {
 		}
 		
 		convertedSong.mNotes = notes[difficulty.ordinal()];
-		convertedSong.mMusicFile = "New Game.mp3";
+		convertedSong.mMusicFile = "Perfection.mp3";
 		return convertedSong;
 	}
 

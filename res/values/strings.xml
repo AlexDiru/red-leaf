@@ -30,4 +30,10 @@
     <string name="game_combosuffix">\u0020COMBO</string>
     <string name="game_highcombo">INSANE!</string>
     <string name="game_starpower">STAR POWER</string>
+    <string name="game_scoredialog_title">Score</string>
+    <string name="game_scoredialog_message">You scored\u0020</string>
+    <string name="game_scoredialog_ok">OK</string>
+    <string name="game_countdown3">3</string>
+    <string name="game_countdown2">2</string>
+    <string name="game_countdown1">1</string>
 </resources>

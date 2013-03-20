@@ -1,10 +1,10 @@
 package com.alexdiru.redleaf.activity;
 
-import com.alexdiru.redleaf.GameView;
-import com.alexdiru.redleaf.Utils;
-
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.alexdiru.redleaf.GameView;
 
 /**
  * The activity for the game
@@ -18,6 +18,8 @@ public class ActivityGame extends ActivityCommon {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		
 		//This happens when the game has been left idleA, just switch to previous activity
 		try {

@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 
 import com.alexdiru.redleaf.android.MusicManager;
+import com.alexdiru.redleaf.android.ScoreDialog;
 import com.alexdiru.redleaf.interfaces.IDisposable;
 
 public class GameView extends SurfaceView implements
@@ -23,7 +25,7 @@ public class GameView extends SurfaceView implements
 
 	private GameThread mGameThread;
 	public MusicManager mMusicManager;
-	private DataTapAreas mTapAreas;
+	private DataPlayer mTapAreas;
 
 	// Text Paints
 	private Paint mTextPaint = new Paint();
@@ -35,11 +37,18 @@ public class GameView extends SurfaceView implements
 	private int mCurrentTime;
 
 	/** Speed at which notes fall */
-	private float mSongSpeed = 0.8f;
+	//easy 0.7
+	//med 0.8
+	//hard 1.1
+	private float mSongSpeed = 0.85f;
 
 	// / Debug Variables ///
 	// Variables for recording the FPS
-	private long mPreviousTime, mCurrentTimeFPS, mFPS, mTotalFPS = 0, mLoopCount = 0;
+	private long mPreviousTime = 0, mCurrentTimeFPS = 0, mFPS, mTotalFPS = 0, mLoopCount = 0;
+
+	private DataCountdownTimer mCountdownTimer;
+	
+	private GameState mGameState = new GameState();
 
 	public GameView(Context context) {
 		super(context);
@@ -51,10 +60,18 @@ public class GameView extends SurfaceView implements
 
 		mGameThread = new GameThread(this);
 		mMusicManager = new MusicManager();
+		
+		
 		mSong = Utils.getCurrentSong();
-		mTapAreas = new DataTapAreas();
-
+		mTapAreas = new DataPlayer();
+		mCountdownTimer = new DataCountdownTimer(mTapAreas.getColourSchemeAssets().getCountdownPaint());
+		
 		setupTextPaints();
+
+		mGameState.set(GameState.STATE_COUNTDOWN);
+		
+		//Get initial notes to render so they can be shown during the countdown
+		//TODO
 	}
 
 	private void setupTextPaints() {
@@ -105,19 +122,24 @@ public class GameView extends SurfaceView implements
 
 	public void pauseGame() {
 
-		if (mMusicManager != null)
-			mMusicManager.pause();
+		if (mGameState.get() == GameState.STATE_GAME)
+			if (mMusicManager != null)
+				mMusicManager.pause();
 
 		mGameThread.mPaused = true;
 	}
 
 	public void resumeGame() {
 
-		if (mMusicManager != null)
-			mMusicManager.resume();
+		if (mGameState.get() == GameState.STATE_GAME)
+			if (mMusicManager != null)
+				mMusicManager.resume();
 
 		if (mGameThread != null)
 			mGameThread.mPaused = false;
+		
+		//This needs to be done so the elapsed time isn't the time in which the game was paused
+		mCurrentTimeFPS = SystemClock.elapsedRealtime();
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
@@ -170,45 +192,64 @@ public class GameView extends SurfaceView implements
 	}
 
 	public void update() {
-
+		
 		mPreviousTime = mCurrentTimeFPS;
 		mCurrentTimeFPS = SystemClock.elapsedRealtime();
+		
+		if (mGameThread.mPaused)
+			return;
 
-		mFPS = (int) (1000 * ((float) 1 / (float) (mCurrentTimeFPS - mPreviousTime)));
-		mTotalFPS += mFPS;
-		mLoopCount++;
+		if (mGameState.get() == GameState.STATE_GAME) {
+	
+			mFPS = (int) (1000 * ((float) 1 / (float) (mCurrentTimeFPS - mPreviousTime)));
+			mTotalFPS += mFPS;
+			mLoopCount++;
+	
+			// Update the timer
+			if (mTapAreas != null) {
+				mCurrentTime = mMusicManager.getPlayPosition();
+				mTapAreas.update(mCurrentTime);
+				mSong.updateNotes(mCurrentTime, (int) (1280 / mSongSpeed), TAPCIRCLES_Y);
+			}
+	
+			//Check if song is over
+			if (!mMusicManager.isPlaying() && !mMusicManager.isPaused()) {
+				mGameState.set(GameState.STATE_SCOREDISPLAY);
+				ScoreDialog.show(mTapAreas.getScore());
+			}
+		} else if (mGameState.get() == GameState.STATE_COUNTDOWN) {
 
-		// Log.d("fps", mFPS + " / " + (mTotalFPS/mLoopCount));
-
-		// Update the timer
-		if (mTapAreas != null) {
-			mCurrentTime = mMusicManager.getPlayPosition();
-			mTapAreas.update(mCurrentTime);
-			mSong.updateNotes(mCurrentTime, (int) (1280 / mSongSpeed), TAPCIRCLES_Y);
-
+			if (mCountdownTimer.hasFinished()) {
+				mGameState.set(GameState.STATE_GAME);
+				mMusicManager.play();
+			}
+				
+			if (mPreviousTime != 0)
+				mCountdownTimer.update(mCurrentTimeFPS - mPreviousTime);
 		}
-
 	}
 
 	public void draw(Canvas canvas) {
 
-		// Background
-
 		// Tap boxes
 		if (mTapAreas != null)
-			mTapAreas.draw(canvas);
-
-		// Notes
-		mSong.renderNotes(canvas, mSongSpeed);
-
-		// Text
-		drawScore(canvas);
-		// drawSongName(canvas);
-		drawAccuracy(canvas);
-		// drawStreak(canvas);
-		drawMultiplier(canvas);
-		// drawFPS(canvas);
-		drawCombo(canvas);
+			mTapAreas.render(canvas);
+		
+		if (mGameState.get() == GameState.STATE_GAME) {
+			// Notes
+			mSong.renderNotes(canvas, mSongSpeed);
+	
+			// Text
+			drawScore(canvas);
+			// drawSongName(canvas);
+			drawAccuracy(canvas);
+			// drawStreak(canvas);
+			drawMultiplier(canvas);
+			// drawFPS(canvas);
+			drawCombo(canvas);
+		} else if (mGameState.get() == GameState.STATE_COUNTDOWN) {
+			mCountdownTimer.render(canvas);
+		}
 	}
 
 	private void drawCombo(Canvas canvas) {

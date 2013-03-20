@@ -11,9 +11,10 @@ import com.alexdiru.redleaf.interfaces.IDisposable;
 public class MusicManager implements OnPreparedListener, IDisposable {
 
 	public MediaPlayer mMediaPlayer;
-	public int mPauseTime;
+	public int mPauseTime = 0;
 	public boolean mStarted;
 	private long mSongLength;
+	private boolean mPaused = false;
 
 	public MusicManager() {
 		
@@ -57,8 +58,8 @@ public class MusicManager implements OnPreparedListener, IDisposable {
 	}
 
 	public void pause() {
-		if (mMediaPlayer != null)
-			if (mMediaPlayer.isPlaying()) {
+		if (mMediaPlayer != null) {
+				mPaused = true;
 				mMediaPlayer.pause();
 				mPauseTime = mMediaPlayer.getCurrentPosition();
 			}
@@ -67,6 +68,7 @@ public class MusicManager implements OnPreparedListener, IDisposable {
 	/** Resumes the media player if it is already playing */
 	public void resume() {
 		if (mStarted && mMediaPlayer != null) {
+			mPaused = false;
 			mMediaPlayer.seekTo(mPauseTime);
 			mMediaPlayer.start();
 		}
@@ -86,14 +88,24 @@ public class MusicManager implements OnPreparedListener, IDisposable {
 
 	@Override
 	public void onPrepared(MediaPlayer mp) {
-		Log.d("MM", "onprepared");
+
+		if (mPauseTime != 0){
 		mp.start();
 		mp.seekTo(mPauseTime);
 		mStarted = true;
+		}
 	}
 
 	public int getLength() {
 		return mMediaPlayer.getDuration();
+	}
+	
+	public boolean isPlaying() {
+		return mMediaPlayer.isPlaying();
+	}
+
+	public boolean isPaused() {
+		return mPaused;
 	}
 
 }

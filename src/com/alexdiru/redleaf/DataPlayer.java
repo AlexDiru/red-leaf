@@ -3,8 +3,9 @@ package com.alexdiru.redleaf;
 import android.graphics.Canvas;
 
 import com.alexdiru.redleaf.ColourScheme.ThemeType;
+import com.alexdiru.redleaf.interfaces.IRenderable;
 
-public class DataTapAreas {
+public class DataPlayer implements IRenderable {
 
 	private static final int TAP_AREAS = 4;
 	private static final int TAP_AREA_HEIGHT = 160;
@@ -13,7 +14,7 @@ public class DataTapAreas {
 	
 	private static final int STAR_POWER_DURATION = 10000;
 
-	private DataBoundingBox[] mTapBoundingBoxes;
+	private DataTapBox[] mTapBoxes;
 	private DataSong mSong;
 
 	/** Handles the rendering according to the colour scheme */
@@ -44,13 +45,14 @@ public class DataTapAreas {
 	private DataBoundingBox mStarPowerBoundingBox = new DataBoundingBox();
 	private int mStarPowerTimeOfActivation;
 
-	public DataTapAreas() {
+	public DataPlayer() {
 		mSong = Utils.getCurrentSong();
 		mSong.setTapAreas(this);
 		
 		initialiseBackgroundAndTapBoxes();
 		
 		//Star power bounding box
+		mStarPowerBoundingBox.setRenderBitmap(mColourSchemeAssets.getStarPower());
 		mStarPowerBoundingBox.update(UtilsScreenSize.getScreenWidth()/2 - mColourSchemeAssets.getStarPower().getWidth()/2,UtilsScreenSize.getScreenHeight()/2 - mColourSchemeAssets.getStarPower().getHeight()/2, 
 				UtilsScreenSize.getScreenWidth()/2 + mColourSchemeAssets.getStarPower().getWidth()/2,UtilsScreenSize.getScreenHeight()/2 + mColourSchemeAssets.getStarPower().getHeight()/2);
 	}
@@ -72,22 +74,26 @@ public class DataTapAreas {
 
 	private void initialiseBackgroundAndTapBoxes() {
 		//Create the bounding boxes
-		mTapBoundingBoxes = new DataBoundingBox[TAP_AREAS];
-		for (int t = 0; t < TAP_AREAS; t++)
-			mTapBoundingBoxes[t] = new DataBoundingBox();
+		mTapBoxes = new DataTapBox[TAP_AREAS];
+		for (int t = 0; t < TAP_AREAS; t++) {
+			mTapBoxes[t] = new DataTapBox();
+			mTapBoxes[t].setRectangleWidth(UtilsScreenSize.scaleY(6));
+			mTapBoxes[t].setUnheldBitmap(mColourSchemeAssets.getTapBox(t));
+			mTapBoxes[t].setHeldBitmap(mColourSchemeAssets.getTapBoxHeld(t));
+		}
 		
 		//Get the tapbox height boundaries
 		mTapBoxTop = UtilsScreenSize.scaleY(GameView.TAPCIRCLES_Y);
 		mTapBoxBottom = mTapBoxTop + UtilsScreenSize.scaleY(TAP_AREA_HEIGHT);
 		
 		//Update the tapboxes according to their size
-		mTapBoundingBoxes[0].update(UtilsScreenSize.scaleX(TAP_AREA_GAP), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP + TAP_AREA_WIDTH), mTapBoxBottom);
-		mTapBoundingBoxes[1].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 2 + TAP_AREA_WIDTH), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 2 + TAP_AREA_WIDTH * 2), mTapBoxBottom);
-		mTapBoundingBoxes[2].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 3 + TAP_AREA_WIDTH * 2), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 3 + TAP_AREA_WIDTH * 3), mTapBoxBottom);
-		mTapBoundingBoxes[3].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 4 + TAP_AREA_WIDTH * 3), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 4 + TAP_AREA_WIDTH * 4), mTapBoxBottom);
-
+		mTapBoxes[0].update(UtilsScreenSize.scaleX(TAP_AREA_GAP), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP + TAP_AREA_WIDTH), mTapBoxBottom);
+		mTapBoxes[1].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 2 + TAP_AREA_WIDTH), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 2 + TAP_AREA_WIDTH * 2), mTapBoxBottom);
+		mTapBoxes[2].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 3 + TAP_AREA_WIDTH * 2), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 3 + TAP_AREA_WIDTH * 3), mTapBoxBottom);
+		mTapBoxes[3].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 4 + TAP_AREA_WIDTH * 3), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 4 + TAP_AREA_WIDTH * 4), mTapBoxBottom);
+		
 		//Render the tapboxes on the same bitmap as the background
-		mColourSchemeAssets.setupBackgroundsWithTapboxes(mTapBoundingBoxes);
+		mColourSchemeAssets.setupBackgroundsWithTapboxes(mTapBoxes);
 	}
 
 	public void successfulTap(DataNote note) {
@@ -112,6 +118,8 @@ public class DataTapAreas {
 		//Check star
 		if (note.isStarNote())
 			mStarNoteStreak++;
+		else 
+			mStarNoteStreak = 0;
 		
 		if (mStarNoteStreak == 4) 
 			mStarPowersAvailable++;
@@ -138,7 +146,8 @@ public class DataTapAreas {
 		
 		//Check the tapboxes being touched
 		for (int i = 0; i < TAP_AREAS; i++)
-			if (mTapBoundingBoxes[i].isTouched(x, y, TAP_AREA_GAP/2, TAP_AREA_GAP*2)) {
+			if (mTapBoxes[i].isTouched(x, y, TAP_AREA_GAP/2, TAP_AREA_GAP*2)) {
+				mTapBoxes[i].hold();
 				mSong.tap(i, currentTime);
 				mTouchMap.put(pid, i);
 				return;
@@ -161,8 +170,10 @@ public class DataTapAreas {
 	 * @param pid The index of the finger (secondary finger so it will be 1) */
 	public void handleTouchUp(int pid) {
 		Integer position = mTouchMap.get(pid);
-		if (mSong != null && position != null)
+		if (mSong != null && position != null) {
 			mSong.unhold(position);
+			mTapBoxes[position].unhold();
+		}
 		
 		mTouchMap.remove(pid);
 	}
@@ -176,15 +187,17 @@ public class DataTapAreas {
 
 	/** Draws this object, this includes the background and the tapboxes
 	 * @param canvas The canvas to draw to */
-	public void draw(Canvas canvas) {
+	@Override
+	public void render(Canvas canvas) {
 		canvas.drawBitmap(mColourSchemeAssets.getBackground(mStarPowerActive),0,0,null);
 
 		for (int t = 0; t < TAP_AREAS; t++)
 			if (mTouchMap.isTouched(t))
-				mColourSchemeAssets.drawTapBox(canvas, mTapBoundingBoxes[t], t, true);
+				mTapBoxes[t].render(canvas);
 	
-		if (mStarPowersAvailable > 0)
-			mStarPowerBoundingBox.drawWithBitmap(canvas, mColourSchemeAssets.getStarPower());
+		if (mStarPowersAvailable > 0) { 
+			mStarPowerBoundingBox.render(canvas);
+		}
 	}
 
 	public ColourSchemeAssets getColourSchemeAssets() {
@@ -192,15 +205,15 @@ public class DataTapAreas {
 	}
 
 	public int getBoundingBoxTop() {
-		return mTapBoundingBoxes[0].getTop();
+		return mTapBoxes[0].getTop();
 	}
 
 	public int getBoundingBoxBottom() {
-		return mTapBoundingBoxes[0].getBottom();
+		return mTapBoxes[0].getBottom();
 	}
 
 	public int getBoundingBoxLeft(int position) {
-		return mTapBoundingBoxes[position].getLeft();
+		return mTapBoxes[position].getLeft();
 	}
 
 	public int getTappedCount() {

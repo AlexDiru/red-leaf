@@ -57,6 +57,8 @@ public class ColourSchemeAssets {
 	/** Paint used for drawing the multiplier */
 	private StrokePaint mMultiplierPaint = new StrokePaint();
 	
+	private StrokePaint mCountdownPaint = new StrokePaint();
+	
 	private static Bitmap loadBackground(String filePath, int alpha) throws IOException {
 		
 		Bitmap backgroundBitmap;
@@ -83,7 +85,7 @@ public class ColourSchemeAssets {
 	public ColourSchemeAssets(ColourScheme colourScheme, int tapBoxWidth, int tapBoxHeight) {
 		setupPaints();
 
-		int gapBetweenTapBoxes = (UtilsScreenSize.getScreenWidth() - (DataTapAreas.TAP_AREA_WIDTH * 4)) / 5;
+		int gapBetweenTapBoxes = (UtilsScreenSize.getScreenWidth() - (DataPlayer.TAP_AREA_WIDTH * 4)) / 5;
 
 		try {
 			mBackgroundBitmap = loadBackground(colourScheme.mBackground, colourScheme.mBackgroundAlpha);
@@ -111,7 +113,7 @@ public class ColourSchemeAssets {
 
 				// We have to adjust the paint bitmap offset
 				Matrix matrix = new Matrix();
-				int offsetWidth = gapBetweenTapBoxes * (i + 1) + DataTapAreas.TAP_AREA_WIDTH * i;
+				int offsetWidth = gapBetweenTapBoxes * (i + 1) + DataPlayer.TAP_AREA_WIDTH * i;
 				matrix.preTranslate(offsetWidth, 0);
 
 				// Load the held and unheld notes
@@ -128,9 +130,11 @@ public class ColourSchemeAssets {
 
 				mHoldLineUnheldPaint[i] = new Paint();
 				mHoldLineUnheldPaint[i].setShader(unheldShader);
+				mHoldLineUnheldPaint[i].setAlpha(170);
 
 				mHoldLineHeldPaint[i] = new Paint();
 				mHoldLineHeldPaint[i].setShader(heldShader);
+				mHoldLineHeldPaint[i].setAlpha(170);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -162,6 +166,14 @@ public class ColourSchemeAssets {
 		mMultiplierPaint.setStrokeWidth(UtilsScreenSize.scaleFontSize(6));
 		mMultiplierPaint.setARGB(220, 255, 255, 255);
 		mMultiplierPaint.setStrokeARGB(220, 0, 0, 0);
+		
+
+		mCountdownPaint.setTextSize(UtilsScreenSize.scaleFontSize(110));
+		mCountdownPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
+		mCountdownPaint.setStrokeWidth(UtilsScreenSize.scaleFontSize(12));
+		mCountdownPaint.setTextAlign(Align.CENTER);
+		mCountdownPaint.setARGB(220, 255, 255, 255);
+		mCountdownPaint.setStrokeARGB(220, 0, 0, 0);
 	}
 
 	public Bitmap getBackground(boolean starPowerActive) {
@@ -191,10 +203,6 @@ public class ColourSchemeAssets {
 		canvas.drawBitmap(mBackgroundBitmap, 0, 0, null);
 	}
 
-	public void drawTapBox(Canvas canvas, DataBoundingBox tapbox, int tapboxIndex, boolean touched) {
-		tapbox.drawWithBitmap(canvas, touched ? LOSTInverse[tapboxIndex] : LOST[tapboxIndex], null, true, UtilsScreenSize.scaleX(6));
-	}
-
 	public Paint getHoldLineUnheldPaint(int position) {
 		return mHoldLineUnheldPaint[position];
 	}
@@ -211,19 +219,19 @@ public class ColourSchemeAssets {
 	 * Draws the tapboxes to the same bitmap as the background
 	 * @param tapBoundingBoxes
 	 */
-	public void setupBackgroundsWithTapboxes(DataBoundingBox[] tapBoundingBoxes) {
+	public void setupBackgroundsWithTapboxes(DataTapBox[] tapBoundingBoxes) {
 		mBackgroundBitmap = drawTapboxesOnBackground(mBackgroundBitmap, tapBoundingBoxes);
 		mBackgroundStarBitmap = drawTapboxesOnBackground(mBackgroundStarBitmap, tapBoundingBoxes);
 	}
 	
-	private Bitmap drawTapboxesOnBackground(Bitmap backgroundBitmap, DataBoundingBox[] tapBoundingBoxes){
+	private Bitmap drawTapboxesOnBackground(Bitmap backgroundBitmap, DataTapBox[] tapBoundingBoxes){
 		Bitmap storedBackground = backgroundBitmap;
 		backgroundBitmap = Bitmap.createBitmap(UtilsScreenSize.getScreenWidth(), UtilsScreenSize.getScreenHeight(), Config.RGB_565);
 		Canvas canvas = new Canvas(backgroundBitmap);
 		canvas.drawBitmap(storedBackground, 0,0,null);
 
 		for (int t = 0; t < tapBoundingBoxes.length; t++)
-			drawTapBox(canvas, tapBoundingBoxes[t], t, false);
+			tapBoundingBoxes[t].render(canvas);
 		
 		return backgroundBitmap;
 	}
@@ -272,5 +280,9 @@ public class ColourSchemeAssets {
 	
 	public StrokePaint getMultiplierPaint() {
 		return mMultiplierPaint;
+	}
+	
+	public StrokePaint getCountdownPaint() {
+		return mCountdownPaint;
 	}
 }

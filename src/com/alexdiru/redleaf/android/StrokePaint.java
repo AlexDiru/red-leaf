@@ -43,6 +43,11 @@ public class StrokePaint {
 	public void setStrokeWidth(float width) {
 		mBackgroundPaint.setStrokeWidth(width);
 	}
+
+	public void drawText(Canvas canvas, String text, float x, float y) {
+		canvas.drawText(text, x, y, mBackgroundPaint);
+		canvas.drawText(text, x, y, mPaint);
+	}
 	
 	public void drawText(Canvas canvas, char[] text, int start, int length, float x, float y) {
 		canvas.drawText(text, start, length, x, y, mBackgroundPaint);
