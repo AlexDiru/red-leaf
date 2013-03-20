@@ -72,6 +72,7 @@ public class GameView extends SurfaceView implements
 		
 		//Get initial notes to render so they can be shown during the countdown
 		//TODO
+		mSong.updateNotes(0,(int) (1280 / mSongSpeed), TAPCIRCLES_Y);
 	}
 
 	private void setupTextPaints() {
@@ -234,11 +235,11 @@ public class GameView extends SurfaceView implements
 		// Tap boxes
 		if (mTapAreas != null)
 			mTapAreas.render(canvas);
+
+		// Notes
+		mSong.renderNotes(canvas, mSongSpeed);
 		
 		if (mGameState.get() == GameState.STATE_GAME) {
-			// Notes
-			mSong.renderNotes(canvas, mSongSpeed);
-	
 			// Text
 			drawScore(canvas);
 			// drawSongName(canvas);
