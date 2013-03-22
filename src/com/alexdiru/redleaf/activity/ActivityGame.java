@@ -1,6 +1,7 @@
 package com.alexdiru.redleaf.activity;
 
-import android.content.pm.ActivityInfo;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -8,20 +9,21 @@ import com.alexdiru.redleaf.GameView;
 
 /**
  * The activity for the game
+ * 
  * @author Alex
- *
+ * 
  */
-public class ActivityGame extends ActivityCommon {
+public class ActivityGame extends Activity {
 
 	private GameView mGameView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		
-		//This happens when the game has been left idleA, just switch to previous activity
+		ActivityCommon.create(this);
+
+		// This happens when the game has been left idleA, just switch to
+		// previous activity
 		try {
 			mGameView = new GameView(this);
 			setContentView(mGameView);
@@ -34,7 +36,7 @@ public class ActivityGame extends ActivityCommon {
 	protected void onPause() {
 		Log.d(getClass().getName(), "onPause");
 		super.onPause();
-		
+
 		mGameView.pauseGame();
 	}
 
@@ -42,7 +44,7 @@ public class ActivityGame extends ActivityCommon {
 	protected void onStop() {
 		Log.d(getClass().getName(), "onStop");
 		super.onStop();
-		
+
 		mGameView.pauseGame();
 	}
 
@@ -54,6 +56,12 @@ public class ActivityGame extends ActivityCommon {
 	}
 
 	@Override
+	protected void onUserLeaveHint() {
+		Log.d(getClass().getName(), "onUserLeaveHint");
+		super.onUserLeaveHint();
+	}
+
+	@Override
 	protected void onResume() {
 		Log.d(getClass().getName(), "onResume");
 		super.onResume();
@@ -62,12 +70,39 @@ public class ActivityGame extends ActivityCommon {
 	}
 
 	@Override
+	protected void onStart() {
+		Log.d(getClass().getName(), "onStart");
+		super.onStart();
+
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+
+		Log.d(getClass().getName(), "onSaveInstanceState");
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		Log.d(getClass().getName(), "onNewIntent");
+		super.onNewIntent(intent);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		Log.d(getClass().getName(), "onRestoreInstanceState");
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+
+	@Override
 	protected void onDestroy() {
+		Log.d(getClass().getName(), "onDestroy");
 		super.onDestroy();
-		
+
 		if (mGameView != null)
 			mGameView.dispose();
-		
+
 		mGameView = null;
 	}
 }

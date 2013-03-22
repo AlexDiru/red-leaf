@@ -1,7 +1,10 @@
 package com.alexdiru.redleaf;
 
+import com.alexdiru.redleaf.activity.ActivityGame;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 public class GameThread extends Thread {
@@ -24,6 +27,8 @@ public class GameThread extends Thread {
 		Canvas canvas;
 
 		while (mRunning) {
+			if (mGameView == null)
+				Log.d(ActivityGame.class.getName(), "GV NULL");
 
 			if (mPaused)
 				continue;
@@ -32,6 +37,10 @@ public class GameThread extends Thread {
 
 			try {
 				canvas = mSurfaceHolder.lockCanvas(null);
+				
+				if (canvas == null)
+					Log.d(ActivityGame.class.getName(), "C NULL");
+				
 				synchronized (mSurfaceHolder) {
 					if (mGameView != null && canvas != null) {
 						// Update the game

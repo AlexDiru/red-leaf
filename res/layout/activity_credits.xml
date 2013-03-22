@@ -2,9 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/menu_background_tile"
     tools:context=".GameActivity" >
 
     <TextView
+        style = "@style/TextView"
         android:id="@+id/playTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,6 +17,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
+        style = "@style/TextView"
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,12 +28,23 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
+        style = "@style/TextView"
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView1"
         android:layout_below="@+id/textView1"
         android:text="@string/credits_music"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/versionTextView"
+        style="@style/TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/credits_versionid"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

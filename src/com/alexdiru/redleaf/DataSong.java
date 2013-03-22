@@ -63,11 +63,11 @@ public class DataSong {
 		Arrays.fill(mHeldNotes, null);
 	}
 
-	public DataSong(String filePath) {
+	public DataSong(String filePath, int difficulty) {
 		this();
 		
 		// Parse the file
-		parse(filePath, 0);
+		parse(filePath, difficulty);
 
 	}
 

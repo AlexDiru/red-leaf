@@ -1,12 +1,13 @@
 package com.alexdiru.redleaf;
 
-import com.alexdiru.redleaf.interfaces.IRenderable;
-
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
+
+import com.alexdiru.redleaf.interfaces.IRenderable;
 
 /** Represents a bounding box which can be touched They can also be drawn to the screen
  * @author Alex */
@@ -18,6 +19,8 @@ public class DataBoundingBox implements IRenderable {
 	/** The paint used to draw the rectangle around the tapboxes */
 	private static Paint mRectanglePaint = new Paint();
 	
+	private Paint mPaint = null;
+	
 	protected Bitmap mRenderBitmap;
 	private int mRectangleWidth = 0;
 	
@@ -26,6 +29,11 @@ public class DataBoundingBox implements IRenderable {
 	
 	public DataBoundingBox(Bitmap bitmap) {
 		mRenderBitmap = bitmap;
+	}
+	
+	public DataBoundingBox(Bitmap bitmap, Paint paint) {
+		this(bitmap);
+		mPaint=  paint;
 	}
 
 	/** Updates the position of the bounding box */
@@ -55,23 +63,25 @@ public class DataBoundingBox implements IRenderable {
 	}
 	
 	public void setRectangleWidth(int width) {
+		//Odd width, make even
+		if (width % 2 != 0)
+			width++;
 		mRectangleWidth = width;
+		mRectanglePaint.setColor(Color.BLACK);
+		mRectanglePaint.setStrokeWidth(mRectangleWidth);
 	}
 
 
 	@Override
 	public void render(Canvas canvas) {
 
-		canvas.drawBitmap(mRenderBitmap, mRect.left, mRect.top, null);
+		canvas.drawBitmap(mRenderBitmap, mRect.left, mRect.top, mPaint);
 
 		if (mRectangleWidth > 0) {
-			mRectanglePaint.setColor(Color.BLACK);
-			mRectanglePaint.setStrokeWidth(mRectangleWidth);
 			canvas.drawLine(mRect.left - mRectangleWidth, mRect.top - mRectangleWidth / 2, mRect.right + mRectangleWidth, mRect.top - mRectangleWidth / 2, mRectanglePaint);
 			canvas.drawLine(mRect.left - mRectangleWidth, mRect.bottom + mRectangleWidth / 2, mRect.right + mRectangleWidth, mRect.bottom + mRectangleWidth / 2, mRectanglePaint);
 			canvas.drawLine(mRect.left - mRectangleWidth / 2, mRect.top, mRect.left - mRectangleWidth / 2, mRect.bottom, mRectanglePaint);
 			canvas.drawLine(mRect.right + mRectangleWidth / 2, mRect.top, mRect.right + mRectangleWidth / 2, mRect.bottom, mRectanglePaint);
-
 		}
 	}
 

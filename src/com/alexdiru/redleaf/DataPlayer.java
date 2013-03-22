@@ -1,6 +1,7 @@
 package com.alexdiru.redleaf;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
 
 import com.alexdiru.redleaf.ColourScheme.ThemeType;
 import com.alexdiru.redleaf.interfaces.IRenderable;
@@ -11,6 +12,7 @@ public class DataPlayer implements IRenderable {
 	private static final int TAP_AREA_HEIGHT = 160;
 	public static final int TAP_AREA_WIDTH = 120;
 	private static final int TAP_AREA_GAP = (720 - TAP_AREA_WIDTH * 4)/5;
+	private static final int NOTE_STREAK_REQUIRED_FOR_STAR_POWER = 10;
 	
 	private static final int STAR_POWER_DURATION = 10000;
 
@@ -42,7 +44,7 @@ public class DataPlayer implements IRenderable {
 	private int mStarNoteStreak = 0;
 	private int mStarPowersAvailable = 0;
 	private boolean mStarPowerActive = false;
-	private DataBoundingBox mStarPowerBoundingBox = new DataBoundingBox();
+	private DataBoundingBox mStarPowerBoundingBox;
 	private int mStarPowerTimeOfActivation;
 
 	public DataPlayer() {
@@ -52,9 +54,9 @@ public class DataPlayer implements IRenderable {
 		initialiseBackgroundAndTapBoxes();
 		
 		//Star power bounding box
-		mStarPowerBoundingBox.setRenderBitmap(mColourSchemeAssets.getStarPower());
-		mStarPowerBoundingBox.update(UtilsScreenSize.getScreenWidth()/2 - mColourSchemeAssets.getStarPower().getWidth()/2,UtilsScreenSize.getScreenHeight()/2 - mColourSchemeAssets.getStarPower().getHeight()/2, 
-				UtilsScreenSize.getScreenWidth()/2 + mColourSchemeAssets.getStarPower().getWidth()/2,UtilsScreenSize.getScreenHeight()/2 + mColourSchemeAssets.getStarPower().getHeight()/2);
+		mStarPowerBoundingBox = new DataBoundingBox(mColourSchemeAssets.getStarPower());
+		mStarPowerBoundingBox.update(UtilsScreenSize.getScreenWidth()/2 - mColourSchemeAssets.getStarPower().getWidth()/2,UtilsScreenSize.getScreenHeight()/2 , 
+				UtilsScreenSize.getScreenWidth()/2 + mColourSchemeAssets.getStarPower().getWidth()/2,UtilsScreenSize.getScreenHeight()/2 + mColourSchemeAssets.getStarPower().getHeight());
 	}
 	
 	public void update(int currentTime) {
@@ -77,7 +79,7 @@ public class DataPlayer implements IRenderable {
 		mTapBoxes = new DataTapBox[TAP_AREAS];
 		for (int t = 0; t < TAP_AREAS; t++) {
 			mTapBoxes[t] = new DataTapBox();
-			mTapBoxes[t].setRectangleWidth(UtilsScreenSize.scaleY(6));
+			mTapBoxes[t].setRectangleWidth(Math.round(UtilsScreenSize.scaleY(6)));
 			mTapBoxes[t].setUnheldBitmap(mColourSchemeAssets.getTapBox(t));
 			mTapBoxes[t].setHeldBitmap(mColourSchemeAssets.getTapBoxHeld(t));
 		}
@@ -121,8 +123,10 @@ public class DataPlayer implements IRenderable {
 		else 
 			mStarNoteStreak = 0;
 		
-		if (mStarNoteStreak == 4) 
+		if (mStarNoteStreak == NOTE_STREAK_REQUIRED_FOR_STAR_POWER) {
 			mStarPowersAvailable++;
+			mStarNoteStreak = 0;
+		}
 		
 		if (mStarPowerActive)
 			mScore += 1600;
@@ -155,8 +159,9 @@ public class DataPlayer implements IRenderable {
 		
 		//Check star power being touched
 		if (mStarPowersAvailable > 0)
-			if (mStarPowerBoundingBox.isTouched(x, y)) 
-				startStarPower(currentTime);
+			if (!mStarPowerActive)
+				if (mStarPowerBoundingBox.isTouched(x, y)) 
+					startStarPower(currentTime);
 		
 	}
 

@@ -10,6 +10,7 @@ import android.graphics.Paint.Align;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Shader;
@@ -39,6 +40,7 @@ public class ColourSchemeAssets {
 
 	private Paint[] mHoldLineUnheldPaint = new Paint[4];
 	private Paint[] mHoldLineHeldPaint = new Paint[4];
+	private Paint[] mHoldLineStarUnheldPaint = new Paint[4];
 	
 	private Bitmap mStarPowerBitmap;
 	
@@ -85,14 +87,15 @@ public class ColourSchemeAssets {
 	public ColourSchemeAssets(ColourScheme colourScheme, int tapBoxWidth, int tapBoxHeight) {
 		setupPaints();
 
-		int gapBetweenTapBoxes = (UtilsScreenSize.getScreenWidth() - (DataPlayer.TAP_AREA_WIDTH * 4)) / 5;
+		int gapBetweenTapBoxes = (UtilsScreenSize.getScreenWidth() - (int)UtilsScreenSize.scaleX(DataPlayer.TAP_AREA_WIDTH * 4)) / 5;
 
 		try {
 			mBackgroundBitmap = loadBackground(colourScheme.mBackground, colourScheme.mBackgroundAlpha);
 			mBackgroundStarBitmap = loadBackground(colourScheme.mBackgroundStar, colourScheme.mBackgroundAlpha);
 			
 			//Star power bitmap
-			mStarPowerBitmap = BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mStarPower));
+			mStarPowerBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mStarPower)), UtilsScreenSize.scaleX(300),
+					UtilsScreenSize.scaleX(300), false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -113,17 +116,22 @@ public class ColourSchemeAssets {
 
 				// We have to adjust the paint bitmap offset
 				Matrix matrix = new Matrix();
-				int offsetWidth = gapBetweenTapBoxes * (i + 1) + DataPlayer.TAP_AREA_WIDTH * i;
+				int offsetWidth = gapBetweenTapBoxes * (i + 1) + UtilsScreenSize.scaleX( DataPlayer.TAP_AREA_WIDTH * i);
 				matrix.preTranslate(offsetWidth, 0);
 
 				// Load the held and unheld notes
 				Bitmap held = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mNoteStreamHeld[i])), UtilsScreenSize.scaleX(DataSong.NOTESIZE),
+						UtilsScreenSize.scaleY(DataSong.NOTESIZE), false);
+				Bitmap unheldStar = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mNoteStreamUnheldStar[i])), UtilsScreenSize.scaleX(DataSong.NOTESIZE),
 						UtilsScreenSize.scaleY(DataSong.NOTESIZE), false);
 				Bitmap unheld = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mNoteStreamUnheld[i])),
 						UtilsScreenSize.scaleX(DataSong.NOTESIZE), UtilsScreenSize.scaleY(DataSong.NOTESIZE), false);
 
 				BitmapShader unheldShader = new BitmapShader(unheld, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 				unheldShader.setLocalMatrix(matrix);
+				
+				BitmapShader unheldStarShader = new BitmapShader(unheldStar, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+				unheldStarShader.setLocalMatrix(matrix);
 
 				BitmapShader heldShader = new BitmapShader(held, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 				heldShader.setLocalMatrix(matrix);
@@ -131,6 +139,10 @@ public class ColourSchemeAssets {
 				mHoldLineUnheldPaint[i] = new Paint();
 				mHoldLineUnheldPaint[i].setShader(unheldShader);
 				mHoldLineUnheldPaint[i].setAlpha(170);
+				
+				mHoldLineStarUnheldPaint[i] = new Paint();
+				mHoldLineStarUnheldPaint[i].setShader(unheldStarShader);
+				mHoldLineStarUnheldPaint[i].setAlpha(170);
 
 				mHoldLineHeldPaint[i] = new Paint();
 				mHoldLineHeldPaint[i].setShader(heldShader);
@@ -203,7 +215,9 @@ public class ColourSchemeAssets {
 		canvas.drawBitmap(mBackgroundBitmap, 0, 0, null);
 	}
 
-	public Paint getHoldLineUnheldPaint(int position) {
+	public Paint getHoldLineUnheldPaint(int position, boolean isStarNote) {
+		if (isStarNote)
+			return mHoldLineStarUnheldPaint[position];
 		return mHoldLineUnheldPaint[position];
 	}
 

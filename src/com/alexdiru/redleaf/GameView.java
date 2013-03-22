@@ -12,6 +12,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
+import com.alexdiru.redleaf.activity.ActivityGame;
 import com.alexdiru.redleaf.android.MusicManager;
 import com.alexdiru.redleaf.android.ScoreDialog;
 import com.alexdiru.redleaf.interfaces.IDisposable;
@@ -83,6 +84,7 @@ public class GameView extends SurfaceView implements
 	// Used to release any resources.
 	@Override
 	public void dispose() {
+		Log.d(getClass().getName(), "dispose");
 		mMusicManager.dispose();
 		mMusicManager = null;
 
@@ -114,10 +116,12 @@ public class GameView extends SurfaceView implements
 	// ensure that we go into pause state if we go out of focus
 	@Override
 	public void onWindowFocusChanged(boolean hasWindowFocus) {
+		Log.d(ActivityGame.class.getName(), "onWindowFocusChanged");
 		if (mGameThread != null) {
 			if (!hasWindowFocus) {
 				pauseGame();
-			}
+			} else
+				resumeGame();
 		}
 	}
 
@@ -144,7 +148,7 @@ public class GameView extends SurfaceView implements
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
-
+		Log.d(ActivityGame.class.getName(), "surfaceCreated");
 		if (mGameThread != null) {
 			mGameThread.mRunning = true;
 
@@ -173,6 +177,7 @@ public class GameView extends SurfaceView implements
 	/* Need to stop the GameThread if the surface is destroyed Remember this doesn't need to happen
 	 * when app is paused on even stopped. */
 	public void surfaceDestroyed(SurfaceHolder arg0) {
+		Log.d(ActivityGame.class.getName(), "surfaceDestroyed");
 
 		// Stop the thread from running its update and draw methods
 		if (mGameThread != null)
@@ -194,11 +199,9 @@ public class GameView extends SurfaceView implements
 
 	public void update() {
 		
+		
 		mPreviousTime = mCurrentTimeFPS;
 		mCurrentTimeFPS = SystemClock.elapsedRealtime();
-		
-		if (mGameThread.mPaused)
-			return;
 
 		if (mGameState.get() == GameState.STATE_GAME) {
 	
@@ -263,23 +266,6 @@ public class GameView extends SurfaceView implements
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
 		mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak())
 				.drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, UtilsScreenSize.getScreenHeight() / 2);
-
-		// STAR POWER
-		if (mTapAreas.isStarPowerActive()) {
-			sb = UtilsString.getStringBuilder();
-			sb.append(Utils.getActivity().getString(R.string.game_starpower));
-			sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-			mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak())
-					.drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, UtilsScreenSize.getScreenHeight() / 2 - UtilsScreenSize.scaleY(60));
-		}
-		// INSANE
-		else if (mTapAreas.getStreak() > 150) {
-			sb = UtilsString.getStringBuilder();
-			sb.append(Utils.getActivity().getString(R.string.game_highcombo));
-			sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-			mTapAreas.getColourSchemeAssets().getComboPaint(mTapAreas.getStreak())
-					.drawText(canvas, UtilsString.getChars(), 0, sb.length(), UtilsScreenSize.getScreenWidth() / 2, UtilsScreenSize.getScreenHeight() / 2 - UtilsScreenSize.scaleY(60));
-		}
 
 	}
 
@@ -352,11 +338,10 @@ public class GameView extends SurfaceView implements
 			return false;
 
 		switch (actionCode) {
+		case MotionEvent.ACTION_POINTER_DOWN:
 		case MotionEvent.ACTION_DOWN:
 			mTapAreas.handleTouchDown((int) event.getX(touchOrderID), (int) event.getY(touchOrderID), touchOrderID, mCurrentTime);
-			break;
-		case MotionEvent.ACTION_POINTER_DOWN:
-			mTapAreas.handleTouchDown((int) event.getX(touchOrderID), (int) event.getY(touchOrderID), touchOrderID, mCurrentTime);
+			debugMSLogTouch((int) event.getX(touchOrderID), (int) event.getY(touchOrderID));
 			break;
 		case MotionEvent.ACTION_POINTER_UP:
 		case MotionEvent.ACTION_CANCEL:
@@ -369,6 +354,11 @@ public class GameView extends SurfaceView implements
 		}
 
 		return true;
+	}
+	
+	private void debugMSLogTouch(int x, int y) {
+		if (y < UtilsScreenSize.getScreenHeight() >> 1)
+			Log.d("msLog", String.valueOf(mCurrentTime));
 	}
 
 }

@@ -2,15 +2,7 @@ package com.alexdiru.redleaf.activity;
 
 import java.io.IOException;
 
-import com.alexdiru.redleaf.DataSong;
-import com.alexdiru.redleaf.DataSongMenuItem;
-import com.alexdiru.redleaf.R;
-import com.alexdiru.redleaf.Utils;
-import com.alexdiru.redleaf.UtilsStepmaniaConvertor;
-import com.alexdiru.redleaf.DataSong.DataSongDifficulty;
-import com.alexdiru.redleaf.R.id;
-import com.alexdiru.redleaf.R.layout;
-
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -21,26 +13,37 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ActivitySongPickerMenu extends ActivityCommon implements OnItemClickListener, DialogInterface.OnClickListener {
+import com.alexdiru.redleaf.DataSong;
+import com.alexdiru.redleaf.DataSongMenuItem;
+import com.alexdiru.redleaf.R;
+import com.alexdiru.redleaf.Utils;
+
+public class ActivitySongPickerMenu extends Activity implements OnItemClickListener, DialogInterface.OnClickListener {
 
 	private ListView mListView;
 	private FileIOSongListParser mSongListParser;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_songpicker);
-
+		ActivityCommon.create(this);
+		setContentView(R.layout.activity_songpicker_layout);
+		
+		mListView = (ListView)findViewById(R.id.listView);
+		
+		mListView.setBackgroundResource(R.drawable.songpicker_background_tile);
+		
 		// Setup the list view
 		// Load all the songs from file
 		loadSongList();
-		
-		mListView = (ListView) findViewById(R.id.menusongpicker_listview);
-		mListView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mSongListParser.getMenuItemsToDisplay()));
+
+		// mListView = (ListView) findViewById(R.id.menusongpicker_listview);
+		mListView.setAdapter(new ArrayAdapter<String>(this,
+				R.layout.activity_songpicker,
+				mSongListParser.getMenuItemsToDisplay()));
 		mListView.setOnItemClickListener(this);
 	}
-	
+
 	public void loadSongList() {
 		mSongListParser = new FileIOSongListParser("SongList.txt");
 	}
@@ -49,7 +52,8 @@ public class ActivitySongPickerMenu extends ActivityCommon implements OnItemClic
 	public void onItemClick(AdapterView<?> a, View v, int position, long id) {
 
 		// Get the note file of the selected song
-		DataSongMenuItem menuItem = mSongListParser.getMenuItemFromString(((TextView) v).getText().toString());
+		DataSongMenuItem menuItem = mSongListParser
+				.getMenuItemFromString(((TextView) v).getText().toString());
 		final String noteFile = menuItem.mNoteFile;
 
 		// Check if the file exists
@@ -60,66 +64,68 @@ public class ActivitySongPickerMenu extends ActivityCommon implements OnItemClic
 			fileExists = false;
 		}
 
-		//if (fileExists) {
-			//(new DataSong(noteFile));
-			
+		// if (fileExists) {
+		// (new DataSong(noteFile));
 
-			// Choose difficulties dialog box
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage("Choose a difficulty").setTitle(menuItem.mSongName);
+		// Choose difficulties dialog box
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Choose a difficulty").setTitle(menuItem.mSongName);
 
-			if (menuItem.hasHardDifficulty())
-				builder.setPositiveButton("Hard",
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								//Utils.setCurrentSong(new DataSong(noteFile));
-								Utils.setCurrentSong(UtilsStepmaniaConvertor.stepmaniaToRedLeaf("Perfection.ssc",DataSong.DataSongDifficulty.MEDIUM));
-								Utils.getCurrentSong().mDifficulty = DataSong.DataSongDifficulty.MEDIUM;
-								Utils.switchActivity(ActivityGame.class);
-							}
-						});
+		// After a long wait, clicking the button will do nothing, maybe need to
+		// reinitialise the FileIOList on resume??
 
-			if (menuItem.hasMediumDifficulty()) 
-				builder.setNeutralButton("Medium",
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								Utils.setCurrentSong(UtilsStepmaniaConvertor.stepmaniaToRedLeaf("Perfection.ssc",DataSong.DataSongDifficulty.MEDIUM));
-								Utils.getCurrentSong().mDifficulty = DataSong.DataSongDifficulty.MEDIUM;
-								Utils.switchActivity(ActivityGame.class);
-							}
-						});
-			
-			if (menuItem.hasEasyDifficulty())
-				builder.setNegativeButton("Easy",
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								Utils.setCurrentSong(UtilsStepmaniaConvertor.stepmaniaToRedLeaf("World Mad.ssc",DataSong.DataSongDifficulty.EASY));
-								Utils.getCurrentSong().mDifficulty = DataSong.DataSongDifficulty.EASY;
-								Utils.switchActivity(ActivityGame.class);
-							}
-				});
-			
-			builder.show();
+		if (menuItem.hasHardDifficulty())
+			builder.setNegativeButton("Hard",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Utils.setCurrentSong(new DataSong(noteFile, 2));
+							Utils.getCurrentSong().mDifficulty = DataSong.DataSongDifficulty.HARD;
+							Utils.switchActivity(ActivityGame.class);
+						}
+					});
 
-			
-		//}
-		/*else {
+		if (menuItem.hasMediumDifficulty())
+			builder.setNeutralButton("Medium",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Utils.setCurrentSong(new DataSong(noteFile, 1));
+							Utils.getCurrentSong().mDifficulty = DataSong.DataSongDifficulty.MEDIUM;
+							Utils.switchActivity(ActivityGame.class);
+						}
+					});
 
-			// 1. Instantiate an AlertDialog.Builder with its constructor
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		if (menuItem.hasEasyDifficulty())
+			builder.setPositiveButton("Easy",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Utils.setCurrentSong(new DataSong(noteFile, 0));
+							Utils.getCurrentSong().mDifficulty = DataSong.DataSongDifficulty.EASY;
+							Utils.switchActivity(ActivityGame.class);
+						}
+					});
 
-			// 2. Chain together various setter methods to set the dialog
-			// characteristics
-			builder.setMessage("Sorry this song hasn't been implemented yet :(").setTitle("Sorry");
+		builder.show();
 
-			// 3. Get the AlertDialog from create()
-			AlertDialog dialog = builder.create();
-
-			dialog.show();
-		}*/
+		// }
+		/*
+		 * else {
+		 * 
+		 * // 1. Instantiate an AlertDialog.Builder with its constructor
+		 * AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		 * 
+		 * // 2. Chain together various setter methods to set the dialog //
+		 * characteristics
+		 * builder.setMessage("Sorry this song hasn't been implemented yet :("
+		 * ).setTitle("Sorry");
+		 * 
+		 * // 3. Get the AlertDialog from create() AlertDialog dialog =
+		 * builder.create();
+		 * 
+		 * dialog.show(); }
+		 */
 
 	}
 

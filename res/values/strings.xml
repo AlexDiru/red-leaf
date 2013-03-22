@@ -6,12 +6,13 @@
 
     <!-- Main Menu -->
     <string name="menumain_play">Play</string>
-    <string name="menumain_editor">Editor</string>
+    <string name="menumain_exit">Exit</string>
     <string name="menumain_credits">Credits</string>
     
     <!-- Credits -->
     <string name="credits_programmer">Programmer - Alex Spedding</string>
     <string name="credits_music">Music - LOST</string>
+    <string name="credits_versionid">Alpha v0.1.130322</string>
     
     <!-- Alerts -->
     <string name="ok">OK</string>
@@ -28,12 +29,14 @@
     <string name="game_multipliersuffix">x</string>
     <string name="game_scoreprefix">Score:\u0020</string>
     <string name="game_combosuffix">\u0020COMBO</string>
-    <string name="game_highcombo">INSANE!</string>
-    <string name="game_starpower">STAR POWER</string>
     <string name="game_scoredialog_title">Score</string>
     <string name="game_scoredialog_message">You scored\u0020</string>
     <string name="game_scoredialog_ok">OK</string>
     <string name="game_countdown3">3</string>
     <string name="game_countdown2">2</string>
     <string name="game_countdown1">1</string>
+    
+    <color name="gray">#4D494A</color>
+    <color name="red">#FF5757</color>
+    <color name="white">#FFFFFF</color>
 </resources>

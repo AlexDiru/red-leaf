@@ -1,10 +1,6 @@
 package com.alexdiru.redleaf.activity;
 
-import com.alexdiru.redleaf.R;
-import com.alexdiru.redleaf.UtilsFileIO;
-import com.alexdiru.redleaf.R.id;
-import com.alexdiru.redleaf.R.layout;
-
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,13 +8,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.alexdiru.redleaf.R;
+import com.alexdiru.redleaf.UtilsFileIO;
+
 /**
  * The activity for picking the song to edit
  * No editor currently so this is pointless
  * @author Alex
  *
  */
-public class ActivityEditorSongPickerMenu extends ActivityCommon implements OnItemClickListener {
+public class ActivityEditorSongPickerMenu extends Activity implements OnItemClickListener {
 
 	private ListView mListView;
 
@@ -26,6 +25,8 @@ public class ActivityEditorSongPickerMenu extends ActivityCommon implements OnIt
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		ActivityCommon.create(this);
+		
 		setContentView(R.layout.activity_editorsongpicker);
 
 		// Setup the list view, assign the names of all mp3 files to the listview

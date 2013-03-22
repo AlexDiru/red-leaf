@@ -1,20 +1,20 @@
 package com.alexdiru.redleaf.activity;
 
-import com.alexdiru.redleaf.R;
-import com.alexdiru.redleaf.Utils;
-import com.alexdiru.redleaf.UtilsScreenSize;
-import com.alexdiru.redleaf.R.id;
-import com.alexdiru.redleaf.R.layout;
-
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.TextView;
+import android.widget.Button;
 
-public class ActivityMainMenu extends ActivityCommon {
+import com.alexdiru.redleaf.R;
+import com.alexdiru.redleaf.Utils;
+import com.alexdiru.redleaf.UtilsScreenSize;
+
+public class ActivityMainMenu extends Activity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		ActivityCommon.create(this);
 		
 		setContentView(R.layout.activity_menumain);
 		
@@ -24,22 +24,25 @@ public class ActivityMainMenu extends ActivityCommon {
 	}
 	
 	private void addButtonListeners() {
-		TextView playTextView = (TextView)findViewById(R.id.playTextView);
-		playTextView.setOnClickListener(new OnClickListener() {
+		Button playButton = (Button)findViewById(R.id.playButton);
+		playButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				Utils.switchActivity(ActivitySongPickerMenu.class);
 			}
 		});
 		
-		TextView editorTextView = (TextView)findViewById(R.id.editorTextView);
-		editorTextView.setOnClickListener(new OnClickListener() {
+		Button exitButton = (Button)findViewById(R.id.exitButton);
+		
+		final Activity activity = this;
+		
+		exitButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				Utils.switchActivity(ActivityEditorSongPickerMenu.class);
+				activity.finish();
 			}
 		});
 		
-		TextView creditsTextView = (TextView)findViewById(R.id.creditsTextView);
-		creditsTextView.setOnClickListener(new OnClickListener() {
+		Button creditsButton = (Button)findViewById(R.id.creditsButton);
+		creditsButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				Utils.switchActivity(ActivityCredits.class);
 			}

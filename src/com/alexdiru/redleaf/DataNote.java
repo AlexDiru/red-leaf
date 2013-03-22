@@ -7,7 +7,7 @@ import android.graphics.Rect;
 /** Represents a note which appears on a song i.e. falls down from the top of the screen and the
  * player must tap it
  * @author Alex */
-public class DataNote {
+public class DataNote implements Comparable<DataNote> {
 
 	public static final int NOTE_TYPE_TAP = 0;
 	public static final int NOTE_TYPE_HOLD = 1;
@@ -71,18 +71,18 @@ public class DataNote {
 
 	public void draw(Canvas canvas, DataPlayer tapAreas, float songSpeed) {
 		// Update note coordinates
-		mTopY = (int) ((Utils.getCurrentSong().mMusicManager.getPlayPosition() - getStartTime()) * songSpeed) + GameView.TAPCIRCLES_Y;
+		mTopY = (int)(((Utils.getCurrentSong().mMusicManager.getPlayPosition() - getStartTime()) * songSpeed) + GameView.TAPCIRCLES_Y);
 		mBottomY = mTopY + DataSong.NOTESIZE;
 
 		int noteXPosition = tapAreas.getBoundingBoxLeft(mPosition) + (UtilsScreenSize.scaleX(DataPlayer.TAP_AREA_WIDTH - DataSong.NOTESIZE) >> 1);
 
 		if (isHoldNote())
-			drawHoldLine(canvas, tapAreas.getColourSchemeAssets().getHoldLineHeldPaint(mPosition), tapAreas.getColourSchemeAssets().getHoldLineUnheldPaint(mPosition), noteXPosition, songSpeed);
+			drawHoldLine(canvas, tapAreas.getColourSchemeAssets().getHoldLineHeldPaint(mPosition), tapAreas.getColourSchemeAssets().getHoldLineUnheldPaint(mPosition, isStarNote()), noteXPosition, songSpeed);
 		
 		if (isStarNote())
-			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getColourSchemeAssets().getNoteHeld(mPosition) : tapAreas.getColourSchemeAssets().getNoteStar(mPosition), noteXPosition, mTopY, null);
+			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getColourSchemeAssets().getNoteHeld(mPosition) : tapAreas.getColourSchemeAssets().getNoteStar(mPosition), noteXPosition, UtilsScreenSize.scaleY(mTopY), null);
 		else
-			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getColourSchemeAssets().getNoteHeld(mPosition) : tapAreas.getColourSchemeAssets().getNote(mPosition), noteXPosition, mTopY, null);
+			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getColourSchemeAssets().getNoteHeld(mPosition) : tapAreas.getColourSchemeAssets().getNote(mPosition), noteXPosition, UtilsScreenSize.scaleY(mTopY), null);
 
 	}
 
@@ -147,5 +147,10 @@ public class DataNote {
 
 	public void setTapped(boolean tapped) {
 		mTapped = tapped;
+	}
+
+	@Override
+	public int compareTo(DataNote note) {
+		return mStartTime - note.mStartTime;
 	}
 }

@@ -30,6 +30,8 @@ public class ColourScheme {
 
 	/** Bitmaps used for a hold note trail when the note is not held down */
 	public String[] mNoteStreamUnheld = new String[4];
+	
+	public String[] mNoteStreamUnheldStar = new String[4];
 
 	/** Bitmap used for the background */
 	public String mBackground;
@@ -86,6 +88,11 @@ public class ColourScheme {
 			mNoteStreamUnheld[1] = "reddowntrail.png";
 			mNoteStreamUnheld[2] = "reddowntrail.png";
 			mNoteStreamUnheld[3] = "reddowntrail.png";
+
+			mNoteStreamUnheldStar[0] = "yellowdowntrail.png";
+			mNoteStreamUnheldStar[1] = "yellowdowntrail.png";
+			mNoteStreamUnheldStar[2] = "yellowdowntrail.png";
+			mNoteStreamUnheldStar[3] = "yellowdowntrail.png";
 
 			mStarPower = "silverflame.png";
 

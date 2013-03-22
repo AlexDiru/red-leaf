@@ -1,9 +1,13 @@
 package com.alexdiru.redleaf;
 
+
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 
 import android.util.Log;
 
@@ -70,23 +74,27 @@ public abstract class UtilsStepmaniaConvertor {
 					{
 						int time = currentTimeMS + n * (4000/noteLines.size());
 						for (int c = 0; c < noteLines.get(n).length(); c++) {
-							switch (noteLines.get(n).charAt(c)){
-								default:
-								case '0':
-									//Stop any hold notes
+							switch (noteLines.get(n).charAt(c)) {
+								case '1':
+									//Tap note
+									notes[currentDifficulty].add(new DataNote(time, 0, 0, c ));
+									break;
+								case '2':
+									//Start the hold note
+									if (!heldEnabled[c]) {
+										heldEnabled[c] = true;
+										heldStart[c] = time;
+									}
+									break;
+								case '3':
+									//End the hold note
 									if (heldEnabled[c]) {
 										heldEnabled[c] = false;
 										notes[currentDifficulty].add(new DataNote(heldStart[c], time, 1, c));
 									}
 									break;
-								case '1':
-									notes[currentDifficulty].add(new DataNote(time, 0, 0, c ));
-									break;
-								case '2':
-									if (!heldEnabled[c]) {
-										heldEnabled[c] = true;
-										heldStart[c] = time;
-									}
+								default:
+									//Everything else is not necessary
 									break;
 							}
 						}
@@ -173,7 +181,13 @@ public abstract class UtilsStepmaniaConvertor {
 			}
 		}
 		
+		
 		convertedSong.mNotes = notes[difficulty.ordinal()];
+		
+
+		//Sort notes because hold notes will be in wrong order
+		Collections.sort(convertedSong.mNotes);
+		
 		convertedSong.mMusicFile = "Perfection.mp3";
 		return convertedSong;
 	}

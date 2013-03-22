@@ -2,36 +2,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/menu_background_tile"
     tools:context=".GameActivity" >
 
-    <TextView
-        android:id="@+id/playTextView"
+    <Button
+        android:id="@+id/playButton"
+        style="@style/Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/creditsButton"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:layout_alignRight="@+id/creditsButton"
         android:layout_marginTop="58dp"
         android:text="@string/menumain_play"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-    
-    <TextView
-        android:id="@+id/editorTextView"
+
+    <Button
+        android:id="@+id/creditsButton"
+        style="@style/Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/playButton"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="116dp"
-        android:text="@string/menumain_editor"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-    
-    <TextView
-        android:id="@+id/creditsTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="174dp"
+        android:layout_marginTop="18dp"
         android:text="@string/menumain_credits"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/exitButton"
+        style="@style/Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/creditsButton"
+        android:layout_alignRight="@+id/creditsButton"
+        android:layout_below="@+id/creditsButton"
+        android:layout_marginTop="16dp"
+        android:text="@string/menumain_exit"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>
