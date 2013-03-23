@@ -1,9 +1,11 @@
 package com.alexdiru.redleaf;
 
+import com.alexdiru.redleaf.interfaces.IDisposable;
+
 /** Represents a colour scheme for the song Different assets will be loaded for the graphics
  * depending on the theme chosen
  * @author Alex */
-public class ColourScheme {
+public class ColourScheme implements IDisposable {
 
 	/** The themes the song can have */
 	public enum ThemeType {
@@ -31,6 +33,7 @@ public class ColourScheme {
 	/** Bitmaps used for a hold note trail when the note is not held down */
 	public String[] mNoteStreamUnheld = new String[4];
 	
+	/** Bitmaps used for a hold note trail when the note is a star note */
 	public String[] mNoteStreamUnheldStar = new String[4];
 
 	/** Bitmap used for the background */
@@ -50,6 +53,7 @@ public class ColourScheme {
 
 		switch (themeType) {
 		case DISCOVERY:
+		default:
 			mBackground = "discovery.png";
 			mBackgroundStar = "discoverystar.png";
 			mBackgroundAlpha = 213;
@@ -97,42 +101,21 @@ public class ColourScheme {
 			mStarPower = "silverflame.png";
 
 			break;
-		case MONSOON:
-			mBackground = "monsoon.png";
-
-			mTap[0] = "Li.png";
-			mTap[1] = "Oi.png";
-			mTap[2] = "Si.png";
-			mTap[3] = "Ti.png";
-
-			mTapHold[0] = "L.png";
-			mTapHold[1] = "O.png";
-			mTapHold[2] = "S.png";
-			mTapHold[3] = "T.png";
-
-			mNote[0] = "note.png";
-			mNote[1] = "note.png";
-			mNote[2] = "note.png";
-			mNote[3] = "note.png";
-			break;
-		case MAYDIE:
-			mBackground = "maydie.png";
-
-			mTap[0] = "L.png";
-			mTap[1] = "O.png";
-			mTap[2] = "S.png";
-			mTap[3] = "T.png";
-
-			mTapHold[0] = "Li.png";
-			mTapHold[1] = "Oi.png";
-			mTapHold[2] = "Si.png";
-			mTapHold[3] = "Ti.png";
-
-			mNote[0] = "note3.png";
-			mNote[1] = "note3.png";
-			mNote[2] = "note3.png";
-			mNote[3] = "note3.png";
-			break;
 		}
+	}
+
+	@Override
+	public void dispose() {
+		mTap = null;
+		mNoteStar = null;
+		mTapHold = null;
+		mNote = null;
+		mNoteHeld = null;
+		mNoteStreamHeld = null;
+		mNoteStreamUnheld = null;
+		mNoteStreamUnheldStar = null;
+		mBackground = null;
+		mBackgroundStar = null;
+		mStarPower = null;	
 	}
 }

@@ -4,19 +4,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-import com.alexdiru.redleaf.android.MusicManager;
-
 import android.graphics.Canvas;
+
+import com.alexdiru.redleaf.android.MusicManager;
+import com.alexdiru.redleaf.interfaces.IDisposable;
 
 /** Represents a song the player can play
  * As such it stores all the notes which will fall down the screen (and provide methods to update and render these notes)
  * @author Alex
  *
  */
-public class DataSong {
+public class DataSong implements IDisposable {
 
 	/** The pixel width/height of each note */
-	public static final int NOTESIZE = DataPlayer.TAP_AREA_WIDTH;
+	public static int NOTESIZE;
 	
 	/** The maximum number of notes that can be rendered */
 	private static final int MAX_NOTES_ON_SCREEN = 20;
@@ -158,7 +159,7 @@ public class DataSong {
 		}
 	}
 	
-	public void updateNotes(int currentTime, int renderDistance, int tapCirclesHeight) {
+	public void updateNotes(int currentTime, int renderDistance, int tapCirclesHeight, float songSpeed) {
 
 		tapCirclesHeight = UtilsScreenSize.scaleY(tapCirclesHeight);
 		
@@ -237,7 +238,7 @@ public class DataSong {
 	/** Renders the notes of the song
 	 * @param canvas The canvas to render to
 	 * @param songSpeed */
-	public void renderNotes(Canvas canvas,float songSpeed) {
+	public void renderNotes(Canvas canvas,float songSpeed, int currentTime) {
 
 		// Assign the notes to a local array list
 		ArrayList<DataNote> notes = Utils.getCurrentSong().mRenderNotes;
@@ -249,8 +250,8 @@ public class DataSong {
 
 			if (note == null)
 				continue;
-			
-			note.draw(canvas, mTapAreas, songSpeed);
+
+			note.render(canvas, mTapAreas, songSpeed,currentTime);
 		}
 	}
 
@@ -315,5 +316,18 @@ public class DataSong {
 			contents += "note " + note.getStartTime() + " " + note.getEndTime() + " " + note.getType() + " " + note.getPosition() + "\n";
 		
 		contents += "end difficulty";
+	}
+
+	@Override
+	public void dispose() {
+		mArtistName = null;
+		mAlbumName = null;
+		mSongName = null;
+		mDifficulty = null;
+		mMusicFile = null;
+		mNotes = null;
+		mRenderNotes = null;
+		UtilsDispose.dispose(mMusicManager);
+		Arrays.fill(mHeldNotes, null);
 	}
 }

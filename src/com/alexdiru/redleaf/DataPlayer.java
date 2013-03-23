@@ -1,26 +1,28 @@
 package com.alexdiru.redleaf;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
 
 import com.alexdiru.redleaf.ColourScheme.ThemeType;
+import com.alexdiru.redleaf.interfaces.IDisposable;
 import com.alexdiru.redleaf.interfaces.IRenderable;
 
-public class DataPlayer implements IRenderable {
+public class DataPlayer implements IRenderable, IDisposable {
 
 	private static final int TAP_AREAS = 4;
-	private static final int TAP_AREA_HEIGHT = 160;
-	public static final int TAP_AREA_WIDTH = 120;
-	private static final int TAP_AREA_GAP = (720 - TAP_AREA_WIDTH * 4)/5;
+	public static final int TAP_AREA_HEIGHT = 160;
 	private static final int NOTE_STREAK_REQUIRED_FOR_STAR_POWER = 10;
 	
 	private static final int STAR_POWER_DURATION = 10000;
 
+
+	public static int TAP_AREA_WIDTH;
+	public static int TAP_AREA_GAP;
+	
 	private DataTapBox[] mTapBoxes;
 	private DataSong mSong;
 
 	/** Handles the rendering according to the colour scheme */
-	private ColourSchemeAssets mColourSchemeAssets = new ColourSchemeAssets(new ColourScheme(ThemeType.DISCOVERY), TAP_AREA_WIDTH, TAP_AREA_HEIGHT);
+	private ColourSchemeAssets mColourSchemeAssets = new ColourSchemeAssets(new ColourScheme(ThemeType.DISCOVERY),TAP_AREA_HEIGHT);
 
 	/** Handles the player's touches */
 	private DataTouchMap mTouchMap = new DataTouchMap();
@@ -89,10 +91,10 @@ public class DataPlayer implements IRenderable {
 		mTapBoxBottom = mTapBoxTop + UtilsScreenSize.scaleY(TAP_AREA_HEIGHT);
 		
 		//Update the tapboxes according to their size
-		mTapBoxes[0].update(UtilsScreenSize.scaleX(TAP_AREA_GAP), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP + TAP_AREA_WIDTH), mTapBoxBottom);
-		mTapBoxes[1].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 2 + TAP_AREA_WIDTH), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 2 + TAP_AREA_WIDTH * 2), mTapBoxBottom);
-		mTapBoxes[2].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 3 + TAP_AREA_WIDTH * 2), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 3 + TAP_AREA_WIDTH * 3), mTapBoxBottom);
-		mTapBoxes[3].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 4 + TAP_AREA_WIDTH * 3), mTapBoxTop, UtilsScreenSize.scaleX(TAP_AREA_GAP * 4 + TAP_AREA_WIDTH * 4), mTapBoxBottom);
+		mTapBoxes[0].update(UtilsScreenSize.scaleX(TAP_AREA_GAP), mTapBoxTop);//, UtilsScreenSize.scaleX(TAP_AREA_GAP + TAP_AREA_WIDTH), mTapBoxBottom);
+		mTapBoxes[1].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 2) + TAP_AREA_WIDTH, mTapBoxTop);//, UtilsScreenSize.scaleX(TAP_AREA_GAP * 2 ) + TAP_AREA_WIDTH * 2, mTapBoxBottom);
+		mTapBoxes[2].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 3)+ TAP_AREA_WIDTH * 2, mTapBoxTop);//, UtilsScreenSize.scaleX(TAP_AREA_GAP * 3) + TAP_AREA_WIDTH * 3, mTapBoxBottom);
+		mTapBoxes[3].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 4)+ TAP_AREA_WIDTH * 3, mTapBoxTop);//, UtilsScreenSize.scaleX(TAP_AREA_GAP * 4) + TAP_AREA_WIDTH * 4, mTapBoxBottom);
 		
 		//Render the tapboxes on the same bitmap as the background
 		mColourSchemeAssets.setupBackgroundsWithTapboxes(mTapBoxes);
@@ -251,5 +253,14 @@ public class DataPlayer implements IRenderable {
 	
 	public boolean isStarPowerActive() {
 		return mStarPowerActive;
+	}
+
+	@Override
+	public void dispose() {
+		UtilsDispose.disposeAll(mTapBoxes);
+		UtilsDispose.dispose(mColourSchemeAssets);
+		UtilsDispose.dispose(mTouchMap);
+		UtilsDispose.dispose(mStarPowerBoundingBox);
+		UtilsDispose.dispose(mSong);
 	}
 }

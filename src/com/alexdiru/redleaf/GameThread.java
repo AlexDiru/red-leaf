@@ -27,8 +27,6 @@ public class GameThread extends Thread {
 		Canvas canvas;
 
 		while (mRunning) {
-			if (mGameView == null)
-				Log.d(ActivityGame.class.getName(), "GV NULL");
 
 			if (mPaused)
 				continue;
@@ -38,16 +36,22 @@ public class GameThread extends Thread {
 			try {
 				canvas = mSurfaceHolder.lockCanvas(null);
 				
-				if (canvas == null)
-					Log.d(ActivityGame.class.getName(), "C NULL");
 				
 				synchronized (mSurfaceHolder) {
 					if (mGameView != null && canvas != null) {
 						// Update the game
-						update();
-
+						try {
+							update();
+						} catch (Exception ex) {
+							Log.d("exception", "update exception");
+						}
+						
 						// Render the game
-						draw(canvas);
+						try {
+							draw(canvas);
+						} catch (Exception ex) {
+							Log.d("exception", "draw exception");
+						}
 					}
 				}
 			} finally {
@@ -66,7 +70,6 @@ public class GameThread extends Thread {
 	}
 
 	private void draw(Canvas canvas) {
-		canvas.drawColor(Color.BLACK);
 		mGameView.draw(canvas);
 	}
 }

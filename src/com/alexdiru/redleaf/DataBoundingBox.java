@@ -5,13 +5,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
 
+import com.alexdiru.redleaf.interfaces.IDisposable;
 import com.alexdiru.redleaf.interfaces.IRenderable;
 
 /** Represents a bounding box which can be touched They can also be drawn to the screen
  * @author Alex */
-public class DataBoundingBox implements IRenderable {
+public class DataBoundingBox implements IRenderable, IDisposable {
 
 	/** Used for the coordinates of the bounding box */
 	private Rect mRect = new Rect();
@@ -33,7 +33,7 @@ public class DataBoundingBox implements IRenderable {
 	
 	public DataBoundingBox(Bitmap bitmap, Paint paint) {
 		this(bitmap);
-		mPaint=  paint;
+		mPaint = paint;
 	}
 
 	/** Updates the position of the bounding box */
@@ -101,5 +101,14 @@ public class DataBoundingBox implements IRenderable {
 	 * @return The left of the bounding box */
 	public int getLeft() {
 		return mRect.left;
+	}
+
+	@Override
+	public void dispose() {
+		UtilsDispose.disposeBitmap(mRenderBitmap);
+		mRect = null;
+		mRectanglePaint = null;
+		mPaint = null;
+		mRenderBitmap = null;
 	}
 }

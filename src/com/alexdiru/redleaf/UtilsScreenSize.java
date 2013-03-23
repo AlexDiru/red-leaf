@@ -1,6 +1,10 @@
 package com.alexdiru.redleaf;
 
-import android.graphics.Point;
+import java.io.IOException;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.Display;
 
 public abstract class UtilsScreenSize {
@@ -46,5 +50,42 @@ public abstract class UtilsScreenSize {
 	
 	public static int scaleFontSize(int sz) {
 		return (int)(sz * mScaleY);
+	}
+	
+	public static int getHeightInRatio(int newWidth, int originalWidth, int originalHeight) {
+		return (int)((float)newWidth * (originalHeight/(float)originalWidth));
+	}
+
+	public static int getWidthInRatio(int newHeight, int originalWidth, int originalHeight) {
+		return (int)((float)newHeight * (originalWidth/(float)originalHeight));
+	}
+	
+	public static Bitmap loadBitmapInRatioFromWidth(String assetFile, int newWidth, int originalWidth, int originalHeight) {
+		try {
+			return loadBitmapInRatioFromWidth(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(assetFile)), newWidth, originalWidth, originalHeight);
+		} catch (IOException e) {
+			Log.d("error", assetFile + " does not exist");
+			return null;
+		}
+	}
+	
+	public static Bitmap loadBitmapInRatioFromHeight(String assetFile, int newHeight) {
+		try {
+			Bitmap original = BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(assetFile));
+			return loadBitmapInRatioFromHeight(original, newHeight, original.getWidth(), original.getHeight());
+		} catch (IOException e) {
+			Log.d("error", assetFile + " does not exist");
+			return null;
+		}
+	}
+	
+	public static Bitmap loadBitmapInRatioFromWidth(Bitmap src, int newWidth, int originalWidth, int originalHeight) {
+		int newHeight = getHeightInRatio(newWidth, originalWidth, originalHeight);
+		return Bitmap.createScaledBitmap(src, newWidth, newHeight, false);
+	}
+	
+	public static Bitmap loadBitmapInRatioFromHeight(Bitmap src, int newHeight, int originalWidth, int originalHeight) {
+		int newWidth = getWidthInRatio(newHeight, originalWidth, originalHeight);
+		return Bitmap.createScaledBitmap(src, newWidth, newHeight, false);
 	}
 }

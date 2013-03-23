@@ -2,10 +2,12 @@ package com.alexdiru.redleaf;
 
 import java.util.Arrays;
 
+import com.alexdiru.redleaf.interfaces.IDisposable;
+
 /** Used to mitigate the overhead of hash map allocations forcing the GC
  * 
  * @author Alex */
-public class DataTouchMap {
+public class DataTouchMap implements IDisposable {
 
 	/** Maps finger number + position to whether the combination is touched i.e. If secondary finger
 	 * is touching position 3 then mTouchMap[4 + 3] will be true */
@@ -53,5 +55,10 @@ public class DataTouchMap {
 			if (mTouchMap[4 * index + i])
 				return i;
 		return null;
+	}
+	
+	@Override
+	public void dispose() {
+		mTouchMap = null;
 	}
 }

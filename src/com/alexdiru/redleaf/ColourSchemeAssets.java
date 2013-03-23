@@ -1,8 +1,10 @@
 package com.alexdiru.redleaf;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import com.alexdiru.redleaf.android.StrokePaint;
+import com.alexdiru.redleaf.interfaces.IDisposable;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -21,7 +23,7 @@ import android.graphics.Typeface;
  * @author Alex
  *
  */
-public class ColourSchemeAssets {
+public class ColourSchemeAssets implements IDisposable {
 
 	// Tapbox bitmaps
 	private Bitmap[] LOST = new Bitmap[4];
@@ -59,6 +61,7 @@ public class ColourSchemeAssets {
 	/** Paint used for drawing the multiplier */
 	private StrokePaint mMultiplierPaint = new StrokePaint();
 	
+	/** Paint used for drawing the countdown timer */
 	private StrokePaint mCountdownPaint = new StrokePaint();
 	
 	private static Bitmap loadBackground(String filePath, int alpha) throws IOException {
@@ -84,48 +87,47 @@ public class ColourSchemeAssets {
 		return backgroundBitmap;
 	}
 
-	public ColourSchemeAssets(ColourScheme colourScheme, int tapBoxWidth, int tapBoxHeight) {
+	public ColourSchemeAssets(ColourScheme colourScheme, int tapBoxHeight) {
 		setupPaints();
 
+		//Tapboxes
+		for (int i = 0; i < 4; i++) {
+			LOST[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mTap[i], UtilsScreenSize.scaleY(tapBoxHeight));
+			LOSTInverse[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mTapHold[i], UtilsScreenSize.scaleY(tapBoxHeight));
+		}
+
+
+		//Adjust the width of the tapboxes to maintain the same ratio as used in the image that represents them
+		DataSong.NOTESIZE = DataPlayer.TAP_AREA_WIDTH = UtilsScreenSize.getWidthInRatio(DataPlayer.TAP_AREA_HEIGHT, LOST[0].getWidth(), LOST[0].getHeight());
+		//New the width has been implemented we can calculate the gap
+		DataPlayer.TAP_AREA_GAP = (720 - (DataPlayer.TAP_AREA_WIDTH * 4))/5;
+		
+		//Pixel gap between tap boxes
 		int gapBetweenTapBoxes = (UtilsScreenSize.getScreenWidth() - (int)UtilsScreenSize.scaleX(DataPlayer.TAP_AREA_WIDTH * 4)) / 5;
 
 		try {
 			mBackgroundBitmap = loadBackground(colourScheme.mBackground, colourScheme.mBackgroundAlpha);
 			mBackgroundStarBitmap = loadBackground(colourScheme.mBackgroundStar, colourScheme.mBackgroundAlpha);
-			
-			//Star power bitmap
-			mStarPowerBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mStarPower)), UtilsScreenSize.scaleX(300),
-					UtilsScreenSize.scaleX(300), false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+			mStarPowerBitmap = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mStarPower, UtilsScreenSize.scaleX(300));
 
-		try {
 			// Load all of the tap box bitmaps (non-hold and hold) and note bitmaps
 			for (int i = 0; i < 4; i++) {
-				LOST[i] = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mTap[i])), UtilsScreenSize.scaleX(tapBoxWidth),
-						UtilsScreenSize.scaleY(tapBoxHeight), false);
-				LOSTInverse[i] = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mTapHold[i])), UtilsScreenSize.scaleX(tapBoxWidth),
-						UtilsScreenSize.scaleY(tapBoxHeight), false);
-				mNoteBitmap[i] = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mNote[i])), UtilsScreenSize.scaleX(DataSong.NOTESIZE),
-						UtilsScreenSize.scaleY(DataSong.NOTESIZE), false);
-				mNoteHeldBitmap[i] = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mNoteHeld[i])), UtilsScreenSize.scaleX(DataSong.NOTESIZE),
-						UtilsScreenSize.scaleY(DataSong.NOTESIZE), false);
-				mNoteStarBitmap[i] = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mNoteStar[i])), UtilsScreenSize.scaleX(DataSong.NOTESIZE),
-						UtilsScreenSize.scaleY(DataSong.NOTESIZE), false);
-
+				mNoteBitmap[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNote[i], UtilsScreenSize.scaleY(DataSong.NOTESIZE));
+				mNoteHeldBitmap[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteHeld[i], UtilsScreenSize.scaleY(DataSong.NOTESIZE));
+				mNoteStarBitmap[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteStar[i], UtilsScreenSize.scaleY(DataSong.NOTESIZE));
+				
 				// We have to adjust the paint bitmap offset
 				Matrix matrix = new Matrix();
 				int offsetWidth = gapBetweenTapBoxes * (i + 1) + UtilsScreenSize.scaleX( DataPlayer.TAP_AREA_WIDTH * i);
 				matrix.preTranslate(offsetWidth, 0);
 
 				// Load the held and unheld notes
-				Bitmap held = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mNoteStreamHeld[i])), UtilsScreenSize.scaleX(DataSong.NOTESIZE),
-						UtilsScreenSize.scaleY(DataSong.NOTESIZE), false);
-				Bitmap unheldStar = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mNoteStreamUnheldStar[i])), UtilsScreenSize.scaleX(DataSong.NOTESIZE),
-						UtilsScreenSize.scaleY(DataSong.NOTESIZE), false);
-				Bitmap unheld = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(colourScheme.mNoteStreamUnheld[i])),
-						UtilsScreenSize.scaleX(DataSong.NOTESIZE), UtilsScreenSize.scaleY(DataSong.NOTESIZE), false);
+				Bitmap held = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteStreamHeld[i], UtilsScreenSize.scaleY(DataSong.NOTESIZE));
+				Bitmap unheldStar = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteStreamUnheldStar[i], UtilsScreenSize.scaleY(DataSong.NOTESIZE));
+				Bitmap unheld = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteStreamUnheld[i], UtilsScreenSize.scaleY(DataSong.NOTESIZE));
 
 				BitmapShader unheldShader = new BitmapShader(unheld, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 				unheldShader.setLocalMatrix(matrix);
@@ -148,9 +150,8 @@ public class ColourSchemeAssets {
 				mHoldLineHeldPaint[i].setShader(heldShader);
 				mHoldLineHeldPaint[i].setAlpha(170);
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
+		colourScheme.dispose();
 	}
 	
 	private void setupPaints() {
@@ -298,5 +299,40 @@ public class ColourSchemeAssets {
 	
 	public StrokePaint getCountdownPaint() {
 		return mCountdownPaint;
+	}
+
+	@Override
+	public void dispose() {
+		UtilsDispose.disposeBitmaps(LOST);
+		UtilsDispose.disposeBitmaps(LOSTInverse);
+		UtilsDispose.disposeBitmaps(mNoteBitmap);
+		UtilsDispose.disposeBitmaps(mNoteStarBitmap);
+		UtilsDispose.disposeBitmaps(mNoteHeldBitmap);
+		UtilsDispose.disposeBitmap(mBackgroundBitmap);
+		UtilsDispose.disposeBitmap(mBackgroundStarBitmap);
+		UtilsDispose.disposeBitmap(mStarPowerBitmap);
+		UtilsDispose.dispose(mComboPaint);
+		UtilsDispose.dispose(mScorePaint);
+		UtilsDispose.dispose(mAccuracyPaint);
+		UtilsDispose.dispose(mMultiplierPaint);
+		UtilsDispose.dispose(mCountdownPaint);
+		Arrays.fill(mHoldLineUnheldPaint, null);
+		Arrays.fill(mHoldLineHeldPaint, null);
+		Arrays.fill(mHoldLineStarUnheldPaint, null);
+		LOST = null;
+		LOSTInverse = null;
+		mNoteBitmap = null;
+		mNoteStarBitmap = null;
+		mNoteHeldBitmap = null;
+		mBackgroundBitmap = null;
+		mBackgroundStarBitmap = null;
+		mStarPowerBitmap = null;
+		mComboPaint = null;
+		mAccuracyPaint = null;
+		mMultiplierPaint = null;
+		mCountdownPaint = null;
+		mHoldLineUnheldPaint = null;
+		mHoldLineHeldPaint = null;
+		mHoldLineStarUnheldPaint = null;
 	}
 }

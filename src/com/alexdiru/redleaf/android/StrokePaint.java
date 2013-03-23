@@ -5,7 +5,9 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Typeface;
 
-public class StrokePaint {
+import com.alexdiru.redleaf.interfaces.IDisposable;
+
+public class StrokePaint implements IDisposable {
 
 	private Paint mPaint;
 	private Paint mBackgroundPaint;
@@ -52,5 +54,11 @@ public class StrokePaint {
 	public void drawText(Canvas canvas, char[] text, int start, int length, float x, float y) {
 		canvas.drawText(text, start, length, x, y, mBackgroundPaint);
 		canvas.drawText(text, start, length, x, y, mPaint);
+	}
+
+	@Override
+	public void dispose() {
+		mPaint = null;
+		mBackgroundPaint = null;
 	}
 }

@@ -73,7 +73,7 @@ public class GameView extends SurfaceView implements
 		
 		//Get initial notes to render so they can be shown during the countdown
 		//TODO
-		mSong.updateNotes(0,(int) (1280 / mSongSpeed), TAPCIRCLES_Y);
+		mSong.updateNotes(0,(int) (1280 / mSongSpeed), TAPCIRCLES_Y, mSongSpeed);
 	}
 
 	private void setupTextPaints() {
@@ -213,13 +213,19 @@ public class GameView extends SurfaceView implements
 			if (mTapAreas != null) {
 				mCurrentTime = mMusicManager.getPlayPosition();
 				mTapAreas.update(mCurrentTime);
-				mSong.updateNotes(mCurrentTime, (int) (1280 / mSongSpeed), TAPCIRCLES_Y);
+				mSong.updateNotes(mCurrentTime, (int) (1280 / mSongSpeed), TAPCIRCLES_Y, mSongSpeed);
 			}
 	
 			//Check if song is over
 			if (!mMusicManager.isPlaying() && !mMusicManager.isPaused()) {
 				mGameState.set(GameState.STATE_SCOREDISPLAY);
-				ScoreDialog.show(mTapAreas.getScore());
+
+				synchronized (this) {
+					ScoreDialog.show(mTapAreas.getScore());
+					UtilsDispose.dispose(mTapAreas);
+					mTapAreas = null;
+					mSong = null;
+				}
 			}
 		} else if (mGameState.get() == GameState.STATE_COUNTDOWN) {
 
@@ -240,7 +246,8 @@ public class GameView extends SurfaceView implements
 			mTapAreas.render(canvas);
 
 		// Notes
-		mSong.renderNotes(canvas, mSongSpeed);
+		if (mSong != null)
+			mSong.renderNotes(canvas, mSongSpeed, mCurrentTime);
 		
 		if (mGameState.get() == GameState.STATE_GAME) {
 			// Text
@@ -331,6 +338,7 @@ public class GameView extends SurfaceView implements
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 
+		if (mGameState.get() == GameState.STATE_GAME) {
 		int actionCode = event.getAction() & MotionEvent.ACTION_MASK;
 		int touchOrderID = event.getAction() >> MotionEvent.ACTION_POINTER_ID_SHIFT;
 
@@ -352,7 +360,7 @@ public class GameView extends SurfaceView implements
 			break;
 		default:
 		}
-
+		}
 		return true;
 	}
 	

@@ -1,5 +1,7 @@
 package com.alexdiru.redleaf;
 
+import android.graphics.Bitmap;
+
 public class UtilsArray {
 
 	/*

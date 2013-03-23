@@ -1,5 +1,6 @@
 package com.alexdiru.redleaf;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -37,6 +38,8 @@ public class DataNote implements Comparable<DataNote> {
 
 	/** Stores the pixel position of the bottom of the note when it is being rendered */
 	public int mBottomY;
+	
+	private int mLeft;
 
 	/** If a hold note, whether the note is being held down */
 	private boolean mBeingHeld;
@@ -68,40 +71,52 @@ public class DataNote implements Comparable<DataNote> {
 	public boolean isHit(int currentTime, int tapWindow) {
 		return (mStartTime >= currentTime - tapWindow && mStartTime <= currentTime + tapWindow);
 	}
-
-	public void draw(Canvas canvas, DataPlayer tapAreas, float songSpeed) {
-		// Update note coordinates
+	
+	private void update(DataPlayer player, float songSpeed) {// Update note coordinates
 		mTopY = (int)(((Utils.getCurrentSong().mMusicManager.getPlayPosition() - getStartTime()) * songSpeed) + GameView.TAPCIRCLES_Y);
 		mBottomY = mTopY + DataSong.NOTESIZE;
-
-		int noteXPosition = tapAreas.getBoundingBoxLeft(mPosition) + (UtilsScreenSize.scaleX(DataPlayer.TAP_AREA_WIDTH - DataSong.NOTESIZE) >> 1);
-
-		if (isHoldNote())
-			drawHoldLine(canvas, tapAreas.getColourSchemeAssets().getHoldLineHeldPaint(mPosition), tapAreas.getColourSchemeAssets().getHoldLineUnheldPaint(mPosition, isStarNote()), noteXPosition, songSpeed);
+		mLeft = player.getBoundingBoxLeft(mPosition) + (UtilsScreenSize.scaleX(DataPlayer.TAP_AREA_WIDTH - DataSong.NOTESIZE) >> 1);
+	}
+	
+	public void render(Canvas canvas, DataPlayer player, float songSpeed, int currentTime) {
 		
-		if (isStarNote())
-			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getColourSchemeAssets().getNoteHeld(mPosition) : tapAreas.getColourSchemeAssets().getNoteStar(mPosition), noteXPosition, UtilsScreenSize.scaleY(mTopY), null);
-		else
-			canvas.drawBitmap(isHeld() && isHoldNote() ? tapAreas.getColourSchemeAssets().getNoteHeld(mPosition) : tapAreas.getColourSchemeAssets().getNote(mPosition), noteXPosition, UtilsScreenSize.scaleY(mTopY), null);
-
+		//Update the position
+		update(player, songSpeed);
+		
+		//If hold note draw the hold line
+		if (isHoldNote())
+			drawHoldLine(canvas, player.getColourSchemeAssets().getHoldLineHeldPaint(mPosition), player.getColourSchemeAssets().getHoldLineUnheldPaint(mPosition, isStarNote()), mLeft, songSpeed, currentTime);
+		
+		Bitmap bmp = getNoteBitmap(player.getColourSchemeAssets());
+		canvas.drawBitmap(bmp, mLeft, UtilsScreenSize.scaleY(mTopY), null);
 	}
 
-	private void drawHoldLine(Canvas canvas, Paint held, Paint unheld, int noteX, float songSpeed) {
-		// Get the top of the hold line
-		int holdLineYPosition = (int) ((Utils.getCurrentSong().mMusicManager.getPlayPosition() - mEndTime) * songSpeed) + GameView.TAPCIRCLES_Y;// - (int)(DataSong.NOTESIZE * 1.5);
-
-		// Top of line cannot be negative
-		if (holdLineYPosition < 0)
-			holdLineYPosition = 0;
-
+	/** Gets the bitmap used to draw the note */
+	private Bitmap getNoteBitmap(ColourSchemeAssets colourSchemeAssets) {
+		if (isStarNote())
+			return isHeld() && isHoldNote() ? colourSchemeAssets.getNoteHeld(mPosition) : colourSchemeAssets.getNoteStar(mPosition);
+		return isHeld() && isHoldNote() ? colourSchemeAssets.getNoteHeld(mPosition) : colourSchemeAssets.getNote(mPosition);
+	}
+	
+	
+	private void drawHoldLine(Canvas canvas, Paint held, Paint unheld, int noteX, float songSpeed,int currentTime) {
+		
+		//Something has gone wrong
 		if (mHoldLineRect == null)
 			return;
+		
+		//Get the top of the hold line
+		int holdLineTop = (int) ((currentTime - mEndTime) * songSpeed) + GameView.TAPCIRCLES_Y;
+		if (holdLineTop < 0)
+			holdLineTop = 0;
 
+		//Create the rectangle 
 		mHoldLineRect.left = noteX;
-		mHoldLineRect.top = UtilsScreenSize.scaleY(holdLineYPosition);
+		mHoldLineRect.top = UtilsScreenSize.scaleY(holdLineTop);
 		mHoldLineRect.right = noteX + UtilsScreenSize.scaleY(DataSong.NOTESIZE);
 		mHoldLineRect.bottom = UtilsScreenSize.scaleY(mBottomY - DataSong.NOTESIZE / 2);
 
+		//Draw the hold line
 		canvas.drawRect(mHoldLineRect, mBeingHeld ? held : unheld);
 	}
 
