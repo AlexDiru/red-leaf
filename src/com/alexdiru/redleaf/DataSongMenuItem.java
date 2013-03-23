@@ -15,6 +15,7 @@ public class DataSongMenuItem {
 	/** The file which contains the notes/other data for the song */
 	public String mNoteFile;
 	
+	/** Whether the song has notes for certain difficulties, i.e. if mDA[2] is true, then hard mode is available */
 	private boolean[] mDifficultiesAvailable = new boolean[3];
 
 	public DataSongMenuItem(String songName, String albumName, String noteFile, String difficulties) {

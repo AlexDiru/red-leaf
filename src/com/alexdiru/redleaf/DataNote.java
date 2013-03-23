@@ -73,9 +73,9 @@ public class DataNote implements Comparable<DataNote> {
 	}
 	
 	private void update(DataPlayer player, float songSpeed) {// Update note coordinates
-		mTopY = (int)(((Utils.getCurrentSong().mMusicManager.getPlayPosition() - getStartTime()) * songSpeed) + GameView.TAPCIRCLES_Y);
-		mBottomY = mTopY + DataSong.NOTESIZE;
-		mLeft = player.getBoundingBoxLeft(mPosition) + (UtilsScreenSize.scaleX(DataPlayer.TAP_AREA_WIDTH - DataSong.NOTESIZE) >> 1);
+		mTopY = (int)(((Utils.getCurrentSong().mMusicManager.getPlayPosition() - getStartTime()) * songSpeed) + DataPlayer.mUnscaledTapBoxY);
+		mBottomY = mTopY + DataSong.mNotePixelHeight;
+		mLeft = player.getBoundingBoxLeft(mPosition) + (UtilsScreenSize.scaleX(DataPlayer.getUnscaledTapBoxWidth()- DataSong.mNotePixelHeight) >> 1);
 	}
 	
 	public void render(Canvas canvas, DataPlayer player, float songSpeed, int currentTime) {
@@ -106,15 +106,15 @@ public class DataNote implements Comparable<DataNote> {
 			return;
 		
 		//Get the top of the hold line
-		int holdLineTop = (int) ((currentTime - mEndTime) * songSpeed) + GameView.TAPCIRCLES_Y;
+		int holdLineTop = (int) ((currentTime - mEndTime) * songSpeed) + DataPlayer.mUnscaledTapBoxY;
 		if (holdLineTop < 0)
 			holdLineTop = 0;
 
 		//Create the rectangle 
 		mHoldLineRect.left = noteX;
 		mHoldLineRect.top = UtilsScreenSize.scaleY(holdLineTop);
-		mHoldLineRect.right = noteX + UtilsScreenSize.scaleY(DataSong.NOTESIZE);
-		mHoldLineRect.bottom = UtilsScreenSize.scaleY(mBottomY - DataSong.NOTESIZE / 2);
+		mHoldLineRect.right = noteX + UtilsScreenSize.scaleY(DataSong.mNotePixelHeight);
+		mHoldLineRect.bottom = UtilsScreenSize.scaleY(mBottomY - DataSong.mNotePixelHeight / 2);
 
 		//Draw the hold line
 		canvas.drawRect(mHoldLineRect, mBeingHeld ? held : unheld);

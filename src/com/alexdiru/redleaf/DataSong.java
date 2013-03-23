@@ -15,17 +15,20 @@ import com.alexdiru.redleaf.interfaces.IDisposable;
  *
  */
 public class DataSong implements IDisposable {
-
-	/** The pixel width/height of each note */
-	public static int NOTESIZE;
 	
 	/** The maximum number of notes that can be rendered */
 	private static final int MAX_NOTES_ON_SCREEN = 20;
+	
+	/** The pixel height of each note */
+	public static int mNotePixelHeight;
 
 	/** Represents the levels of difficulty of the song */
 	public enum DataSongDifficulty {
 		EASY, MEDIUM, HARD
 	}
+
+	/** Speed at which notes fall */
+	private float mSongSpeed;
 
 	/** Artist of the song */
 	public String mArtistName = "LOST";
@@ -157,11 +160,26 @@ public class DataSong implements IDisposable {
 			} catch (Exception ex) {
 			}
 		}
+		
+		//Adjust speed according to difficulty
+		switch (currentDifficulty) {
+			default:
+			case 0:
+				mSongSpeed = 0.65f;
+				break;
+			case 1:
+				mSongSpeed = 0.75f;
+				break;
+			case 2:
+				mSongSpeed = 0.85f;
+				break;
+		}
 	}
 	
-	public void updateNotes(int currentTime, int renderDistance, int tapCirclesHeight, float songSpeed) {
+	public void updateNotes(int currentTime, int renderDistance) {
 
-		tapCirclesHeight = UtilsScreenSize.scaleY(tapCirclesHeight);
+		//Account for song speed
+		renderDistance /= mSongSpeed;
 		
 		// Check the render list to remove any tapped or off screen notes
 		// Note: must use iterator to delete otherwise MASSIVE speed drop (very noticable jitter)
@@ -238,7 +256,7 @@ public class DataSong implements IDisposable {
 	/** Renders the notes of the song
 	 * @param canvas The canvas to render to
 	 * @param songSpeed */
-	public void renderNotes(Canvas canvas,float songSpeed, int currentTime) {
+	public void renderNotes(Canvas canvas, int currentTime) {
 
 		// Assign the notes to a local array list
 		ArrayList<DataNote> notes = Utils.getCurrentSong().mRenderNotes;
@@ -251,7 +269,7 @@ public class DataSong implements IDisposable {
 			if (note == null)
 				continue;
 
-			note.render(canvas, mTapAreas, songSpeed,currentTime);
+			note.render(canvas, mTapAreas, mSongSpeed,currentTime);
 		}
 	}
 

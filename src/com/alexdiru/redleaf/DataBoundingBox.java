@@ -67,7 +67,8 @@ public class DataBoundingBox implements IRenderable, IDisposable {
 		if (width % 2 != 0)
 			width++;
 		mRectangleWidth = width;
-		mRectanglePaint.setColor(Color.BLACK);
+		mRectanglePaint.setColor(Color.DKGRAY);
+		mRectanglePaint.setAlpha(155);
 		mRectanglePaint.setStrokeWidth(mRectangleWidth);
 	}
 

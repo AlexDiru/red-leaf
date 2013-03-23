@@ -20,10 +20,6 @@ import com.alexdiru.redleaf.interfaces.IDisposable;
 public class GameView extends SurfaceView implements
 		SurfaceHolder.Callback, OnTouchListener, IDisposable {
 
-	private static final String SONG_NAME_PREFIX = Utils.getActivity().getString(R.string.game_songnameprefix);
-
-	public static final int TAPCIRCLES_Y = (int) (1280 / 1.3061);
-
 	private GameThread mGameThread;
 	public MusicManager mMusicManager;
 	private DataPlayer mTapAreas;
@@ -36,12 +32,6 @@ public class GameView extends SurfaceView implements
 
 	/** Current time that the song is at, assigned in the update method, used in the draw method */
 	private int mCurrentTime;
-
-	/** Speed at which notes fall */
-	//easy 0.7
-	//med 0.8
-	//hard 1.1
-	private float mSongSpeed = 0.85f;
 
 	// / Debug Variables ///
 	// Variables for recording the FPS
@@ -72,8 +62,7 @@ public class GameView extends SurfaceView implements
 		mGameState.set(GameState.STATE_COUNTDOWN);
 		
 		//Get initial notes to render so they can be shown during the countdown
-		//TODO
-		mSong.updateNotes(0,(int) (1280 / mSongSpeed), TAPCIRCLES_Y, mSongSpeed);
+		mSong.updateNotes(0, 1280);
 	}
 
 	private void setupTextPaints() {
@@ -213,7 +202,7 @@ public class GameView extends SurfaceView implements
 			if (mTapAreas != null) {
 				mCurrentTime = mMusicManager.getPlayPosition();
 				mTapAreas.update(mCurrentTime);
-				mSong.updateNotes(mCurrentTime, (int) (1280 / mSongSpeed), TAPCIRCLES_Y, mSongSpeed);
+				mSong.updateNotes(mCurrentTime, 1280);
 			}
 	
 			//Check if song is over
@@ -247,7 +236,7 @@ public class GameView extends SurfaceView implements
 
 		// Notes
 		if (mSong != null)
-			mSong.renderNotes(canvas, mSongSpeed, mCurrentTime);
+			mSong.renderNotes(canvas, mCurrentTime);
 		
 		if (mGameState.get() == GameState.STATE_GAME) {
 			// Text

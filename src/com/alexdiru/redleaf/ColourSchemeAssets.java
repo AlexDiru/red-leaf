@@ -12,7 +12,6 @@ import android.graphics.Paint.Align;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Shader;
@@ -95,16 +94,18 @@ public class ColourSchemeAssets implements IDisposable {
 			LOST[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mTap[i], UtilsScreenSize.scaleY(tapBoxHeight));
 			LOSTInverse[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mTapHold[i], UtilsScreenSize.scaleY(tapBoxHeight));
 		}
-
-
+		
 		//Adjust the width of the tapboxes to maintain the same ratio as used in the image that represents them
-		DataSong.NOTESIZE = DataPlayer.TAP_AREA_WIDTH = UtilsScreenSize.getWidthInRatio(DataPlayer.TAP_AREA_HEIGHT, LOST[0].getWidth(), LOST[0].getHeight());
+		int scaledTapBoxWidth = UtilsScreenSize.getWidthInRatio(DataPlayer.getUnscaledTapBoxHeight(), LOST[0].getWidth(), LOST[0].getHeight());
+		DataPlayer.setUnscaledTapBoxWidth(scaledTapBoxWidth);
+		DataSong.mNotePixelHeight = scaledTapBoxWidth;
+		
 		//New the width has been implemented we can calculate the gap
-		DataPlayer.TAP_AREA_GAP = (720 - (DataPlayer.TAP_AREA_WIDTH * 4))/5;
+		DataPlayer.setUnscaledTapBoxGap((720 - (DataPlayer.getUnscaledTapBoxWidth() * 4))/5);
 		
 		//Pixel gap between tap boxes
-		int gapBetweenTapBoxes = (UtilsScreenSize.getScreenWidth() - (int)UtilsScreenSize.scaleX(DataPlayer.TAP_AREA_WIDTH * 4)) / 5;
-
+		int gapBetweenTapBoxes = UtilsScreenSize.scaleX(DataPlayer.getUnscaledTapBoxGap());
+		
 		try {
 			mBackgroundBitmap = loadBackground(colourScheme.mBackground, colourScheme.mBackgroundAlpha);
 			mBackgroundStarBitmap = loadBackground(colourScheme.mBackgroundStar, colourScheme.mBackgroundAlpha);
@@ -115,19 +116,19 @@ public class ColourSchemeAssets implements IDisposable {
 
 			// Load all of the tap box bitmaps (non-hold and hold) and note bitmaps
 			for (int i = 0; i < 4; i++) {
-				mNoteBitmap[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNote[i], UtilsScreenSize.scaleY(DataSong.NOTESIZE));
-				mNoteHeldBitmap[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteHeld[i], UtilsScreenSize.scaleY(DataSong.NOTESIZE));
-				mNoteStarBitmap[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteStar[i], UtilsScreenSize.scaleY(DataSong.NOTESIZE));
+				mNoteBitmap[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNote[i], UtilsScreenSize.scaleY(DataSong.mNotePixelHeight));
+				mNoteHeldBitmap[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteHeld[i], UtilsScreenSize.scaleY(DataSong.mNotePixelHeight));
+				mNoteStarBitmap[i] = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteStar[i], UtilsScreenSize.scaleY(DataSong.mNotePixelHeight));
 				
 				// We have to adjust the paint bitmap offset
 				Matrix matrix = new Matrix();
-				int offsetWidth = gapBetweenTapBoxes * (i + 1) + UtilsScreenSize.scaleX( DataPlayer.TAP_AREA_WIDTH * i);
+				int offsetWidth = gapBetweenTapBoxes * (i + 1) + UtilsScreenSize.scaleX(DataPlayer.getUnscaledTapBoxWidth() * i);
 				matrix.preTranslate(offsetWidth, 0);
-
+   
 				// Load the held and unheld notes
-				Bitmap held = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteStreamHeld[i], UtilsScreenSize.scaleY(DataSong.NOTESIZE));
-				Bitmap unheldStar = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteStreamUnheldStar[i], UtilsScreenSize.scaleY(DataSong.NOTESIZE));
-				Bitmap unheld = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteStreamUnheld[i], UtilsScreenSize.scaleY(DataSong.NOTESIZE));
+				Bitmap held = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteStreamHeld[i], UtilsScreenSize.scaleY(DataSong.mNotePixelHeight));
+				Bitmap unheldStar = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteStreamUnheldStar[i], UtilsScreenSize.scaleY(DataSong.mNotePixelHeight));
+				Bitmap unheld = UtilsScreenSize.loadBitmapInRatioFromHeight(colourScheme.mNoteStreamUnheld[i], UtilsScreenSize.scaleY(DataSong.mNotePixelHeight));
 
 				BitmapShader unheldShader = new BitmapShader(unheld, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 				unheldShader.setLocalMatrix(matrix);
@@ -180,7 +181,6 @@ public class ColourSchemeAssets implements IDisposable {
 		mMultiplierPaint.setARGB(220, 255, 255, 255);
 		mMultiplierPaint.setStrokeARGB(220, 0, 0, 0);
 		
-
 		mCountdownPaint.setTextSize(UtilsScreenSize.scaleFontSize(110));
 		mCountdownPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
 		mCountdownPaint.setStrokeWidth(UtilsScreenSize.scaleFontSize(12));

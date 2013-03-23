@@ -7,6 +7,8 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.Display;
 
+import com.alexdiru.redleaf.exception.ResourceNotExistant;
+
 public abstract class UtilsScreenSize {
 	
 	private static int mScreenHeight;
@@ -64,8 +66,7 @@ public abstract class UtilsScreenSize {
 		try {
 			return loadBitmapInRatioFromWidth(BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(assetFile)), newWidth, originalWidth, originalHeight);
 		} catch (IOException e) {
-			Log.d("error", assetFile + " does not exist");
-			return null;
+			throw new ResourceNotExistant(assetFile + " does not exist");
 		}
 	}
 	
@@ -74,8 +75,7 @@ public abstract class UtilsScreenSize {
 			Bitmap original = BitmapFactory.decodeStream(Utils.getActivity().getAssets().open(assetFile));
 			return loadBitmapInRatioFromHeight(original, newHeight, original.getWidth(), original.getHeight());
 		} catch (IOException e) {
-			Log.d("error", assetFile + " does not exist");
-			return null;
+			throw new ResourceNotExistant(assetFile + " does not exist");
 		}
 	}
 	

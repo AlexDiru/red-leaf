@@ -3,26 +3,38 @@ package com.alexdiru.redleaf;
 import android.graphics.Canvas;
 
 import com.alexdiru.redleaf.ColourScheme.ThemeType;
+import com.alexdiru.redleaf.exception.ValueNotSetException;
 import com.alexdiru.redleaf.interfaces.IDisposable;
 import com.alexdiru.redleaf.interfaces.IRenderable;
 
 public class DataPlayer implements IRenderable, IDisposable {
 
-	private static final int TAP_AREAS = 4;
-	public static final int TAP_AREA_HEIGHT = 160;
-	private static final int NOTE_STREAK_REQUIRED_FOR_STAR_POWER = 10;
+	/** Unscaled Y position of the tapboxes */
+	public static final int mUnscaledTapBoxY = (int) (1280 / 1.3061);
 	
-	private static final int STAR_POWER_DURATION = 10000;
-
-
-	public static int TAP_AREA_WIDTH;
-	public static int TAP_AREA_GAP;
+	/** Handles the rendering according to the colour scheme - sets some of the variables in this class so make sure this is first */
+	private ColourSchemeAssets mColourSchemeAssets = new ColourSchemeAssets(new ColourScheme(ThemeType.DISCOVERY),mUnscaledTapBoxHeight);
 	
+	/** The number of star notes required in a streak for star power */
+	private static final int mNoteStreakRequiredForStarPower = 10;
+	
+	/** The number of milliseconds star power lasts for */
+	private static final int mStarPowerDuration = 10000;
+	
+	/** The pixel height of the tapboxes when ScaleY = 1 */
+	private static final int mUnscaledTapBoxHeight = 160;
+
+	/** Set in ColourSchemeAssets as is dependent on the ratio of the images loaded */
+	private static int mUnscaledTapBoxWidth = -1;
+	
+	/** Set in ColourSchemeAssets as is dependent on the ratio of the images loaded */
+	private static int mUnscaledTapBoxGap = -1;
+	
+	/** The tapboxes the player touches to tap/hold notes */
 	private DataTapBox[] mTapBoxes;
+	
+	/** The song the player is playing */
 	private DataSong mSong;
-
-	/** Handles the rendering according to the colour scheme */
-	private ColourSchemeAssets mColourSchemeAssets = new ColourSchemeAssets(new ColourScheme(ThemeType.DISCOVERY),TAP_AREA_HEIGHT);
 
 	/** Handles the player's touches */
 	private DataTouchMap mTouchMap = new DataTouchMap();
@@ -62,7 +74,7 @@ public class DataPlayer implements IRenderable, IDisposable {
 	}
 	
 	public void update(int currentTime) {
-		if (mStarPowerActive && mStarPowerTimeOfActivation + STAR_POWER_DURATION < currentTime)
+		if (mStarPowerActive && mStarPowerTimeOfActivation + mStarPowerDuration < currentTime)
 			endStarPower();
 	}
 	
@@ -78,23 +90,23 @@ public class DataPlayer implements IRenderable, IDisposable {
 
 	private void initialiseBackgroundAndTapBoxes() {
 		//Create the bounding boxes
-		mTapBoxes = new DataTapBox[TAP_AREAS];
-		for (int t = 0; t < TAP_AREAS; t++) {
+		mTapBoxes = new DataTapBox[4];
+		for (int t = 0; t < 4; t++) {
 			mTapBoxes[t] = new DataTapBox();
-			mTapBoxes[t].setRectangleWidth(Math.round(UtilsScreenSize.scaleY(6)));
+			mTapBoxes[t].setRectangleWidth(Math.round(UtilsScreenSize.scaleY(14)));
 			mTapBoxes[t].setUnheldBitmap(mColourSchemeAssets.getTapBox(t));
 			mTapBoxes[t].setHeldBitmap(mColourSchemeAssets.getTapBoxHeld(t));
 		}
 		
 		//Get the tapbox height boundaries
-		mTapBoxTop = UtilsScreenSize.scaleY(GameView.TAPCIRCLES_Y);
-		mTapBoxBottom = mTapBoxTop + UtilsScreenSize.scaleY(TAP_AREA_HEIGHT);
+		mTapBoxTop = UtilsScreenSize.scaleY(DataPlayer.mUnscaledTapBoxY);
+		mTapBoxBottom = mTapBoxTop + UtilsScreenSize.scaleY(mUnscaledTapBoxHeight);
 		
 		//Update the tapboxes according to their size
-		mTapBoxes[0].update(UtilsScreenSize.scaleX(TAP_AREA_GAP), mTapBoxTop);//, UtilsScreenSize.scaleX(TAP_AREA_GAP + TAP_AREA_WIDTH), mTapBoxBottom);
-		mTapBoxes[1].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 2) + TAP_AREA_WIDTH, mTapBoxTop);//, UtilsScreenSize.scaleX(TAP_AREA_GAP * 2 ) + TAP_AREA_WIDTH * 2, mTapBoxBottom);
-		mTapBoxes[2].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 3)+ TAP_AREA_WIDTH * 2, mTapBoxTop);//, UtilsScreenSize.scaleX(TAP_AREA_GAP * 3) + TAP_AREA_WIDTH * 3, mTapBoxBottom);
-		mTapBoxes[3].update(UtilsScreenSize.scaleX(TAP_AREA_GAP * 4)+ TAP_AREA_WIDTH * 3, mTapBoxTop);//, UtilsScreenSize.scaleX(TAP_AREA_GAP * 4) + TAP_AREA_WIDTH * 4, mTapBoxBottom);
+		mTapBoxes[0].update(UtilsScreenSize.scaleX(getUnscaledTapBoxGap()), mTapBoxTop);//, UtilsScreenSize.scaleX(TAP_AREA_GAP + TAP_AREA_WIDTH), mTapBoxBottom);
+		mTapBoxes[1].update(UtilsScreenSize.scaleX(getUnscaledTapBoxGap() * 2) + mUnscaledTapBoxWidth, mTapBoxTop);//, UtilsScreenSize.scaleX(TAP_AREA_GAP * 2 ) + TAP_AREA_WIDTH * 2, mTapBoxBottom);
+		mTapBoxes[2].update(UtilsScreenSize.scaleX(getUnscaledTapBoxGap() * 3)+ mUnscaledTapBoxWidth * 2, mTapBoxTop);//, UtilsScreenSize.scaleX(TAP_AREA_GAP * 3) + TAP_AREA_WIDTH * 3, mTapBoxBottom);
+		mTapBoxes[3].update(UtilsScreenSize.scaleX(getUnscaledTapBoxGap() * 4)+ mUnscaledTapBoxWidth * 3, mTapBoxTop);//, UtilsScreenSize.scaleX(TAP_AREA_GAP * 4) + TAP_AREA_WIDTH * 4, mTapBoxBottom);
 		
 		//Render the tapboxes on the same bitmap as the background
 		mColourSchemeAssets.setupBackgroundsWithTapboxes(mTapBoxes);
@@ -125,7 +137,7 @@ public class DataPlayer implements IRenderable, IDisposable {
 		else 
 			mStarNoteStreak = 0;
 		
-		if (mStarNoteStreak == NOTE_STREAK_REQUIRED_FOR_STAR_POWER) {
+		if (mStarNoteStreak == mNoteStreakRequiredForStarPower) {
 			mStarPowersAvailable++;
 			mStarNoteStreak = 0;
 		}
@@ -151,8 +163,8 @@ public class DataPlayer implements IRenderable, IDisposable {
 	public void handleTouchDown(int x, int y, int pid, int currentTime) {
 		
 		//Check the tapboxes being touched
-		for (int i = 0; i < TAP_AREAS; i++)
-			if (mTapBoxes[i].isTouched(x, y, TAP_AREA_GAP/2, TAP_AREA_GAP*2)) {
+		for (int i = 0; i < 4; i++)
+			if (mTapBoxes[i].isTouched(x, y, UtilsScreenSize.scaleX(getUnscaledTapBoxGap() >> 1), UtilsScreenSize.scaleX(getUnscaledTapBoxGap() << 1))) {
 				mTapBoxes[i].hold();
 				mSong.tap(i, currentTime);
 				mTouchMap.put(pid, i);
@@ -198,7 +210,7 @@ public class DataPlayer implements IRenderable, IDisposable {
 	public void render(Canvas canvas) {
 		canvas.drawBitmap(mColourSchemeAssets.getBackground(mStarPowerActive),0,0,null);
 
-		for (int t = 0; t < TAP_AREAS; t++)
+		for (int t = 0; t < 4; t++)
 			if (mTouchMap.isTouched(t))
 				mTapBoxes[t].render(canvas);
 	
@@ -262,5 +274,29 @@ public class DataPlayer implements IRenderable, IDisposable {
 		UtilsDispose.dispose(mTouchMap);
 		UtilsDispose.dispose(mStarPowerBoundingBox);
 		UtilsDispose.dispose(mSong);
+	}
+	
+	public static int getUnscaledTapBoxHeight() {
+		return mUnscaledTapBoxHeight;
+	}
+	
+	public static void setUnscaledTapBoxWidth(int width) {
+		mUnscaledTapBoxWidth = width;
+	}
+	
+	public static int getUnscaledTapBoxWidth() {
+		if (mUnscaledTapBoxWidth == -1)
+			throw new ValueNotSetException("getScaledTapBoxWidth()");
+		return mUnscaledTapBoxWidth;
+	}
+
+	public static void setUnscaledTapBoxGap(int gap) {
+		mUnscaledTapBoxGap = gap;
+	}
+	
+	public static int getUnscaledTapBoxGap() {
+		if (mUnscaledTapBoxGap == -1)
+			throw new ValueNotSetException("getScaledTapBoxGap()");
+		return mUnscaledTapBoxGap;
 	}
 }
