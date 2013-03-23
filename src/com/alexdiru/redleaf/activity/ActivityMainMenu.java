@@ -15,12 +15,14 @@ public class ActivityMainMenu extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ActivityCommon.create(this);
+		UtilsScreenSize.initialise(getWindowManager().getDefaultDisplay());
 		
 		setContentView(R.layout.activity_menumain);
+
+		getWindow().setBackgroundDrawable(new MenuBackground("menu_background.png"));
 		
 		addButtonListeners();
 
-		UtilsScreenSize.initialise(getWindowManager().getDefaultDisplay());
 	}
 	
 	private void addButtonListeners() {

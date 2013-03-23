@@ -14,6 +14,8 @@ public class ActivityCredits extends Activity {
 		ActivityCommon.create(this);
 		
 		setContentView(R.layout.activity_credits);
+		
+		getWindow().setBackgroundDrawable(new MenuBackground("menu_background.png"));
 	}
 	
 }

@@ -2,7 +2,6 @@ artist LOST
 album DISCOVERY
 song PERFECTION
 mp3 Perfection.mp3
-background discovery.png
 
 begindifficulty 1
 note 830 0 0 1

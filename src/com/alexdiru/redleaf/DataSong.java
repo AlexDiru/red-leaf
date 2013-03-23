@@ -18,9 +18,6 @@ public class DataSong implements IDisposable {
 	
 	/** The maximum number of notes that can be rendered */
 	private static final int MAX_NOTES_ON_SCREEN = 20;
-	
-	/** The pixel height of each note */
-	public static int mNotePixelHeight;
 
 	/** Represents the levels of difficulty of the song */
 	public enum DataSongDifficulty {
@@ -148,8 +145,6 @@ public class DataSong implements IDisposable {
 					mSongName = UtilsArray.concatArray(fields, " ", 1);
 				else if (fields[0].equals("mp3"))
 					mMusicFile = UtilsArray.concatArray(fields, " ", 1);
-				/* else if (fields[0].equals("background")) mBackgroundFile =
-				 * UtilsArray.concatArray(fields, " ", 1); */
 				else if (fields[0].equals("begindifficulty") && fields[1].equals(String.valueOf(currentDifficulty)))
 					parseNotes = true;
 				else if (parseNotes && fields[0].equals("note"))

@@ -23,6 +23,7 @@ public class ActivitySongPickerMenu extends Activity implements OnItemClickListe
 	private ListView mListView;
 	private FileIOSongListParser mSongListParser;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -31,7 +32,7 @@ public class ActivitySongPickerMenu extends Activity implements OnItemClickListe
 		
 		mListView = (ListView)findViewById(R.id.listView);
 		
-		mListView.setBackgroundResource(R.drawable.songpicker_background_tile);
+		mListView.setBackgroundDrawable(new MenuBackground("menu_background.png"));
 		
 		// Setup the list view
 		// Load all the songs from file
