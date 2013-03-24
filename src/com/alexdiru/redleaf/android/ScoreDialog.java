@@ -21,6 +21,7 @@ public abstract class ScoreDialog {
 					}
 				});
 				
+				
 				//Set the title and body of the dialog
 				StringBuilder sb = UtilsString.getStringBuilder();
 				sb.append( Utils.getActivity().getString(R.string.game_scoredialog_message));
@@ -31,6 +32,8 @@ public abstract class ScoreDialog {
 				
 				//Create and show the dialog
 				AlertDialog dialog = builder.create();
+				
+				dialog.setCanceledOnTouchOutside(false);
 				dialog.show();
 			}
 		});
