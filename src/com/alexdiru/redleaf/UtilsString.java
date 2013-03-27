@@ -8,7 +8,7 @@ public class UtilsString {
 	private static final char[] mChars = new char[100];
 	private static int[] mDigitBuffer = new int[10];
 	private static String[] mDigits = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-" };
-
+	
 	public static StringBuilder getStringBuilder() {
 		mStringBuilder.setLength(0);
 		return mStringBuilder;

@@ -97,7 +97,7 @@ public class DataNote implements Comparable<DataNote> {
 
 		// Update the position
 		update(player, songSpeed);
-
+		
 		// If hold note draw the hold line
 		if (isHoldNote())
 			drawHoldLine(canvas, player.getColourSchemeAssets().getHoldLineHeldPaint(mPosition),

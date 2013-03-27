@@ -49,6 +49,7 @@ public class ActivityMainMenu extends Activity {
 				Utils.switchActivity(ActivityCredits.class);
 			}
 		});
+
 	}
 }
 

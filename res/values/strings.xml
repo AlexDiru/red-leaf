@@ -36,6 +36,11 @@
     <string name="game_countdown2">2</string>
     <string name="game_countdown1">1</string>
     
+    <!-- Twitter -->
+    <string name="twitter_scorepost">I scored SCORE in SONGNAME #RedLeafGame</string>
+    <string name="twitter_accessgranttitle">GRANT ACCESS TITLE</string>
+    <string name="twitter_accessgrantmessage">GRANT ACCESS MESSAGE URL</string>
+    
     <color name="gray">#4D494A</color>
     <color name="red">#FF5757</color>
     <color name="white">#FFFFFF</color>

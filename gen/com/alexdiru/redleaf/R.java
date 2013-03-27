@@ -23,31 +23,40 @@ public final class R {
         public static final int listview_selector_pressed=0x7f020004;
     }
     public static final class id {
-        public static final int creditsButton=0x7f080008;
-        public static final int dialogButtonOK=0x7f08000e;
+        public static final int button1=0x7f080008;
+        public static final int creditsButton=0x7f08000a;
+        public static final int dialogButtonOK=0x7f080014;
         public static final int editorsongpicker_listview=0x7f080004;
-        public static final int exitButton=0x7f080009;
+        public static final int exitButton=0x7f08000b;
         public static final int gameLayout=0x7f080006;
         public static final int gamearea=0x7f080005;
-        public static final int image=0x7f08000c;
-        public static final int listView=0x7f08000b;
-        public static final int menu_settings=0x7f08000f;
-        public static final int menusongpicker_textview=0x7f08000a;
-        public static final int playButton=0x7f080007;
+        public static final int image=0x7f080012;
+        public static final int listView=0x7f08000f;
+        public static final int login_button=0x7f080010;
+        public static final int menu_settings=0x7f080015;
+        public static final int menusongpicker_textview=0x7f08000e;
+        public static final int playButton=0x7f080009;
         public static final int playTextView=0x7f080000;
-        public static final int text=0x7f08000d;
+        public static final int revieew=0x7f08000d;
+        public static final int text=0x7f080013;
         public static final int textView1=0x7f080001;
         public static final int textView2=0x7f080002;
+        public static final int tweetButton=0x7f08000c;
+        public static final int tweet_button=0x7f080011;
+        public static final int twitterCheck=0x7f080007;
         public static final int versionTextView=0x7f080003;
     }
     public static final class layout {
         public static final int activity_credits=0x7f030000;
         public static final int activity_editorsongpicker=0x7f030001;
         public static final int activity_game=0x7f030002;
-        public static final int activity_menumain=0x7f030003;
-        public static final int activity_songpicker=0x7f030004;
-        public static final int activity_songpicker_layout=0x7f030005;
-        public static final int dialog_unimplementedsong=0x7f030006;
+        public static final int activity_main=0x7f030003;
+        public static final int activity_menumain=0x7f030004;
+        public static final int activity_post=0x7f030005;
+        public static final int activity_songpicker=0x7f030006;
+        public static final int activity_songpicker_layout=0x7f030007;
+        public static final int activity_tweettotwitter=0x7f030008;
+        public static final int dialog_unimplementedsong=0x7f030009;
     }
     public static final class menu {
         public static final int activity_game=0x7f070000;
@@ -85,6 +94,11 @@ public final class R {
         /**  Alerts 
          */
         public static final int ok=0x7f040008;
+        public static final int twitter_accessgrantmessage=0x7f04001c;
+        public static final int twitter_accessgranttitle=0x7f04001b;
+        /**  Twitter 
+         */
+        public static final int twitter_scorepost=0x7f04001a;
         public static final int unimplementedsong_message=0x7f04000a;
         public static final int unimplementedsong_title=0x7f040009;
     }

@@ -206,7 +206,7 @@ public class GameView extends SurfaceView implements
 			}
 	
 			//Check if song is over
-			if (!mMusicManager.isPlaying() && !mMusicManager.isPaused()) {
+			if (mMusicManager.isSongOver()) {
 				mGameState.set(GameState.STATE_SCOREDISPLAY);
 
 				synchronized (this) {
@@ -245,7 +245,7 @@ public class GameView extends SurfaceView implements
 			drawAccuracy(canvas);
 			// drawStreak(canvas);
 			drawMultiplier(canvas);
-			// drawFPS(canvas);
+			drawFPS(canvas);
 			drawCombo(canvas);
 		} else if (mGameState.get() == GameState.STATE_COUNTDOWN) {
 			mCountdownTimer.render(canvas);
@@ -321,7 +321,7 @@ public class GameView extends SurfaceView implements
 		sb.append(Utils.getActivity().getString(R.string.game_fpsdivider));
 		UtilsString.appendInteger((int) (mTotalFPS / mLoopCount));
 		sb.getChars(0, sb.length(), UtilsString.getChars(), 0);
-		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 120, mTextPaint);
+		canvas.drawText(UtilsString.getChars(), 0, sb.length(), 30, 300, mTextPaint);
 	}
 
 	@Override

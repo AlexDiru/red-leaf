@@ -1,0 +1,5 @@
+All functionality | [0] 48fps rising to 53fps after ~a minute 
+No note rendering | [+12] 59-60fps
+No note updating  | [+10] 58fps (though no rendering as well?)
+No note rendering & updating | [+10] 58fps
+Using foreach to render | negligible

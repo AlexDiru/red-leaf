@@ -95,6 +95,10 @@ public class MusicManager implements OnPreparedListener, IDisposable {
 		mStarted = true;
 		}
 	}
+	
+	public boolean isSongOver() {
+		return !isPlaying() && !isPaused();
+	}
 
 	public int getLength() {
 		return mMediaPlayer.getDuration();

@@ -2,20 +2,19 @@ package com.alexdiru.redleaf;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
 import android.graphics.Canvas;
 
 import com.alexdiru.redleaf.android.MusicManager;
 import com.alexdiru.redleaf.interfaces.IDisposable;
 
-/** Represents a song the player can play
- * As such it stores all the notes which will fall down the screen (and provide methods to update and render these notes)
- * @author Alex
- *
- */
+/** Represents a song the player can play As such it stores all the notes which
+ * will fall down the screen (and provide methods to update and render these
+ * notes)
+ * 
+ * @author Alex */
 public class DataSong implements IDisposable {
-	
+
 	/** The maximum number of notes that can be rendered */
 	private static final int MAX_NOTES_ON_SCREEN = 20;
 
@@ -42,7 +41,8 @@ public class DataSong implements IDisposable {
 	/** Points to the file the music for the song is stored in */
 	public String mMusicFile;
 
-	/** Stores the notes of the songs, must be kept sorted according to the start time */
+	/** Stores the notes of the songs, must be kept sorted according to the start
+	 * time */
 	public ArrayList<DataNote> mNotes;
 
 	/** Manages the playing track for the song */
@@ -56,7 +56,7 @@ public class DataSong implements IDisposable {
 
 	// Current notes being rendered
 	public ArrayList<DataNote> mRenderNotes = new ArrayList<DataNote>(MAX_NOTES_ON_SCREEN);
-	
+
 	/** The notes which are held by the player at each position */
 	private DataNote[] mHeldNotes = new DataNote[4];
 
@@ -66,65 +66,16 @@ public class DataSong implements IDisposable {
 
 	public DataSong(String filePath, int difficulty) {
 		this();
-		
+
 		// Parse the file
 		parse(filePath, difficulty);
 
 	}
 
-	public void generateRandomNotes(int difficulty) {
-		mNotes.clear();
-
-		int maxNoteSpace;
-		int minNoteSpace;
-		int doubleNoteChance;
-
-		switch (difficulty) {
-		case 0:
-			minNoteSpace = 250;
-			maxNoteSpace = 500;
-			doubleNoteChance = 5;
-			break;
-		case 1:
-			minNoteSpace = 200;
-			maxNoteSpace = 300;
-			doubleNoteChance = 15;
-			break;
-		default:
-		case 2:
-			minNoteSpace = 150;
-			maxNoteSpace = 250;
-			doubleNoteChance = 20;
-			break;
-		case 3:
-			// STRESS TEST
-			minNoteSpace = 10;
-			maxNoteSpace = 20;
-			doubleNoteChance = 50;
-			break;
-		}
-		Random random = new Random();
-		int position = 0;
-		while (position < mMusicManager.getLength()) {
-			int space = random.nextInt(maxNoteSpace - minNoteSpace) + minNoteSpace;
-			position += space;
-
-			int a = random.nextInt(4);
-			if (random.nextInt(100) < doubleNoteChance) {
-				int b;
-				do {
-					b = random.nextInt(4);
-				} while (b != a);
-				mNotes.add(new DataNote(position, 0, 0, b));
-			}
-			mNotes.add(new DataNote(position, 0, 0, a));
-		}
-	}
-
 	/** Parse a data file to extract the song data of the specified difficulty
 	 * 
-	 * @param filePath
-	 * @param currentDifficulty */
+	 * @param filePath The file path of the *.rl file
+	 * @param currentDifficulty The difficulty level to extract the notes of */
 	private void parse(String filePath, int currentDifficulty) {
 		// Read all the lines from the file
 		ArrayList<String> lines = UtilsFileIO.readAllLines(filePath);
@@ -155,65 +106,74 @@ public class DataSong implements IDisposable {
 			} catch (Exception ex) {
 			}
 		}
-		
-		//Adjust speed according to difficulty
+
+		// Adjust speed according to difficulty
 		switch (currentDifficulty) {
-			default:
-			case 0:
-				mSongSpeed = 0.65f;
-				break;
-			case 1:
-				mSongSpeed = 0.75f;
-				break;
-			case 2:
-				mSongSpeed = 0.85f;
-				break;
+		default:
+		case 0:
+			mSongSpeed = 0.65f;
+			break;
+		case 1:
+			mSongSpeed = 0.75f;
+			break;
+		case 2:
+			mSongSpeed = 0.85f;
+			break; 
 		}
 	}
-	
+
+	/** Determines which notes are to be rendered
+	 * 
+	 * @param currentTime The current time of the song being played
+	 * @param renderDistance How many milliseconds to look forward in the song
+	 *            to select notes */
 	public void updateNotes(int currentTime, int renderDistance) {
 
-		//Account for song speed
+		// Account for song speed
 		renderDistance /= mSongSpeed;
-		
+
 		// Check the render list to remove any tapped or off screen notes
-		// Note: must use iterator to delete otherwise MASSIVE speed drop (very noticable jitter)
+		// Note: must use iterator to delete otherwise MASSIVE speed drop (very
+		// noticable jitter)
 		DataNote current = null;
 		for (int i = 0; i < mRenderNotes.size(); i++) {
 
 			current = mRenderNotes.get(i);
 
-			// (Applies to tap notes) If the note has been fallen off the screen remove it from the render list
+			// (Applies to tap notes) If the note has been fallen off the screen
+			// remove it from the render list
 			boolean tapFallen = current.getStartTime() < currentTime - mTapAreas.getTapWindow() && current.isTapNote() && !current.hasBeenTapped();
 
-			// (Applies to hold notes) If the note hasn't been tapped and is below the tapbox
-			boolean heldInitialFallen = ( current.getStartTime() < currentTime - mTapAreas.getTapWindow()) && current.isHoldNote() && !current.hasBeenTapped();
-			
-			// (Applies to hold notes) If the note has been held and the line has fallen off screen
+			// (Applies to hold notes) If the note hasn't been tapped and is
+			// below the tapbox
+			boolean heldInitialFallen = (current.getStartTime() < currentTime - mTapAreas.getTapWindow()) && current.isHoldNote() && !current.hasBeenTapped();
+
+			// (Applies to hold notes) If the note has been held and the line
+			// has fallen off screen
 			boolean heldFallen = current.hasBeenTapped() && !current.isHeld() && current.isHoldNote();
-			
+
 			// If a regular note has been tapped or fallen off the screen
 			if (current.hasBeenTapped() && current.isTapNote() || tapFallen || heldInitialFallen || heldFallen) {
-				
+
 				// Get score from hold note
 				if (current.isHoldNote() && current.hasBeenTapped()) {
 					int smallerTime = Math.min(currentTime, current.getEndTime());
 					mTapAreas.increaseScore(smallerTime - current.getStartTime());
 				}
-					
-				if (tapFallen || heldInitialFallen) 
+
+				if (tapFallen || heldInitialFallen)
 					mTapAreas.miss();
-				
+
 				mRenderNotes.remove(i);
 				i--;
-				
+
 				continue;
 			}
 			// Else no chance of any other notes being tapped
 			else if (current.getStartTime() > currentTime + mTapAreas.getTapWindow()) {
 				break;
 			}
-			
+
 		}
 
 		// Too many notes on screen, no need to add more
@@ -239,8 +199,7 @@ public class DataSong implements IDisposable {
 			if (note.getStartTime() - currentTime < renderDistance) {
 				mRenderNotes.add(note);
 				mNoteIndex = startIndex;
-			}
-			else
+			} else
 				break;
 
 			if (mRenderNotes.size() >= MAX_NOTES_ON_SCREEN)
@@ -249,86 +208,87 @@ public class DataSong implements IDisposable {
 	}
 
 	/** Renders the notes of the song
+	 * 
 	 * @param canvas The canvas to render to
-	 * @param songSpeed */
+	 * @param songSpeed The speed of the song */
 	public void renderNotes(Canvas canvas, int currentTime) {
 
-		// Assign the notes to a local array list
-		ArrayList<DataNote> notes = Utils.getCurrentSong().mRenderNotes;
 
 		// Iterate through the notes to render
-		for (int i = notes.size() - 1; i >= 0; i--) {
+		for (int i = mRenderNotes.size() - 1; i >= 0; i--) {
 
-			DataNote note = notes.get(i);
+			DataNote note = mRenderNotes.get(i);
 
 			if (note == null)
 				continue;
 
-			note.render(canvas, mTapAreas, mSongSpeed,currentTime);
+			note.render(canvas, mTapAreas, mSongSpeed, currentTime);
 		}
 	}
 
-	private DataNote getNextTappableNoteInPosition(int position) {
+	/** Given a position, this will return the next note which will be tappable
+	 * in that position
+	 * 
+	 * @param position The tapbox position
+	 * @return The note, or null if no notes found */
+	private DataNote getNextTappableNoteInPosition(int position, int currentTime, int tapWindow) {
 		DataNote note = null;
 		for (int i = 0; i < mRenderNotes.size(); i++) {
 			note = mRenderNotes.get(i);
 			if (!note.hasBeenTapped())
-					if (note.getPosition() == position)
-						return note;
+				if (note.getPosition() == position)
+					return note;
+			
+			if (note.getStartTime() > currentTime + tapWindow)
+				return null;
 		}
 		return null;
 	}
 
-	private boolean isTapSuccessful(DataNote note, int position, int currentTime, int tapWindow) {
+	/** Called when the player makes a tap on a tapbox, handles all the tapping
+	 * of the notes
+	 * 
+	 * @param position The position of the tapbox which the player tapped
+	 * @param currentTime The current time of the song */
+	public void tap(int position, int currentTime, int tapWindow) {
+		
+		DataNote note = getNextTappableNoteInPosition(position,currentTime,tapWindow);
+
 		if (note == null)
-			return false;
+			return;
 
-		return note.isHit(currentTime, tapWindow);
-	}
+		if (note.isHit(currentTime, mTapAreas.getTapWindow())) {
 
-	public boolean tap(int position,  int currentTime) {
-		DataNote note = getNextTappableNoteInPosition(position);
-		
-		if (isTapSuccessful(note, position, currentTime, mTapAreas.getTapWindow())) {
-		
 			note.setTapped(true);
-			
+
 			if (note.isHoldNote()) {
 				note.setHeld(true);
 				mHeldNotes[position] = note;
 			}
-			
+
 			mTapAreas.successfulTap(note);
 		} else
-			mTapAreas.unsuccessfulTap();
-
-		return false;
+			mTapAreas.mistap();
 	}
-	
-	/** Called when the player lifts a finger up, makes sure any held notes are unheld */
+
+	/** Called when the player lifts a finger up, makes sure any held notes are
+	 * unheld */
 	public void unhold(int position) {
 		if (mHeldNotes[position] != null) {
 			mHeldNotes[position].setHeld(false);
 			mHeldNotes[position] = null;
 		}
 	}
-	
+
+	/** Forces every tapbox to be unheld */
 	public void unholdAll() {
 		for (int i = 0; i < mHeldNotes.length; i++)
 			unhold(i);
 	}
 
-	public void setTapAreas(DataPlayer tapAreas) {
-		mTapAreas = tapAreas;
-	}
-
-	public void save(String filePath, DataSong.DataSongDifficulty difficulty) {
-		String contents = "begin difficulty " + difficulty.ordinal();
-		
-		for (DataNote note : mNotes) 
-			contents += "note " + note.getStartTime() + " " + note.getEndTime() + " " + note.getType() + " " + note.getPosition() + "\n";
-		
-		contents += "end difficulty";
+	/** Sets the player of the song */
+	public void setPlayer(DataPlayer player) {
+		mTapAreas = player;
 	}
 
 	@Override

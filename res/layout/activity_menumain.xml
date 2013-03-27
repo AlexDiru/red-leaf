@@ -38,5 +38,18 @@
         android:layout_marginTop="16dp"
         android:text="@string/menumain_exit"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+    
+    <Button
+        android:id="@+id/tweetButton"
+        style="@style/Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/exitButton"
+        android:layout_alignRight="@+id/exitButton"
+        android:layout_below="@+id/exitButton"
+        android:layout_marginTop="16dp"
+        android:text="Tweet"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>
