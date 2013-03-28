@@ -2,16 +2,16 @@ package com.alexdiru.redleaf;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
 
 import com.alexdiru.redleaf.exception.ValueNotSetException;
+import com.alexdiru.redleaf.interfaces.IDisposable;
+import com.alexdiru.redleaf.interfaces.IRenderable;
 
 /** Represents a note which appears on a song i.e. falls down from the top of the
  * screen and the player must tap it
  * 
  * @author Alex */
-public class DataNote implements Comparable<DataNote> {
+public class DataNote implements Comparable<DataNote>, IDisposable, IRenderable{
 
 	public static final int NOTE_TYPE_TAP = 0;
 	public static final int NOTE_TYPE_HOLD = 1;
@@ -20,9 +20,6 @@ public class DataNote implements Comparable<DataNote> {
 
 	/** The pixel height of each note */
 	public static int mNotePixelHeight = -1;
-
-	/** Only need one rectangle to share between all of the notes */
-	private static Rect mHoldLineRect = new Rect();
 
 	/** The millisecond time at which the note appears in the song */
 	private int mStartTime;
@@ -55,6 +52,8 @@ public class DataNote implements Comparable<DataNote> {
 	/** If a hold note, whether the note is being held down */
 	private boolean mBeingHeld;
 
+	private DataNoteHoldLine mHoldLine;
+	
 	/** Creates the note
 	 * 
 	 * @param startTime The time at which the note starts
@@ -68,6 +67,9 @@ public class DataNote implements Comparable<DataNote> {
 		mPosition = position;
 		mTapped = false;
 		mBeingHeld = false;
+		
+		if (isHoldNote())
+			mHoldLine = new DataNoteHoldLine(this);
 	}
 
 	/** Create a note based of fields loaded from a file
@@ -86,32 +88,32 @@ public class DataNote implements Comparable<DataNote> {
 		return (mStartTime >= currentTime - tapWindow && mStartTime <= currentTime + tapWindow);
 	}
 
-	private void update(DataPlayer player, float songSpeed) {// Update note
-																// coordinates
-		mTopY = (int) (((Utils.getCurrentSong().mMusicManager.getPlayPosition() - getStartTime()) * songSpeed) + DataPlayer.mUnscaledTapBoxY);
+	public void update(DataPlayer player, float songSpeed) {
+		mTopY = UtilsScreenSize.scaleY(((Utils.getCurrentSong().mMusicManager.getPlayPosition() - getStartTime()) * songSpeed) + DataPlayer.mUnscaledTapBoxY);
 		mBottomY = mTopY + mNotePixelHeight;
 		mLeft = player.getBoundingBoxLeft(mPosition) + (UtilsScreenSize.scaleX(DataPlayer.getUnscaledTapBoxWidth() - mNotePixelHeight) >> 1);
+		
+		if (isHoldNote())
+			mHoldLine.update(songSpeed, Utils.getCurrentSong().mMusicManager.getPlayPosition());
 	}
 
-	public void render(Canvas canvas, DataPlayer player, float songSpeed, int currentTime) {
+	@Override
+	public void render(Canvas canvas) {
 
-		// Update the position
-		update(player, songSpeed);
 		
 		// If hold note draw the hold line
 		if (isHoldNote())
-			drawHoldLine(canvas, player.getColourSchemeAssets().getHoldLineHeldPaint(mPosition),
-					player.getColourSchemeAssets().getHoldLineUnheldPaint(mPosition, isStarNote()), mLeft, songSpeed, currentTime);
+			mHoldLine.render(canvas);
+			
 
-		Bitmap bmp = getNoteBitmap(player.getColourSchemeAssets());
-		canvas.drawBitmap(bmp, mLeft, UtilsScreenSize.scaleY(mTopY), null);
+		canvas.drawBitmap(getNoteBitmap(), mLeft, mTopY, null);
 	}
 
 	/** Gets the bitmap used to draw the note */
-	private Bitmap getNoteBitmap(ColourSchemeAssets colourSchemeAssets) {
+	private Bitmap getNoteBitmap() {
 		if (isStarNote())
-			return isHeld() && isHoldNote() ? colourSchemeAssets.getNoteHeld(mPosition) : colourSchemeAssets.getNoteStar(mPosition);
-		return isHeld() && isHoldNote() ? colourSchemeAssets.getNoteHeld(mPosition) : colourSchemeAssets.getNote(mPosition);
+			return isHeld() && isHoldNote() ? ColourSchemeAssets.getNoteHeld(mPosition) : ColourSchemeAssets.getNoteStar(mPosition);
+		return isHeld() && isHoldNote() ? ColourSchemeAssets.getNoteHeld(mPosition) : ColourSchemeAssets.getNote(mPosition);
 	}
 
 	@Override
@@ -119,34 +121,7 @@ public class DataNote implements Comparable<DataNote> {
 		return mStartTime - note.mStartTime;
 	}
 
-	/** Draws the hold line for the note (if applicable)
-	 * 
-	 * @param canvas The canvas to draw to
-	 * @param held The paint to draw the hold line if the note is being held
-	 * @param unheld The paint to draw the hold line if the note is not being
-	 *            held
-	 * @param noteX The x position to draw the hold line at
-	 * @param songSpeed The speed of the song
-	 * @param currentTime The current time the song is at */
-	private void drawHoldLine(Canvas canvas, Paint held, Paint unheld, int noteX, float songSpeed, int currentTime) {
-		// Something has gone wrong
-		if (mHoldLineRect == null)
-			return;
-
-		// Get the top of the hold line
-		int holdLineTop = (int) ((currentTime - mEndTime) * songSpeed) + DataPlayer.mUnscaledTapBoxY;
-		if (holdLineTop < 0)
-			holdLineTop = 0;
-
-		// Create the rectangle
-		mHoldLineRect.left = noteX;
-		mHoldLineRect.top = UtilsScreenSize.scaleY(holdLineTop);
-		mHoldLineRect.right = noteX + UtilsScreenSize.scaleY(mNotePixelHeight);
-		mHoldLineRect.bottom = UtilsScreenSize.scaleY(mBottomY - mNotePixelHeight / 2);
-
-		// Draw the hold line
-		canvas.drawRect(mHoldLineRect, mBeingHeld ? held : unheld);
-	}
+	
 
 	public boolean isHoldNote() {
 		return mEndTime != 0;
@@ -192,6 +167,14 @@ public class DataNote implements Comparable<DataNote> {
 		mTapped = tapped;
 	}
 
+	public int getScaledXPosition() {
+		return mLeft;
+	}
+	
+	public int getScaledYPosition() {
+		return mTopY;
+	}
+	
 	public static void setNotePixelHeight(int height) {
 		mNotePixelHeight = height;
 	}
@@ -201,5 +184,10 @@ public class DataNote implements Comparable<DataNote> {
 			throw new ValueNotSetException("getNotePixelHeight()");
 		else
 			return mNotePixelHeight;
+	}
+
+	@Override
+	public void dispose() {
+		mHoldLine = null;
 	}
 }

@@ -3,19 +3,19 @@ package com.alexdiru.redleaf;
 import java.io.IOException;
 import java.util.Arrays;
 
-import com.alexdiru.redleaf.android.StrokePaint;
-import com.alexdiru.redleaf.interfaces.IDisposable;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.Paint.Align;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Shader;
 import android.graphics.Typeface;
+
+import com.alexdiru.redleaf.android.StrokePaint;
+import com.alexdiru.redleaf.interfaces.IDisposable;
 
 /** Stores assets dependent on the colour scheme chosen
  * 
@@ -23,42 +23,42 @@ import android.graphics.Typeface;
 public class ColourSchemeAssets implements IDisposable {
 
 	// Tapbox bitmaps
-	private Bitmap[] LOST = new Bitmap[4];
-	private Bitmap[] LOSTInverse = new Bitmap[4];
+	private static Bitmap[] LOST = new Bitmap[4];
+	private static Bitmap[] LOSTInverse = new Bitmap[4];
 
 	// Note bitmap
-	private Bitmap[] mNoteBitmap = new Bitmap[4];
+	private static Bitmap[] mNoteBitmap = new Bitmap[4];
 
-	private Bitmap[] mNoteStarBitmap = new Bitmap[4];
+	private static Bitmap[] mNoteStarBitmap = new Bitmap[4];
 
-	private Bitmap[] mNoteHeldBitmap = new Bitmap[4];
+	private static Bitmap[] mNoteHeldBitmap = new Bitmap[4];
 
 	// Background
-	private Bitmap mBackgroundBitmap;
-	private Bitmap mBackgroundStarBitmap;
+	private static Bitmap mBackgroundBitmap;
+	private static Bitmap mBackgroundStarBitmap;
 
-	private Paint[] mHoldLineUnheldPaint = new Paint[4];
-	private Paint[] mHoldLineHeldPaint = new Paint[4];
-	private Paint[] mHoldLineStarUnheldPaint = new Paint[4];
+	private static Paint[] mHoldLineUnheldPaint = new Paint[4];
+	private static Paint[] mHoldLineHeldPaint = new Paint[4];
+	private static Paint[] mHoldLineStarUnheldPaint = new Paint[4];
 
-	private Bitmap mStarPowerBitmap;
+	private static Bitmap mStarPowerBitmap;
 
 	/** Paint used for drawing the combo counter */
-	private StrokePaint mComboPaint = new StrokePaint();
+	private static StrokePaint mComboPaint = new StrokePaint();
 
 	/** Paint used for drawing the score */
-	private StrokePaint mScorePaint = new StrokePaint();
+	private static StrokePaint mScorePaint = new StrokePaint();
 
 	/** Paint used for drawing the accuracy percentage */
-	private StrokePaint mAccuracyPaint = new StrokePaint();
+	private static StrokePaint mAccuracyPaint = new StrokePaint();
 
 	/** Paint used for drawing the multiplier */
-	private StrokePaint mMultiplierPaint = new StrokePaint();
+	private static StrokePaint mMultiplierPaint = new StrokePaint();
 
 	/** Paint used for drawing the countdown timer */
-	private StrokePaint mCountdownPaint = new StrokePaint();
+	private static StrokePaint mCountdownPaint = new StrokePaint();
 
-	public ColourSchemeAssets(ColourScheme colourScheme, int tapBoxHeight) {
+	public static void initialise(ColourScheme colourScheme, int tapBoxHeight) {
 		setupPaints();
 
 		// Tapboxes
@@ -112,17 +112,22 @@ public class ColourSchemeAssets implements IDisposable {
 			BitmapShader heldShader = new BitmapShader(held, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 			heldShader.setLocalMatrix(matrix);
 
+			int alpha = 170;
+			
 			mHoldLineUnheldPaint[i] = new Paint();
 			mHoldLineUnheldPaint[i].setShader(unheldShader);
-			mHoldLineUnheldPaint[i].setAlpha(170);
+			if (UtilsSettings.mUseAlpha)
+			mHoldLineUnheldPaint[i].setAlpha(alpha);
 
 			mHoldLineStarUnheldPaint[i] = new Paint();
 			mHoldLineStarUnheldPaint[i].setShader(unheldStarShader);
-			mHoldLineStarUnheldPaint[i].setAlpha(170);
+			if (UtilsSettings.mUseAlpha)
+			mHoldLineStarUnheldPaint[i].setAlpha(alpha);
 
 			mHoldLineHeldPaint[i] = new Paint();
 			mHoldLineHeldPaint[i].setShader(heldShader);
-			mHoldLineHeldPaint[i].setAlpha(170);
+			if (UtilsSettings.mUseAlpha)
+			mHoldLineHeldPaint[i].setAlpha(alpha);
 		}
 
 		colourScheme.dispose();
@@ -158,7 +163,7 @@ public class ColourSchemeAssets implements IDisposable {
 	}
 
 	/** Sets all the properties of the paints */
-	private void setupPaints() {
+	private static void setupPaints() {
 		mComboPaint.setTextSize(UtilsScreenSize.scaleFontSize(70));
 		mComboPaint.setTextAlign(Align.CENTER);
 		mComboPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
@@ -196,55 +201,55 @@ public class ColourSchemeAssets implements IDisposable {
 	 * 
 	 * @param starPowerActive If the player has activated their star power
 	 * @return The background */
-	public Bitmap getBackground(boolean starPowerActive) {
+	public static Bitmap getBackground(boolean starPowerActive) {
 		if (starPowerActive)
 			return mBackgroundStarBitmap;
 		return mBackgroundBitmap;
 	}
 
-	public Bitmap getNote(int position) {
+	public static Bitmap getNote(int position) {
 		return mNoteBitmap[position];
 	}
 
-	public Bitmap getNoteStar(int position) {
+	public static Bitmap getNoteStar(int position) {
 		return mNoteStarBitmap[position];
 	}
 
-	public Bitmap getTapBox(int position) {
+	public static Bitmap getTapBox(int position) {
 		return LOST[position];
 	}
 
-	public Bitmap getTapBoxHeld(int position) {
+	public static Bitmap getTapBoxHeld(int position) {
 		return LOSTInverse[position];
 	}
 
-	public void drawBackground(Canvas canvas) {
+	public static void drawBackground(Canvas canvas) {
 		canvas.drawBitmap(mBackgroundBitmap, 0, 0, null);
 	}
 
-	public Paint getHoldLineUnheldPaint(int position, boolean isStarNote) {
+	public static Paint getHoldLineUnheldPaint(int position, boolean isStarNote) {
 		if (isStarNote)
 			return mHoldLineStarUnheldPaint[position];
 		return mHoldLineUnheldPaint[position];
 	}
 
-	public Paint getHoldLineHeldPaint(int position) {
+	public static Paint getHoldLineHeldPaint(int position) {
 		return mHoldLineHeldPaint[position];
 	}
 
-	public Bitmap getNoteHeld(int position) {
+	public static Bitmap getNoteHeld(int position) {
 		return mNoteHeldBitmap[position];
 	}
 
 	/** Draws the tapboxes to the same bitmap as the background
 	 * 
 	 * @param tapBoundingBoxes */
-	public void setupBackgroundsWithTapboxes(DataTapBox[] tapBoundingBoxes) {
+	public static void setupBackgroundsWithTapboxes(DataTapBox[] tapBoundingBoxes) {
 		mBackgroundBitmap = drawTapboxesOnBackground(mBackgroundBitmap, tapBoundingBoxes);
 		mBackgroundStarBitmap = drawTapboxesOnBackground(mBackgroundStarBitmap, tapBoundingBoxes);
 	}
 
-	private Bitmap drawTapboxesOnBackground(Bitmap backgroundBitmap, DataTapBox[] tapBoundingBoxes) {
+	private static Bitmap drawTapboxesOnBackground(Bitmap backgroundBitmap, DataTapBox[] tapBoundingBoxes) {
 		Bitmap storedBackground = backgroundBitmap;
 		backgroundBitmap = Bitmap.createBitmap(UtilsScreenSize.getScreenWidth(), UtilsScreenSize.getScreenHeight(), Config.RGB_565);
 		Canvas canvas = new Canvas(backgroundBitmap);
@@ -256,8 +261,8 @@ public class ColourSchemeAssets implements IDisposable {
 		return backgroundBitmap;
 	}
 
-	private void updateComboPaints(StrokePaint comboPaint, int streak) {
-		int opacity = 190;
+	private static void updateComboPaints(StrokePaint comboPaint, int streak) {
+		int opacity = 255;
 
 		// Set colours depending on the streak
 		if (streak < 20) {
@@ -281,28 +286,28 @@ public class ColourSchemeAssets implements IDisposable {
 		}
 	}
 
-	public Bitmap getStarPower() {
+	public static Bitmap getStarPower() {
 		return mStarPowerBitmap;
 	}
 
-	public StrokePaint getComboPaint(int streak) {
+	public static StrokePaint getComboPaint(int streak) {
 		updateComboPaints(mComboPaint, streak);
 		return mComboPaint;
 	}
 
-	public StrokePaint getScorePaint() {
+	public static StrokePaint getScorePaint() {
 		return mScorePaint;
 	}
 
-	public StrokePaint getAccuracyPaint() {
+	public static StrokePaint getAccuracyPaint() {
 		return mAccuracyPaint;
 	}
 
-	public StrokePaint getMultiplierPaint() {
+	public static StrokePaint getMultiplierPaint() {
 		return mMultiplierPaint;
 	}
 
-	public StrokePaint getCountdownPaint() {
+	public static StrokePaint getCountdownPaint() {
 		return mCountdownPaint;
 	}
 

@@ -7,13 +7,14 @@ import android.graphics.Canvas;
 
 import com.alexdiru.redleaf.android.MusicManager;
 import com.alexdiru.redleaf.interfaces.IDisposable;
+import com.alexdiru.redleaf.interfaces.IRenderable;
 
 /** Represents a song the player can play As such it stores all the notes which
  * will fall down the screen (and provide methods to update and render these
  * notes)
  * 
  * @author Alex */
-public class DataSong implements IDisposable {
+public class DataSong implements IDisposable, IRenderable {
 
 	/** The maximum number of notes that can be rendered */
 	private static final int MAX_NOTES_ON_SCREEN = 20;
@@ -24,7 +25,7 @@ public class DataSong implements IDisposable {
 	}
 
 	/** Speed at which notes fall */
-	private float mSongSpeed;
+	public static float mSongSpeed;
 
 	/** Artist of the song */
 	public String mArtistName = "LOST";
@@ -205,13 +206,17 @@ public class DataSong implements IDisposable {
 			if (mRenderNotes.size() >= MAX_NOTES_ON_SCREEN)
 				break;
 		}
+		
+		for (int i = 0; i < mRenderNotes.size(); i++)
+			mRenderNotes.get(i).update(mTapAreas, mSongSpeed);
 	}
 
 	/** Renders the notes of the song
 	 * 
 	 * @param canvas The canvas to render to
 	 * @param songSpeed The speed of the song */
-	public void renderNotes(Canvas canvas, int currentTime) {
+	@Override
+	public void render(Canvas canvas) {
 
 
 		// Iterate through the notes to render
@@ -222,7 +227,7 @@ public class DataSong implements IDisposable {
 			if (note == null)
 				continue;
 
-			note.render(canvas, mTapAreas, mSongSpeed, currentTime);
+			note.render(canvas);
 		}
 	}
 

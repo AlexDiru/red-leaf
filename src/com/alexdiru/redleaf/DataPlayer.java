@@ -13,10 +13,6 @@ public class DataPlayer implements IRenderable, IDisposable {
 	/** Unscaled Y position of the tapboxes */
 	public static final int mUnscaledTapBoxY = (int) (1280 / 1.3061);
 
-	/** Handles the rendering according to the colour scheme - sets some of the
-	 * variables in this class so make sure this is first */
-	private ColourSchemeAssets mColourSchemeAssets = new ColourSchemeAssets(new ColourScheme(ThemeType.DISCOVERY), mUnscaledTapBoxHeight);
-
 	/** The number of star notes required in a streak for star power */
 	private static final int mNoteStreakRequiredForStarPower = 10;
 
@@ -42,6 +38,9 @@ public class DataPlayer implements IRenderable, IDisposable {
 
 	/** Handles the player's touches */
 	private DataTouchMap mTouchMap = new DataTouchMap();
+	
+	/** Handles the star power */
+	private DataStarPower mStarPower;
 
 	// Gameplay
 	private int mStreak;
@@ -60,27 +59,16 @@ public class DataPlayer implements IRenderable, IDisposable {
 	/** The tap window in ms */
 	private int mTapWindow = 200;
 
-	private int mStarNoteStreak = 0;
-	private int mStarPowersAvailable = 0;
-	private boolean mStarPowerActive = false;
-	private DataBoundingBox mStarPowerBoundingBox;
-	private int mStarPowerTimeOfActivation;
-
 	public DataPlayer() {
+		ColourSchemeAssets.initialise(new ColourScheme(ThemeType.DISCOVERY), mUnscaledTapBoxHeight);
+		
 		mSong = Utils.getCurrentSong();
 		mSong.setPlayer(this);
 
 		initialiseBackgroundAndTapBoxes();
-		initialiseStarPowerBoundingBox();
 
-	}
+		mStarPower = new DataStarPower();
 
-	/** Initialises the bounding box for when star power is pressed */
-	private void initialiseStarPowerBoundingBox() {
-		mStarPowerBoundingBox = new DataBoundingBox(mColourSchemeAssets.getStarPower());
-		mStarPowerBoundingBox.update(UtilsScreenSize.getScreenWidth() / 2 - mColourSchemeAssets.getStarPower().getWidth() / 2,
-				UtilsScreenSize.getScreenHeight() / 2, UtilsScreenSize.getScreenWidth() / 2 + mColourSchemeAssets.getStarPower().getWidth() / 2,
-				UtilsScreenSize.getScreenHeight() / 2 + mColourSchemeAssets.getStarPower().getHeight());
 	}
 
 	/** Gets the world height of the tapbox
@@ -121,30 +109,15 @@ public class DataPlayer implements IRenderable, IDisposable {
 			throw new ValueNotSetException("getScaledTapBoxGap()");
 		return mUnscaledTapBoxGap;
 	}
-
-	public void update(int currentTime) {
-		if (mStarPowerActive && mStarPowerTimeOfActivation + mStarPowerDuration < currentTime)
-			endStarPower();
-	}
-
-	private void startStarPower(int currentTime) {
-		mStarPowerActive = true;
-		mStarPowersAvailable--;
-		mStarPowerTimeOfActivation = currentTime;
-	}
-
-	private void endStarPower() {
-		mStarPowerActive = false;
-	}
-
+	
 	private void initialiseBackgroundAndTapBoxes() {
 		// Create the bounding boxes
 		mTapBoxes = new DataTapBox[4];
 		for (int t = 0; t < 4; t++) {
 			mTapBoxes[t] = new DataTapBox();
 			mTapBoxes[t].setRectangleWidth(Math.round(UtilsScreenSize.scaleY(14)));
-			mTapBoxes[t].setUnheldBitmap(mColourSchemeAssets.getTapBox(t));
-			mTapBoxes[t].setHeldBitmap(mColourSchemeAssets.getTapBoxHeld(t));
+			mTapBoxes[t].setUnheldBitmap(ColourSchemeAssets.getTapBox(t));
+			mTapBoxes[t].setHeldBitmap(ColourSchemeAssets.getTapBoxHeld(t));
 		}
 
 		// Get the tapbox height boundaries
@@ -158,7 +131,7 @@ public class DataPlayer implements IRenderable, IDisposable {
 		mTapBoxes[3].update(UtilsScreenSize.scaleX(getUnscaledTapBoxGap() * 4) + mUnscaledTapBoxWidth * 3, mTapBoxTop);
 
 		// Render the tapboxes on the same bitmap as the background
-		mColourSchemeAssets.setupBackgroundsWithTapboxes(mTapBoxes);
+		ColourSchemeAssets.setupBackgroundsWithTapboxes(mTapBoxes);
 	}
 
 	/** Called when a successful tap is made on a note, updates all of the
@@ -174,7 +147,7 @@ public class DataPlayer implements IRenderable, IDisposable {
 
 	/** Updates the player's score with respect to the multiplier */
 	private void updateScore() {
-		if (mStarPowerActive)
+		if (mStarPower.isActive())
 			mScore += 1600;
 		else
 			mScore += 100 * mMultiplier;
@@ -187,12 +160,12 @@ public class DataPlayer implements IRenderable, IDisposable {
 
 		// Star note streak
 		if (isStarNote)
-			mStarNoteStreak++;
+			mStarPower.increaseStreak();
 
 		// Star note activation
-		if (mStarNoteStreak == mNoteStreakRequiredForStarPower) {
-			mStarPowersAvailable++;
-			mStarNoteStreak = 0;
+		if (mStarPower.getStreak() == mNoteStreakRequiredForStarPower) {
+			mStarPower.increaseNumberAvailable();
+			mStarPower.resetStreak();
 		}
 	}
 
@@ -224,7 +197,7 @@ public class DataPlayer implements IRenderable, IDisposable {
 	 * mistap is made, resets all of the player's streaks and multipliers */
 	private void unsuccessfulTap() {
 		mStreak = 0;
-		mStarNoteStreak = 0;
+		mStarPower.resetStreak();
 		mScore -= 30;
 		mMultiplier = 1;
 	}
@@ -247,10 +220,7 @@ public class DataPlayer implements IRenderable, IDisposable {
 			}
 
 		// Check star power being touched
-		if (mStarPowersAvailable > 0)
-			if (!mStarPowerActive)
-				if (mStarPowerBoundingBox.isTouched(x, y))
-					startStarPower(currentTime);
+		mStarPower.handleTouch(x,y, currentTime);
 
 	}
 
@@ -286,19 +256,13 @@ public class DataPlayer implements IRenderable, IDisposable {
 	 * @param canvas The canvas to draw to */
 	@Override
 	public void render(Canvas canvas) {
-		canvas.drawBitmap(mColourSchemeAssets.getBackground(mStarPowerActive), 0, 0, null);
+		canvas.drawBitmap(ColourSchemeAssets.getBackground(mStarPower.isActive()), 0, 0, null);
 
 		for (int t = 0; t < 4; t++)
 			if (mTouchMap.isTouched(t))
 				mTapBoxes[t].render(canvas);
 
-		if (mStarPowersAvailable > 0) {
-			mStarPowerBoundingBox.render(canvas);
-		}
-	}
-
-	public ColourSchemeAssets getColourSchemeAssets() {
-		return mColourSchemeAssets;
+		mStarPower.render(canvas);
 	}
 
 	public int getBoundingBoxTop() {
@@ -340,17 +304,24 @@ public class DataPlayer implements IRenderable, IDisposable {
 	public void increaseScore(int score) {
 		mScore += score;
 	}
-
-	public boolean isStarPowerActive() {
-		return mStarPowerActive;
-	}
-
+	
 	@Override
 	public void dispose() {
 		UtilsDispose.disposeAll(mTapBoxes);
-		UtilsDispose.dispose(mColourSchemeAssets);
+		(new ColourSchemeAssets()).dispose();
 		UtilsDispose.dispose(mTouchMap);
-		UtilsDispose.dispose(mStarPowerBoundingBox);
+		mTouchMap = null;
+		UtilsDispose.dispose(mStarPower);
+		mStarPower = null;
 		UtilsDispose.dispose(mSong);
+		mSong = null;
+	}
+
+	public boolean isStarPowerActive() {
+		return mStarPower.isActive();
+	}
+
+	public void update(int currentTime) {
+		mStarPower.update(currentTime);
 	}
 }

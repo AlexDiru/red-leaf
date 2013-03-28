@@ -47,11 +47,11 @@ public class GameThread extends Thread {
 						}
 						
 						// Render the game
-						try {
+						//try {
 							draw(canvas);
-						} catch (Exception ex) {
-							Log.d("exception", "draw exception");
-						}
+						//} catch (Exception ex) {
+						//	Log.d("exception", "draw exception");
+						//}
 					}
 				}
 			} finally {

@@ -50,6 +50,14 @@ public abstract class UtilsScreenSize {
 		return (int)(px * mScaleY);
 	}
 	
+	public static int scaleX(float px) {
+		return (int)(px * mScaleX);
+	}
+	
+	public static int scaleY(float py) {
+		return (int)(py * mScaleY);
+	}
+	
 	public static int scaleFontSize(int sz) {
 		return (int)(sz * mScaleY);
 	}
