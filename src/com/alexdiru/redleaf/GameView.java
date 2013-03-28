@@ -21,7 +21,7 @@ public class GameView extends SurfaceView implements
 		SurfaceHolder.Callback, OnTouchListener, IDisposable {
 
 	private GameThread mGameThread;
-	public MusicManager mMusicManager;
+	private MusicManager mMusicManager;
 	private DataPlayer mTapAreas;
 
 	// Text Paints
